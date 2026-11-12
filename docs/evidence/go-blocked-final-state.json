@@ -1,0 +1,35 @@
+{
+  "captured_at": 1794488931,
+  "main": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "main_unchanged": true,
+  "open_prs": [],
+  "rulesets": [
+    {
+      "id": 27101219,
+      "name": "change-guard-main-required-checks",
+      "enforcement": "active",
+      "bypass_actors": [],
+      "sha256": "efd93ae2871142942f0d4216548ba1275869693ed7a4748fb7050a1be4d1f75f"
+    },
+    {
+      "id": 27101186,
+      "name": "change-guard-main-updates",
+      "enforcement": "active",
+      "bypass_actors": [
+        {
+          "actor_id": null,
+          "actor_type": "DeployKey",
+          "bypass_mode": "always"
+        }
+      ],
+      "sha256": "0981724995ea903cb03f2e596c1c65f8db5ddc25e9bea6fe0cf96e0023164a57"
+    }
+  ],
+  "rulesets_unchanged_vs_baseline": true,
+  "baseline_main": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "go_service_active": false,
+  "production_current": "/opt/change-guard/releases/0.2.3",
+  "blockers": [
+    "check-token CLI flag order vs Ansible/unit callers"
+  ]
+}

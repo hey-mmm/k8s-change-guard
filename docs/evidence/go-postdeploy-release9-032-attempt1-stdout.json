@@ -1,0 +1,7 @@
+{
+  "error": "expected image repository is not allowlisted",
+  "schema_version": 1,
+  "started_at": 1794491508,
+  "status": "error",
+  "verifier": "change-guard-postdeploy"
+}

@@ -1,0 +1,19 @@
+{
+  "captured_at": 1794490071,
+  "branch": "release/823770eff4e9-af77edde",
+  "sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+  "parents": [
+    "823770eff4e9384ceb83aa1561f9b5f95239c221"
+  ],
+  "message": "Promote verified digest sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+  "current_main": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "is_based_on_current_main": false,
+  "existing_prs": [
+    {
+      "number": 2,
+      "state": "closed",
+      "url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/2"
+    }
+  ],
+  "reason": "leftover release branch from the earlier Python acceptance; it is based on 823770e, not the current main 321eb951, and has no open PR"
+}

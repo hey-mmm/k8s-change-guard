@@ -1,0 +1,26 @@
+{
+  "ai": {
+    "citations": 4,
+    "model": "deepseek-chat",
+    "status": "ok",
+    "summary": "Decision is ERROR and cannot be approved: the required DeepSeek review result is missing (AI_REQUIRED_UNAVAILABLE), so the hard guard rule blocks release. Beyond that blocker, the report shows a first-time add of Deployment/Service/ServiceMonitor demo in namespace demo with a changed pod template, s"
+  },
+  "collect": {
+    "errors": [],
+    "nodes": 2,
+    "pods": 28
+  },
+  "final": {
+    "decision": "REVIEW",
+    "evaluation_id": null
+  },
+  "pre_decision": "ERROR",
+  "render": {
+    "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+    "kinds": [
+      "Service",
+      "Deployment",
+      "ServiceMonitor"
+    ]
+  }
+}

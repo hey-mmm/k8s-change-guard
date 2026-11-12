@@ -1,0 +1,10 @@
+{
+  "exit": 0,
+  "lines": [
+    "active",
+    "/opt/change-guard/releases/0.3.2",
+    "change-guard 0.3.2 (rules go-2026-11-12.1)",
+    "{ path=/opt/change-guard/current/k8s-change-guard ; argv[]=/opt/change-guard/current/k8s-change-guard daemon --config /etc/change-guard/config.yaml ; ignore_errors=no ; start_time=[Thu 2026-11-12 22:05:20 CST] ; stop_time=[n/a] ; pid=134501 ; code=(null) ; status=0/0 }"
+  ],
+  "stderr": ""
+}

@@ -1,0 +1,15 @@
+{
+  "captured_at": 1794489679,
+  "captured_at_iso": "2026-11-12T13:21:19Z",
+  "credential_check": {
+    "exit": 0,
+    "stdout": "{\n  \"permissions\": {\n    \"admin\": true,\n    \"maintain\": true,\n    \"pull\": true,\n    \"push\": true,\n    \"triage\": true\n  },\n  \"private\": false,\n  \"repository\": \"hey-mmm/Full-Stack-Observability-in-Kubernetes\",\n  \"status\": \"ok\"\n}\n",
+    "stderr": ""
+  },
+  "merge_ssh_proxy_configured": "11.0.1.1:7890",
+  "merge_path": {
+    "exit": 0,
+    "stdout": "321eb9517b83dc0e9261e16dcdb26016332dd7c3\trefs/heads/main\n",
+    "stderr": ""
+  }
+}

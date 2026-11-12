@@ -1,0 +1,20 @@
+{
+  "pr": 10,
+  "started_at": 1794492288,
+  "started_at_iso": "2026-11-12T14:04:48Z",
+  "finished_at": 1794492320,
+  "finished_at_iso": "2026-11-12T14:05:20Z",
+  "exit": 0,
+  "evaluation_id": "ev-84b855038c1eb1ab7e6ce3ce",
+  "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+  "base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "main_before": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "stdout": "{\n  \"base_ancestor\": true,\n  \"base_sha\": \"a9a29da30832380bbdbda091177c738d7a7fde4b\",\n  \"decision\": \"REVIEW\",\n  \"evaluated_head\": \"88ced0cacdb5c6ea2cefd186c51af017125e4ea3\",\n  \"evaluation_id\": \"ev-84b855038c1eb1ab7e6ce3ce\",\n  \"evidence_expires_at\": 1794492497,\n  \"github_merge_api_used\": false,\n  \"head_sha\": \"88ced0cacdb5c6ea2cefd186c51af017125e4ea3\",\n  \"head_tree_sha\": \"b5edacddad17d6c827840de24cf599724f9f6574\",\n  \"merge_sha\": \"88ced0cacdb5c6ea2cefd186c51af017125e4ea3\",\n  \"merged_at\": 1794492320,\n  \"pr\": 10,\n  \"result\": \"MERGED\",\n  \"rollback\": {\n    \"command\": \"git revert 88ced0cacdb5c6ea2cefd186c51af017125e4ea3\",\n    \"commit\": \"88ced0cacdb5c6ea2cefd186c51af017125e4ea3\",\n    \"mainline\": null,\n    \"strategy\": \"git-revert\"\n  },\n  \"strategy\": \"fast-forward\",\n  \"synthetic_merge_sha\": \"7177677552adbbc1362ffea4ee9e040bb7156269\",\n  \"synthetic_tree_sha\": \"b5edacddad17d6c827840de24cf599724f9f6574\"\n}",
+  "stderr": "",
+  "trusted_script": {
+    "local": "C:\\Users\\MYT\\Documents\\Codex\\2026-11-12\\https-github-com-hey-mmm-full-3\\work\\k8s-change-guard\\scripts\\merge-release.sh",
+    "remote": "/home/myt/go-pr-ops/merge-release.sh",
+    "sha256": "094aae10d395643202803553b620d98a12e64ef981318988c61229231f464a09",
+    "stat": "myt:myt 755"
+  }
+}

@@ -1,0 +1,888 @@
+{
+  "captured_at": 1794492234,
+  "captured_at_iso": "2026-11-12T14:03:54Z",
+  "pr": {
+    "number": 10,
+    "title": "Revert release a9a29da30832 to previous digest",
+    "state": "open",
+    "draft": false,
+    "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/10",
+    "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "head_ref": "revert/a9a29da30832",
+    "base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "base_ref": "main",
+    "mergeable": true,
+    "mergeable_state": "blocked",
+    "merge_commit_sha": "7177677552adbbc1362ffea4ee9e040bb7156269"
+  },
+  "index_entry": {
+    "approval": null,
+    "base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "base_tree_sha": "d84a70999466951822f4f1c0a4afa0576eb3b40c",
+    "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+    "closed_revoked": false,
+    "decision": "REVIEW",
+    "evaluation_id": "ev-84b855038c1eb1ab7e6ce3ce",
+    "expires_at": 1794492497,
+    "guard_version": "0.3.2",
+    "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "head_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+    "last_status": {
+      "context": "change-guard/release",
+      "description": "REVIEW required - comment /guard approve ev-84b855038c1eb1ab7e6ce3ce",
+      "evaluation_id": "ev-84b855038c1eb1ab7e6ce3ce",
+      "github_id": 58735721986,
+      "posted_at": 1794492218,
+      "sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+      "state": "pending"
+    },
+    "number": 10,
+    "pending_base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d",
+    "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+    "report_digest": "f20c4ab8d6bb407680491b902af1f8d3abceb87032346691666e2a81834a9153",
+    "updated_at": 1794492200
+  },
+  "report": {
+    "ai": {
+      "additional_risks": [
+        {
+          "detail": "Both changed pod-template env values are redacted, so the diff alone cannot prove the release carries normal settings. Fault drills use DEMO_STARTUP_FAIL=true and DEMO_ERROR_RATE=1; shipping either would degrade the demo. Require the rendered manifest to show normal values before sync.",
+          "severity": "REVIEW",
+          "title": "Redacted env values may hide fault-injection settings"
+        },
+        {
+          "detail": "35 scheduled Pods lack CPU/memory requests and are treated as zero, so available capacity is optimistic while KubeCPUOvercommit is already firing. A surge Pod during rollout may not schedule cleanly.",
+          "severity": "REVIEW",
+          "title": "Capacity headroom may be overstated"
+        },
+        {
+          "detail": "The revert must land as a Git commit and be confirmed after Argo sync; an imperative rollback alone does not restore desired state and must not be reported as a GitOps rollback.",
+          "severity": "REVIEW",
+          "title": "Rollback must be verified in Git, not imperatively"
+        }
+      ],
+      "citations": [
+        {
+          "case_id": "git-revert-required",
+          "line_end": 173,
+          "line_start": 159,
+          "source": "docs/drills.md",
+          "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+          "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89"
+        },
+        {
+          "case_id": "git-revert-required",
+          "line_end": 173,
+          "line_start": 159,
+          "source": "docs/drills.md",
+          "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+          "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89"
+        },
+        {
+          "case_id": "startup-max-unavailable-protection",
+          "line_end": 104,
+          "line_start": 85,
+          "source": "docs/drills.md",
+          "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+          "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89"
+        },
+        {
+          "case_id": "startup-max-unavailable-protection",
+          "line_end": 104,
+          "line_start": 85,
+          "source": "docs/drills.md",
+          "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+          "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89"
+        },
+        {
+          "case_id": "http500-fault",
+          "line_end": 13,
+          "line_start": 13,
+          "source": "docs/fault-review.md",
+          "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+          "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f"
+        }
+      ],
+      "error": null,
+      "model": "deepseek-chat",
+      "status": "ok",
+      "summary": "PR #10 reverts the demo release to the previous image digest and bumps the app.kubernetes.io/version label on Deployment, Service, and ServiceMonitor. The change is confined to gitops/demo/values.yaml, so the Git desired state is the source of truth; the revert commit plus Argo resync is the correct rollback path, and an imperative argocd app rollback or kubectl rollout undo must not be presented as a GitOps rollback. Two pod-template env values are redacted, so reviewers cannot confirm they hold normal values rather than fault-injection settings; the candidate must not carry DEMO_STARTUP_FAIL=true or DEMO_ERROR_RATE=1. Capacity evidence is weak: 35 scheduled Pods have no CPU/memory requests and are counted as zero, so free capacity is overstated, and KubeCPUOvercommit is firing. The AI result status is invalid (ERROR), so the decision preview is ERROR and this PR cannot be treated as approved. Post-sync verification should confirm rollout status, the running image digest, and the /version output."
+    },
+    "approved_chart_digests": [
+      "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+    ],
+    "argo": {
+      "argo_application_changed": false,
+      "argo_application_count": 2,
+      "argo_changed_paths": [],
+      "argo_manifest_error": false,
+      "argo_project_changed": false,
+      "argo_source_changed": false
+    },
+    "base_branch": "main",
+    "base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "base_tree_digest": "f3a3087b22c5262c73fc31c761864e21b623bd430e6b8c073fa331e4f42b27c2",
+    "base_tree_sha": "d84a70999466951822f4f1c0a4afa0576eb3b40c",
+    "changed_count": 1,
+    "changed_paths": [
+      "gitops/demo/values.yaml"
+    ],
+    "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+    "context": {
+      "argo": {
+        "argo_application_changed": false,
+        "argo_application_count": 2,
+        "argo_changed_paths": [],
+        "argo_manifest_error": false,
+        "argo_project_changed": false,
+        "argo_source_changed": false
+      },
+      "changed_count": 1,
+      "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+      "deployment_related_changes": [
+        "gitops/demo/values.yaml"
+      ],
+      "tree_changes": [
+        "gitops/demo/values.yaml"
+      ],
+      "tree_diff_truncated": false,
+      "workflow_changed": false,
+      "workflow_paths": []
+    },
+    "created_at": 1794492202,
+    "decision": "REVIEW",
+    "deployment_images": [
+      {
+        "container": "demo-service",
+        "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+        "init": false
+      }
+    ],
+    "evaluated_at": 1794492217,
+    "evaluation": {
+      "audit": {
+        "ai": {
+          "additional_risks": 3,
+          "citations": 5,
+          "model": "deepseek-chat",
+          "status": "ok"
+        },
+        "capacity": {
+          "additional_pods_reserved": 1,
+          "allocatable_cpu_millicores": 4000,
+          "allocatable_memory_bytes": 12406517760,
+          "available_cpu_millicores": 2190,
+          "available_memory_bytes": 9185292288,
+          "existing_pods_requests_cpu_millicores": 1810,
+          "existing_pods_requests_memory_bytes": 3221225472,
+          "new_pods_reserved": 1,
+          "old_pod_request_cpu_millicores": 50,
+          "old_pod_request_memory_bytes": 67108864,
+          "overcommitted": false,
+          "peak_demo_cpu_millicores": 100,
+          "peak_demo_memory_bytes": 134217728,
+          "peak_total_pods": 2,
+          "pod_request_cpu_millicores": 50,
+          "pod_request_memory_bytes": 67108864,
+          "projected_total_cpu_millicores": 1860,
+          "projected_total_memory_bytes": 3288334336,
+          "replicas": 1,
+          "required_cpu_millicores": 50,
+          "required_memory_bytes": 67108864,
+          "retained_old_replicas": 1,
+          "source": "evidence.capacity",
+          "surge_pods": 1,
+          "worker_names": [
+            "worker"
+          ],
+          "workers_ready": 1
+        },
+        "changes_count": 6,
+        "checks": [
+          {
+            "field": "ai_result.additional_risks",
+            "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+            "rule_id": "AI_ADDITIONAL_RISK",
+            "severity": "REVIEW"
+          },
+          {
+            "field": "evidence.pods[].spec.containers[].resources.requests",
+            "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+            "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+            "severity": "REVIEW"
+          },
+          {
+            "field": "evidence.metrics.alerts",
+            "message": "one or more relevant alerts are firing",
+            "rule_id": "FIRING_ALERTS",
+            "severity": "REVIEW"
+          }
+        ],
+        "evaluated_at": 1794492217,
+        "metrics": {
+          "error_ratio": 0,
+          "firing_alerts": 1,
+          "low_traffic": false,
+          "memory_working_set_bytes": 39038976,
+          "p95_seconds": 0.00475,
+          "request_rate": 1.7193465079721537,
+          "source_timestamps": {
+            "error_ratio": 1794492209.862,
+            "memory_working_set_bytes": 1794492197.599,
+            "p95_seconds": 1794492209.862,
+            "request_rate": 1794492209.862,
+            "up": 1794492209.862
+          },
+          "up": 1
+        },
+        "old_render_digest": "beddac43bb6960dfd0bf19044aa703b58cdb61aa9e3f52a2e8fbfe66cdacfa29",
+        "pod_template_changed": true,
+        "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+        "rule_version": "go-2026-11-12.1",
+        "schema_version": "1.0"
+      },
+      "changes": [
+        {
+          "kind": "Deployment",
+          "name": "demo",
+          "namespace": "demo",
+          "new": "0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+          "old": "0.1.0-823770eff4e9384ceb83aa1561f9b5f95239c221",
+          "operation": "replace",
+          "path": "metadata.labels.app.kubernetes.io/version",
+          "pod_template": false,
+          "resource": "Deployment/demo/demo"
+        },
+        {
+          "kind": "Deployment",
+          "name": "demo",
+          "namespace": "demo",
+          "new": "<redacted>",
+          "old": "<redacted>",
+          "operation": "replace",
+          "path": "spec.template.spec.containers[0].env[0].value",
+          "pod_template": true,
+          "resource": "Deployment/demo/demo"
+        },
+        {
+          "kind": "Deployment",
+          "name": "demo",
+          "namespace": "demo",
+          "new": "<redacted>",
+          "old": "<redacted>",
+          "operation": "replace",
+          "path": "spec.template.spec.containers[0].env[1].value",
+          "pod_template": true,
+          "resource": "Deployment/demo/demo"
+        },
+        {
+          "kind": "Deployment",
+          "name": "demo",
+          "namespace": "demo",
+          "new": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+          "old": "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+          "operation": "replace",
+          "path": "spec.template.spec.containers[0].image",
+          "pod_template": true,
+          "resource": "Deployment/demo/demo"
+        },
+        {
+          "kind": "Service",
+          "name": "demo",
+          "namespace": "demo",
+          "new": "0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+          "old": "0.1.0-823770eff4e9384ceb83aa1561f9b5f95239c221",
+          "operation": "replace",
+          "path": "metadata.labels.app.kubernetes.io/version",
+          "pod_template": false,
+          "resource": "Service/demo/demo"
+        },
+        {
+          "kind": "ServiceMonitor",
+          "name": "demo",
+          "namespace": "demo",
+          "new": "0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+          "old": "0.1.0-823770eff4e9384ceb83aa1561f9b5f95239c221",
+          "operation": "replace",
+          "path": "metadata.labels.app.kubernetes.io/version",
+          "pod_template": false,
+          "resource": "ServiceMonitor/demo/demo"
+        }
+      ],
+      "context": {
+        "ai_required": true,
+        "ai_status": "ok",
+        "approved_chart_digests": [
+          "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+        ],
+        "argo": {
+          "argo_application_changed": false,
+          "argo_application_count": 2,
+          "argo_changed_paths": [],
+          "argo_manifest_error": false,
+          "argo_project_changed": false,
+          "argo_source_changed": false
+        },
+        "argo_application_changed": false,
+        "argo_application_count": 2,
+        "argo_changed_paths": [],
+        "argo_manifest_error": false,
+        "argo_project_changed": false,
+        "argo_source_changed": false,
+        "base_ref": "main",
+        "base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+        "base_tree_digest": "f3a3087b22c5262c73fc31c761864e21b623bd430e6b8c073fa331e4f42b27c2",
+        "base_tree_sha": "d84a70999466951822f4f1c0a4afa0576eb3b40c",
+        "changed_count": 1,
+        "changed_paths": [
+          "gitops/demo/values.yaml"
+        ],
+        "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+        "deployment": "demo",
+        "deployment_related_changes": [
+          "gitops/demo/values.yaml"
+        ],
+        "evidence_collected_at": 1794492213,
+        "evidence_ttl_seconds": 300,
+        "head_ref": "revert/a9a29da30832",
+        "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+        "head_tree_digest": "a1a155a804d284291a6f94084c66b040ca629885a3f151e8afd28b22b05ed103",
+        "head_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+        "namespace": "demo",
+        "new_resource_count": 3,
+        "old_resource_count": 3,
+        "pod_template_changed": true,
+        "pr_base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+        "pull_request": 10,
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "tree_changes": [
+          "gitops/demo/values.yaml"
+        ],
+        "tree_diff_truncated": false,
+        "tree_entry_count": 173,
+        "workflow_changed": false,
+        "workflow_paths": []
+      },
+      "decision": "REVIEW",
+      "evaluated_at": 1794492217,
+      "expires_at": 1794492497,
+      "findings": [
+        {
+          "evidence": {
+            "count": 3,
+            "risks": [
+              {
+                "detail": "Both changed pod-template env values are redacted, so the diff alone cannot prove the release carries normal settings. Fault drills use DEMO_STARTUP_FAIL=true and DEMO_ERROR_RATE=1; shipping either would degrade the demo. Require the rendered manifest to show normal values before sync.",
+                "title": "Redacted env values may hide fault-injection settings"
+              },
+              {
+                "detail": "35 scheduled Pods lack CPU/memory requests and are treated as zero, so available capacity is optimistic while KubeCPUOvercommit is already firing. A surge Pod during rollout may not schedule cleanly.",
+                "title": "Capacity headroom may be overstated"
+              },
+              {
+                "detail": "The revert must land as a Git commit and be confirmed after Argo sync; an imperative rollback alone does not restore desired state and must not be reported as a GitOps rollback.",
+                "title": "Rollback must be verified in Git, not imperatively"
+              }
+            ]
+          },
+          "field": "ai_result.additional_risks",
+          "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+          "rule_id": "AI_ADDITIONAL_RISK",
+          "severity": "REVIEW"
+        },
+        {
+          "evidence": {
+            "unreserved_requests": 35
+          },
+          "field": "evidence.pods[].spec.containers[].resources.requests",
+          "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+          "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+          "severity": "REVIEW"
+        },
+        {
+          "evidence": {
+            "alerts": [
+              {
+                "activeAt": "2026-11-12T12:50:10.464748368Z",
+                "labels": {
+                  "alertname": "KubeCPUOvercommit",
+                  "severity": "warning"
+                },
+                "name": "KubeCPUOvercommit",
+                "state": "firing"
+              }
+            ],
+            "count": 1
+          },
+          "field": "evidence.metrics.alerts",
+          "message": "one or more relevant alerts are firing",
+          "rule_id": "FIRING_ALERTS",
+          "severity": "REVIEW"
+        }
+      ],
+      "old_render_digest": "beddac43bb6960dfd0bf19044aa703b58cdb61aa9e3f52a2e8fbfe66cdacfa29",
+      "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+      "rule_version": "go-2026-11-12.1"
+    },
+    "evaluation_id": "ev-84b855038c1eb1ab7e6ce3ce",
+    "evidence": {
+      "capacity": {
+        "allocatable_cpu_millicores": 4000,
+        "allocatable_memory_bytes": 12406517760,
+        "available_cpu_millicores": 2190,
+        "available_memory_bytes": 9185292288,
+        "workers_ready": 1
+      },
+      "collected_at": 1794492213,
+      "deployment": {
+        "images": [
+          "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7"
+        ],
+        "name": "demo",
+        "namespace": "demo",
+        "ready_replicas": 1,
+        "replicas": 1
+      },
+      "errors": [],
+      "metrics": {
+        "alerts": [
+          {
+            "labels": {
+              "alertname": "Watchdog",
+              "severity": "none"
+            },
+            "name": "Watchdog",
+            "state": "firing"
+          },
+          {
+            "labels": {
+              "alertname": "KubeCPUOvercommit",
+              "severity": "warning"
+            },
+            "name": "KubeCPUOvercommit",
+            "state": "firing"
+          }
+        ],
+        "error_ratio": 0,
+        "memory_working_set_bytes": 39038976,
+        "p95_seconds": 0.00475,
+        "request_rate": 1.7193465079721537,
+        "source_timestamps": {
+          "alerts": 1794492213,
+          "error_ratio": 1794492209,
+          "memory_working_set_bytes": 1794492197,
+          "p95_seconds": 1794492209,
+          "request_rate": 1794492209,
+          "up": 1794492209
+        }
+      },
+      "node_count": 2,
+      "pod_count": 28
+    },
+    "evidence_digest": "dcecab5d1c88859ef5d2b4d9757ac469b6c678a9bb7e483b9f88850a0bbd6516",
+    "evidence_ttl_seconds": 300,
+    "expires_at": 1794492497,
+    "findings": [
+      {
+        "evidence": {
+          "count": 3,
+          "risks": [
+            {
+              "detail": "Both changed pod-template env values are redacted, so the diff alone cannot prove the release carries normal settings. Fault drills use DEMO_STARTUP_FAIL=true and DEMO_ERROR_RATE=1; shipping either would degrade the demo. Require the rendered manifest to show normal values before sync.",
+              "title": "Redacted env values may hide fault-injection settings"
+            },
+            {
+              "detail": "35 scheduled Pods lack CPU/memory requests and are treated as zero, so available capacity is optimistic while KubeCPUOvercommit is already firing. A surge Pod during rollout may not schedule cleanly.",
+              "title": "Capacity headroom may be overstated"
+            },
+            {
+              "detail": "The revert must land as a Git commit and be confirmed after Argo sync; an imperative rollback alone does not restore desired state and must not be reported as a GitOps rollback.",
+              "title": "Rollback must be verified in Git, not imperatively"
+            }
+          ]
+        },
+        "field": "ai_result.additional_risks",
+        "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+        "rule_id": "AI_ADDITIONAL_RISK",
+        "severity": "REVIEW"
+      },
+      {
+        "evidence": {
+          "unreserved_requests": 35
+        },
+        "field": "evidence.pods[].spec.containers[].resources.requests",
+        "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+        "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+        "severity": "REVIEW"
+      },
+      {
+        "evidence": {
+          "alerts": [
+            {
+              "activeAt": "2026-11-12T12:50:10.464748368Z",
+              "labels": {
+                "alertname": "KubeCPUOvercommit",
+                "severity": "warning"
+              },
+              "name": "KubeCPUOvercommit",
+              "state": "firing"
+            }
+          ],
+          "count": 1
+        },
+        "field": "evidence.metrics.alerts",
+        "message": "one or more relevant alerts are firing",
+        "rule_id": "FIRING_ALERTS",
+        "severity": "REVIEW"
+      }
+    ],
+    "guard_version": "0.3.2",
+    "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "head_tree_digest": "a1a155a804d284291a6f94084c66b040ca629885a3f151e8afd28b22b05ed103",
+    "head_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+    "old_render_digest": "beddac43bb6960dfd0bf19044aa703b58cdb61aa9e3f52a2e8fbfe66cdacfa29",
+    "policy_binding": {
+      "guard_version": "0.3.2",
+      "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d",
+      "policy_schema_version": 1,
+      "rule_version": "go-2026-11-12.1"
+    },
+    "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d",
+    "pull_request": {
+      "author": "hey-mmm",
+      "base_ref": "main",
+      "head_ref": "revert/a9a29da30832",
+      "head_repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "number": 10,
+      "pr_base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+      "title": "Revert release a9a29da30832 to previous digest"
+    },
+    "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+    "report_digest": "f20c4ab8d6bb407680491b902af1f8d3abceb87032346691666e2a81834a9153",
+    "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+    "rule_version": "go-2026-11-12.1",
+    "schema_version": 2,
+    "status_context": "change-guard/release",
+    "tree_diff_truncated": false,
+    "tree_entry_count": 173,
+    "workflow_changed": false
+  },
+  "status": {
+    "state": "pending",
+    "statuses": [
+      {
+        "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/statuses/88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+        "avatar_url": "https://avatars.githubusercontent.com/u/202397327?v=4",
+        "id": 58735721986,
+        "node_id": "SC_kwDOVqRdMs8AAAANrOv-Ag",
+        "state": "pending",
+        "description": "REVIEW required - comment /guard approve ev-84b855038c1eb1ab7e6ce3ce",
+        "target_url": null,
+        "context": "change-guard/release",
+        "created_at": "2026-11-12T14:03:38Z",
+        "updated_at": "2026-11-12T14:03:38Z"
+      }
+    ],
+    "latest_by_context": {
+      "change-guard/release": {
+        "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/statuses/88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+        "avatar_url": "https://avatars.githubusercontent.com/u/202397327?v=4",
+        "id": 58735721986,
+        "node_id": "SC_kwDOVqRdMs8AAAANrOv-Ag",
+        "state": "pending",
+        "description": "REVIEW required - comment /guard approve ev-84b855038c1eb1ab7e6ce3ce",
+        "target_url": null,
+        "context": "change-guard/release",
+        "created_at": "2026-11-12T14:03:38Z",
+        "updated_at": "2026-11-12T14:03:38Z"
+      }
+    },
+    "sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "combined_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3"
+  },
+  "check_run": {
+    "total_count": 2,
+    "matching": [
+      {
+        "id": 131231410125,
+        "name": "Test, lint, render",
+        "node_id": "CR_kwDOVqRdMs8AAAAejgBnzQ",
+        "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+        "external_id": "b9f7ce30-27ad-5fdc-9328-13f6c7dc1970",
+        "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/check-runs/131231410125",
+        "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43232556254/job/131231410125",
+        "details_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43232556254/job/131231410125",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T13:59:15Z",
+        "completed_at": "2026-11-12T13:59:34Z",
+        "output": {
+          "title": null,
+          "summary": null,
+          "text": null,
+          "annotations_count": 0,
+          "annotations_url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/check-runs/131231410125/annotations"
+        },
+        "check_suite": {
+          "id": 117070133198
+        },
+        "app": {
+          "id": 15368,
+          "client_id": "Iv1.05c79e9ad1f6bdfa",
+          "slug": "github-actions",
+          "node_id": "MDM6QXBwMTUzNjg=",
+          "owner": {
+            "login": "github",
+            "id": 9919,
+            "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+            "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/github",
+            "html_url": "https://github.com/github",
+            "followers_url": "https://api.github.com/users/github/followers",
+            "following_url": "https://api.github.com/users/github/following{/other_user}",
+            "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+            "organizations_url": "https://api.github.com/users/github/orgs",
+            "repos_url": "https://api.github.com/users/github/repos",
+            "events_url": "https://api.github.com/users/github/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/github/received_events",
+            "type": "Organization",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "name": "GitHub Actions",
+          "description": "Automate your workflow from idea to production",
+          "external_url": "https://help.github.com/en/actions",
+          "html_url": "https://github.com/apps/github-actions",
+          "created_at": "2018-07-30T09:30:17Z",
+          "updated_at": "2026-06-18T16:17:48Z",
+          "permissions": {
+            "actions": "write",
+            "administration": "read",
+            "artifact_metadata": "write",
+            "attestations": "write",
+            "checks": "write",
+            "code_quality": "write",
+            "contents": "write",
+            "copilot_requests": "write",
+            "deployments": "write",
+            "discussions": "write",
+            "drives": "write",
+            "issues": "write",
+            "merge_queues": "write",
+            "metadata": "read",
+            "models": "read",
+            "packages": "write",
+            "pages": "write",
+            "pull_requests": "write",
+            "repository_hooks": "write",
+            "repository_projects": "write",
+            "security_events": "write",
+            "statuses": "write",
+            "vulnerability_alerts": "read"
+          },
+          "events": [
+            "branch_protection_rule",
+            "check_run",
+            "check_suite",
+            "create",
+            "delete",
+            "deployment",
+            "deployment_status",
+            "discussion",
+            "discussion_comment",
+            "fork",
+            "gollum",
+            "issues",
+            "issue_comment",
+            "label",
+            "merge_group",
+            "milestone",
+            "page_build",
+            "public",
+            "pull_request",
+            "pull_request_review",
+            "pull_request_review_comment",
+            "push",
+            "registry_package",
+            "release",
+            "repository",
+            "repository_dispatch",
+            "status",
+            "watch",
+            "workflow_dispatch",
+            "workflow_run"
+          ]
+        },
+        "pull_requests": [
+          {
+            "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/pulls/10",
+            "id": 5278736872,
+            "number": 10,
+            "head": {
+              "ref": "revert/a9a29da30832",
+              "sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+              "repo": {
+                "id": 1453612338,
+                "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes",
+                "name": "Full-Stack-Observability-in-Kubernetes"
+              }
+            },
+            "base": {
+              "ref": "main",
+              "sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+              "repo": {
+                "id": 1453612338,
+                "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes",
+                "name": "Full-Stack-Observability-in-Kubernetes"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "latest": {
+      "id": 131231410125,
+      "name": "Test, lint, render",
+      "node_id": "CR_kwDOVqRdMs8AAAAejgBnzQ",
+      "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+      "external_id": "b9f7ce30-27ad-5fdc-9328-13f6c7dc1970",
+      "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/check-runs/131231410125",
+      "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43232556254/job/131231410125",
+      "details_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43232556254/job/131231410125",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-12T13:59:15Z",
+      "completed_at": "2026-11-12T13:59:34Z",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/check-runs/131231410125/annotations"
+      },
+      "check_suite": {
+        "id": 117070133198
+      },
+      "app": {
+        "id": 15368,
+        "client_id": "Iv1.05c79e9ad1f6bdfa",
+        "slug": "github-actions",
+        "node_id": "MDM6QXBwMTUzNjg=",
+        "owner": {
+          "login": "github",
+          "id": 9919,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/github",
+          "html_url": "https://github.com/github",
+          "followers_url": "https://api.github.com/users/github/followers",
+          "following_url": "https://api.github.com/users/github/following{/other_user}",
+          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+          "organizations_url": "https://api.github.com/users/github/orgs",
+          "repos_url": "https://api.github.com/users/github/repos",
+          "events_url": "https://api.github.com/users/github/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/github/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "name": "GitHub Actions",
+        "description": "Automate your workflow from idea to production",
+        "external_url": "https://help.github.com/en/actions",
+        "html_url": "https://github.com/apps/github-actions",
+        "created_at": "2018-07-30T09:30:17Z",
+        "updated_at": "2026-06-18T16:17:48Z",
+        "permissions": {
+          "actions": "write",
+          "administration": "read",
+          "artifact_metadata": "write",
+          "attestations": "write",
+          "checks": "write",
+          "code_quality": "write",
+          "contents": "write",
+          "copilot_requests": "write",
+          "deployments": "write",
+          "discussions": "write",
+          "drives": "write",
+          "issues": "write",
+          "merge_queues": "write",
+          "metadata": "read",
+          "models": "read",
+          "packages": "write",
+          "pages": "write",
+          "pull_requests": "write",
+          "repository_hooks": "write",
+          "repository_projects": "write",
+          "security_events": "write",
+          "statuses": "write",
+          "vulnerability_alerts": "read"
+        },
+        "events": [
+          "branch_protection_rule",
+          "check_run",
+          "check_suite",
+          "create",
+          "delete",
+          "deployment",
+          "deployment_status",
+          "discussion",
+          "discussion_comment",
+          "fork",
+          "gollum",
+          "issues",
+          "issue_comment",
+          "label",
+          "merge_group",
+          "milestone",
+          "page_build",
+          "public",
+          "pull_request",
+          "pull_request_review",
+          "pull_request_review_comment",
+          "push",
+          "registry_package",
+          "release",
+          "repository",
+          "repository_dispatch",
+          "status",
+          "watch",
+          "workflow_dispatch",
+          "workflow_run"
+        ]
+      },
+      "pull_requests": [
+        {
+          "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/pulls/10",
+          "id": 5278736872,
+          "number": 10,
+          "head": {
+            "ref": "revert/a9a29da30832",
+            "sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+            "repo": {
+              "id": 1453612338,
+              "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes",
+              "name": "Full-Stack-Observability-in-Kubernetes"
+            }
+          },
+          "base": {
+            "ref": "main",
+            "sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+            "repo": {
+              "id": 1453612338,
+              "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes",
+              "name": "Full-Stack-Observability-in-Kubernetes"
+            }
+          }
+        }
+      ]
+    },
+    "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3"
+  }
+}

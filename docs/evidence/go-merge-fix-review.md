@@ -1,5 +1,7 @@
 # Go merge 集成修复说明
 
+> 以下为修复交接时的历史快照，其中 pending 仅描述当时状态。后续发布、回退和最终 live 均已完成，见 [最终验收](../go-acceptance-final.md)。
+
 ## 范围
 
 仅修改：
@@ -7,7 +9,8 @@
 - `work/k8s-change-guard/internal/guard/merge.go`
 - `work/k8s-change-guard/internal/guard/merge_test.go`
 
-未部署、未 merge、未 commit，未执行 PR 源码。其他文件由 root 负责。
+修复工作本身当时未部署、未 merge、未 commit，也未执行 PR 源码；root 随后把修复
+纳入 commit `41f2ba1` 并完成 0.3.2 部署，结果见本文末尾和 `acceptance.md`。
 
 ## 修复 1：`cgMerge --evaluation-id` 可省略
 
@@ -62,5 +65,10 @@ go vet ./...
 
 ## 交接
 
-root 可按计划统一升版 0.3.2 并做不可变部署。PR9 的 `REVIEW` 已审批状态未改动；
-本次仅修复 Go merge 的 evaluation-id 解析与 CI 认证路径。
+root 已统一升版 0.3.2（commit `41f2ba1`）并完成不可变部署/部署级 verify：
+artifact `3485074` bytes、SHA-256 `3929180048...b074be8`，两遍 Ansible 第二遍
+`changed=0`。0.3.2 的最终 live、PR 重跑、postdeploy/revert 仍 pending；不能把
+部署通过写成完整发布成功。
+
+PR9 在 0.3.1 上的 `REVIEW` 与精确审批是历史；0.3.2 若重跑 PR，需要新的
+evaluation 和审批。本次仅修复 Go merge 的 evaluation-id 解析与 CI 认证路径。

@@ -1,0 +1,241 @@
+[
+  {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "labels": {
+        "app.kubernetes.io/component": "demo-service",
+        "app.kubernetes.io/instance": "demo",
+        "app.kubernetes.io/managed-by": "Helm",
+        "app.kubernetes.io/name": "demo",
+        "app.kubernetes.io/part-of": "observability-demo",
+        "app.kubernetes.io/version": "0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+        "helm.sh/chart": "demo-0.1.0"
+      },
+      "name": "demo",
+      "namespace": "demo"
+    },
+    "spec": {
+      "ports": [
+        {
+          "name": "http",
+          "port": 8080,
+          "protocol": "TCP",
+          "targetPort": "http"
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/component": "demo-service",
+        "app.kubernetes.io/instance": "demo",
+        "app.kubernetes.io/name": "demo"
+      },
+      "type": "ClusterIP"
+    }
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+      "labels": {
+        "app.kubernetes.io/component": "demo-service",
+        "app.kubernetes.io/instance": "demo",
+        "app.kubernetes.io/managed-by": "Helm",
+        "app.kubernetes.io/name": "demo",
+        "app.kubernetes.io/part-of": "observability-demo",
+        "app.kubernetes.io/version": "0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+        "helm.sh/chart": "demo-0.1.0"
+      },
+      "name": "demo",
+      "namespace": "demo"
+    },
+    "spec": {
+      "replicas": 1,
+      "revisionHistoryLimit": 3,
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/component": "demo-service",
+          "app.kubernetes.io/instance": "demo",
+          "app.kubernetes.io/name": "demo"
+        }
+      },
+      "strategy": {
+        "rollingUpdate": {
+          "maxSurge": 1,
+          "maxUnavailable": 0
+        },
+        "type": "RollingUpdate"
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/component": "demo-service",
+            "app.kubernetes.io/instance": "demo",
+            "app.kubernetes.io/name": "demo"
+          }
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_VERSION",
+                  "value": "0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c"
+                },
+                {
+                  "name": "GIT_SHA",
+                  "value": "c0bff8abf5625903e5b9b19b586e9660b9fe7a8c"
+                },
+                {
+                  "name": "TMPDIR",
+                  "value": "/tmp"
+                },
+                {
+                  "name": "APP_ENV",
+                  "value": "production"
+                },
+                {
+                  "name": "DEMO_ERROR_RATE",
+                  "value": "0"
+                },
+                {
+                  "name": "DEMO_LATENCY_MS",
+                  "value": "0"
+                },
+                {
+                  "name": "DEMO_STARTUP_FAIL",
+                  "value": "false"
+                }
+              ],
+              "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+              "imagePullPolicy": "IfNotPresent",
+              "livenessProbe": {
+                "failureThreshold": 3,
+                "httpGet": {
+                  "path": "/healthz",
+                  "port": "http"
+                },
+                "initialDelaySeconds": 5,
+                "periodSeconds": 10,
+                "timeoutSeconds": 2
+              },
+              "name": "demo-service",
+              "ports": [
+                {
+                  "containerPort": 8080,
+                  "name": "http",
+                  "protocol": "TCP"
+                }
+              ],
+              "readinessProbe": {
+                "failureThreshold": 3,
+                "httpGet": {
+                  "path": "/readyz",
+                  "port": "http"
+                },
+                "initialDelaySeconds": 2,
+                "periodSeconds": 5,
+                "timeoutSeconds": 2
+              },
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "192Mi"
+                },
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "64Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true,
+                "runAsNonRoot": true,
+                "runAsUser": 10001
+              },
+              "startupProbe": {
+                "failureThreshold": 30,
+                "httpGet": {
+                  "path": "/healthz",
+                  "port": "http"
+                },
+                "periodSeconds": 2,
+                "timeoutSeconds": 2
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/tmp",
+                  "name": "tmp"
+                }
+              ]
+            }
+          ],
+          "securityContext": {
+            "fsGroup": 10001,
+            "runAsGroup": 10001,
+            "runAsNonRoot": true,
+            "runAsUser": 10001,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "terminationGracePeriodSeconds": 20,
+          "volumes": [
+            {
+              "emptyDir": {
+                "sizeLimit": "16Mi"
+              },
+              "name": "tmp"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "apiVersion": "monitoring.coreos.com/v1",
+    "kind": "ServiceMonitor",
+    "metadata": {
+      "labels": {
+        "app.kubernetes.io/component": "demo-service",
+        "app.kubernetes.io/instance": "demo",
+        "app.kubernetes.io/managed-by": "Helm",
+        "app.kubernetes.io/name": "demo",
+        "app.kubernetes.io/part-of": "observability-demo",
+        "app.kubernetes.io/version": "0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+        "helm.sh/chart": "demo-0.1.0"
+      },
+      "name": "demo",
+      "namespace": "demo"
+    },
+    "spec": {
+      "endpoints": [
+        {
+          "interval": "15s",
+          "path": "/metrics",
+          "port": "http",
+          "scheme": "http",
+          "scrapeTimeout": "10s"
+        }
+      ],
+      "namespaceSelector": {
+        "matchNames": [
+          "demo"
+        ]
+      },
+      "selector": {
+        "matchLabels": {
+          "app.kubernetes.io/component": "demo-service",
+          "app.kubernetes.io/instance": "demo",
+          "app.kubernetes.io/name": "demo"
+        }
+      }
+    }
+  }
+]

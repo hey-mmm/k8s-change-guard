@@ -1,0 +1,170 @@
+{
+  "audit": {
+    "ai": {
+      "status": "missing"
+    },
+    "capacity": {
+      "additional_pods_reserved": 1,
+      "allocatable_cpu_millicores": 4000,
+      "allocatable_memory_bytes": 12406517760,
+      "available_cpu_millicores": 2190,
+      "available_memory_bytes": 9185292288,
+      "existing_pods_requests_cpu_millicores": 1810,
+      "existing_pods_requests_memory_bytes": 3221225472,
+      "new_pods_reserved": 1,
+      "old_pod_request_cpu_millicores": 0,
+      "old_pod_request_memory_bytes": 0,
+      "overcommitted": false,
+      "peak_demo_cpu_millicores": 50,
+      "peak_demo_memory_bytes": 67108864,
+      "peak_total_pods": 1,
+      "pod_request_cpu_millicores": 50,
+      "pod_request_memory_bytes": 67108864,
+      "projected_total_cpu_millicores": null,
+      "projected_total_memory_bytes": null,
+      "replicas": 1,
+      "required_cpu_millicores": 50,
+      "required_memory_bytes": 67108864,
+      "retained_old_replicas": 0,
+      "source": "evidence.capacity",
+      "surge_pods": 1,
+      "worker_names": [
+        "worker"
+      ],
+      "workers_ready": 1
+    },
+    "changes_count": 3,
+    "checks": [
+      {
+        "field": "ai_result",
+        "message": "DeepSeek review is required but no result was supplied",
+        "rule_id": "AI_REQUIRED_UNAVAILABLE",
+        "severity": "ERROR"
+      },
+      {
+        "field": "evidence.pods[].spec.containers[].resources.requests",
+        "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+        "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+        "severity": "REVIEW"
+      },
+      {
+        "field": "evidence.metrics.alerts",
+        "message": "one or more relevant alerts are firing",
+        "rule_id": "FIRING_ALERTS",
+        "severity": "REVIEW"
+      }
+    ],
+    "evaluated_at": 1794493062,
+    "metrics": {
+      "error_ratio": 0,
+      "firing_alerts": 1,
+      "low_traffic": false,
+      "memory_working_set_bytes": 39038976,
+      "p95_seconds": 0.00475,
+      "request_rate": 1.6877725963276033,
+      "source_timestamps": {
+        "error_ratio": 1794493057.056,
+        "memory_working_set_bytes": 1794493041.573,
+        "p95_seconds": 1794493057.056,
+        "request_rate": 1794493057.056,
+        "up": 1794493057.056
+      },
+      "up": 1
+    },
+    "old_render_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "pod_template_changed": true,
+    "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+    "rule_version": "go-2026-11-12.1",
+    "schema_version": "1.0"
+  },
+  "changes": [
+    {
+      "kind": "Deployment",
+      "name": "demo",
+      "namespace": "demo",
+      "new": "resource present",
+      "old": null,
+      "operation": "add",
+      "path": "$",
+      "pod_template": true,
+      "resource": "Deployment/demo/demo"
+    },
+    {
+      "kind": "Service",
+      "name": "demo",
+      "namespace": "demo",
+      "new": "resource present",
+      "old": null,
+      "operation": "add",
+      "path": "$",
+      "pod_template": false,
+      "resource": "Service/demo/demo"
+    },
+    {
+      "kind": "ServiceMonitor",
+      "name": "demo",
+      "namespace": "demo",
+      "new": "resource present",
+      "old": null,
+      "operation": "add",
+      "path": "$",
+      "pod_template": false,
+      "resource": "ServiceMonitor/demo/demo"
+    }
+  ],
+  "context": {
+    "ai_required": true,
+    "ai_status": "missing",
+    "deployment": "demo",
+    "evidence_collected_at": 1794493061,
+    "evidence_ttl_seconds": 300,
+    "namespace": "demo",
+    "new_resource_count": 3,
+    "old_resource_count": 0,
+    "pod_template_changed": true
+  },
+  "decision": "ERROR",
+  "evaluated_at": 1794493062,
+  "expires_at": 1794493341,
+  "findings": [
+    {
+      "evidence": {},
+      "field": "ai_result",
+      "message": "DeepSeek review is required but no result was supplied",
+      "rule_id": "AI_REQUIRED_UNAVAILABLE",
+      "severity": "ERROR"
+    },
+    {
+      "evidence": {
+        "unreserved_requests": 35
+      },
+      "field": "evidence.pods[].spec.containers[].resources.requests",
+      "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+      "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+      "severity": "REVIEW"
+    },
+    {
+      "evidence": {
+        "alerts": [
+          {
+            "activeAt": "2026-11-12T12:50:10.464748368Z",
+            "labels": {
+              "alertname": "KubeCPUOvercommit",
+              "severity": "warning"
+            },
+            "name": "KubeCPUOvercommit",
+            "state": "firing"
+          }
+        ],
+        "count": 1
+      },
+      "field": "evidence.metrics.alerts",
+      "message": "one or more relevant alerts are firing",
+      "rule_id": "FIRING_ALERTS",
+      "severity": "REVIEW"
+    }
+  ],
+  "old_render_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+  "rule_version": "go-2026-11-12.1"
+}

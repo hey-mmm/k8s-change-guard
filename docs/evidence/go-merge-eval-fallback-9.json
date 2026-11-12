@@ -1,0 +1,24 @@
+{
+  "reason": "The shipped scripts/merge-release.sh omits the required --evaluation-id argument, so Go MergeRelease refuses with \"invalid evaluation id\" before any merge. This operator shell keeps the same trusted sequence (stop daemon, EXIT trap restart, drop to change-guard, source proxy.env only after runuser) and calls the restricted Go merger with the exact approved evaluation id. No GitHub merge API and no gate bypass.",
+  "pr": 9,
+  "evaluation_id": "ev-e941441d7a1f429dfbf37dd5",
+  "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "main_before": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "started_at": 1794490357,
+  "finished_at": 1794490376,
+  "exit": 1,
+  "stdout": "{\"result\":\"REFUSED\",\"error\":\"public CI check lookup failed\"}\n",
+  "stderr": "",
+  "main_after": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "argv": [
+    "/opt/change-guard/current/k8s-change-guard",
+    "merge",
+    "--config",
+    "/etc/change-guard/config.yaml",
+    "--pr",
+    "9",
+    "--evaluation-id",
+    "ev-e941441d7a1f429dfbf37dd5"
+  ]
+}

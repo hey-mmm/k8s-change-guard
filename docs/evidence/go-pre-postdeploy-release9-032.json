@@ -1,0 +1,63 @@
+{
+  "captured_at": 1794491207,
+  "expected_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "app_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "image": "sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+  "argo": {
+    "sync": "Synced",
+    "health": "Healthy",
+    "revision": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "operation_revision": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "operation_phase": "Succeeded",
+    "observed_at": "2026-11-12T13:46:10Z"
+  },
+  "deployment": {
+    "replicas": 1,
+    "ready_replicas": 1,
+    "available_replicas": 1,
+    "updated_replicas": 1,
+    "containers": [
+      {
+        "name": "demo-service",
+        "image": "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+        "env": [
+          {
+            "name": "APP_VERSION",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "GIT_SHA",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "TMPDIR",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "APP_ENV",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_ERROR_RATE",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_LATENCY_MS",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_STARTUP_FAIL",
+            "value": "<redacted>",
+            "valueFrom": false
+          }
+        ]
+      }
+    ]
+  }
+}

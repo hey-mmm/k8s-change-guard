@@ -1,0 +1,119 @@
+{
+  "captured_at": 1794490978,
+  "rulesets": [
+    {
+      "id": 27101219,
+      "name": "change-guard-main-required-checks",
+      "target": "branch",
+      "source_type": "Repository",
+      "source": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "enforcement": "active",
+      "conditions": {
+        "ref_name": {
+          "exclude": [],
+          "include": [
+            "refs/heads/main"
+          ]
+        }
+      },
+      "rules": [
+        {
+          "type": "required_status_checks",
+          "parameters": {
+            "strict_required_status_checks_policy": true,
+            "do_not_enforce_on_create": false,
+            "required_status_checks": [
+              {
+                "context": "change-guard/release"
+              },
+              {
+                "context": "Test, lint, render",
+                "integration_id": 15368
+              }
+            ]
+          }
+        }
+      ],
+      "node_id": "RRS_lACqUmVwb3NpdG9yec5WpF0yzgGdiCM",
+      "created_at": "2026-11-12T16:34:14.993+08:00",
+      "updated_at": "2026-11-12T16:34:15.105+08:00",
+      "bypass_actors": [],
+      "current_user_can_bypass": "never",
+      "_links": {
+        "self": {
+          "href": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/rulesets/27101219"
+        },
+        "html": {
+          "href": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/rules/27101219"
+        }
+      }
+    },
+    {
+      "id": 27101186,
+      "name": "change-guard-main-updates",
+      "target": "branch",
+      "source_type": "Repository",
+      "source": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "enforcement": "active",
+      "conditions": {
+        "ref_name": {
+          "exclude": [],
+          "include": [
+            "refs/heads/main"
+          ]
+        }
+      },
+      "rules": [
+        {
+          "type": "update"
+        },
+        {
+          "type": "deletion"
+        },
+        {
+          "type": "non_fast_forward"
+        },
+        {
+          "type": "pull_request",
+          "parameters": {
+            "required_approving_review_count": 0,
+            "dismiss_stale_reviews_on_push": true,
+            "required_reviewers": [],
+            "require_code_owner_review": false,
+            "require_last_push_approval": false,
+            "required_review_thread_resolution": true,
+            "require_extra_approval_for_unattributed_changes": true,
+            "allowed_merge_methods": [
+              "merge"
+            ]
+          }
+        }
+      ],
+      "node_id": "RRS_lACqUmVwb3NpdG9yec5WpF0yzgGdiAI",
+      "created_at": "2026-11-12T16:33:40.572+08:00",
+      "updated_at": "2026-11-12T16:33:40.635+08:00",
+      "bypass_actors": [
+        {
+          "actor_id": null,
+          "actor_type": "DeployKey",
+          "bypass_mode": "always"
+        }
+      ],
+      "current_user_can_bypass": "never",
+      "_links": {
+        "self": {
+          "href": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/rulesets/27101186"
+        },
+        "html": {
+          "href": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/rules/27101186"
+        }
+      }
+    }
+  ],
+  "branch_protection": {
+    "message": "Branch not protected",
+    "documentation_url": "https://docs.github.com/rest/branches/branch-protection#get-branch-protection",
+    "status": "404"
+  },
+  "main": "321eb9517b83dc0e9261e16dcdb26016332dd7c3"
+}

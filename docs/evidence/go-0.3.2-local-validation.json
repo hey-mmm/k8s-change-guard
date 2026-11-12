@@ -1,0 +1,19 @@
+{
+  "guard_version": "0.3.2",
+  "code_commit": "41f2ba19bb253976a1cd135aed1688396af82ccb",
+  "ci_url": "https://github.com/hey-mmm/k8s-change-guard/actions/runs/43229323225",
+  "ci_status": "success",
+  "ci_platforms": [
+    "ubuntu-24.04",
+    "windows-latest"
+  ],
+  "review_file": "go-merge-fix-review.md",
+  "test_functions_discovered": 137,
+  "frozen_python_oracle_cases": 151,
+  "scenario_expected": 25,
+  "scenario_file": "go-0.3.2-scenario-matrix.json",
+  "knowledge_sources": 3,
+  "knowledge_cases": 15,
+  "recorded_at": 1794491046,
+  "scope": "Code regression and packaging; live release/revert documented separately."
+}

@@ -1,0 +1,28 @@
+{
+  "created_at": 1794490128,
+  "pr": 9,
+  "url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/9",
+  "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "base_ref": "main",
+  "head_ref": "release/823770eff4e9-af77edde",
+  "title": "Release 823770eff4e9 by digest",
+  "state": "open",
+  "image_digest": "sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+  "image_source_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "main_anchor": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "script": "observability/scripts/create-release-pr.py",
+  "commit_parents": [
+    "321eb9517b83dc0e9261e16dcdb26016332dd7c3"
+  ],
+  "changed_files": [
+    {
+      "filename": "gitops/demo/values.yaml",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 5,
+      "patch": "@@ -1,13 +1,12 @@\n-# Verified CI image; manifest digest sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d\n image:\n   repository: ghcr.io/hey-mmm/observability-demo\n-  tag: sha-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c\n-  digest: sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d\n+  tag: sha-823770eff4e9384ceb83aa1561f9b5f95239c221\n+  digest: sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7\n   pullPolicy: IfNotPresent\n fullnameOverride: demo\n replicaCount: 1\n-appVersion: 0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c\n-gitSha: c0bff8abf5625903e5b9b19b586e9660b9fe7a8c\n+appVersion: 0.1.0-823770eff4e9384ceb83aa1561f9b5f95239c221\n+gitSha: 823770eff4e9384ceb83aa1561f9b5f95239c221\n env:\n   APP_ENV: production\n   DEMO_ERROR_RATE: '0'"
+    }
+  ],
+  "note": "The trusted script created the PR and returned exit 0; the operator wrapper failed only while parsing the pretty-printed JSON, so this record was rebuilt from the authenticated GitHub API without any further mutation."
+}

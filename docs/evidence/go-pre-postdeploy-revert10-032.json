@@ -1,0 +1,64 @@
+{
+  "captured_at": 1794492987,
+  "expected_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+  "app_sha": "c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+  "image_input": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+  "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+  "argo": {
+    "sync": "Synced",
+    "health": "Healthy",
+    "revision": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "operation_revision": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "operation_phase": "Succeeded",
+    "observed_at": "2026-11-12T14:14:32Z"
+  },
+  "deployment": {
+    "replicas": 1,
+    "ready_replicas": 1,
+    "available_replicas": 1,
+    "updated_replicas": 1,
+    "containers": [
+      {
+        "name": "demo-service",
+        "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+        "env": [
+          {
+            "name": "APP_VERSION",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "GIT_SHA",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "TMPDIR",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "APP_ENV",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_ERROR_RATE",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_LATENCY_MS",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_STARTUP_FAIL",
+            "value": "<redacted>",
+            "valueFrom": false
+          }
+        ]
+      }
+    ]
+  }
+}

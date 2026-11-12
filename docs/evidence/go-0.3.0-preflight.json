@@ -1,0 +1,35 @@
+{
+  "artifact": {
+    "artifact": "C:\\Users\\MYT\\Documents\\Codex\\2026-11-12\\https-github-com-hey-mmm-full-3\\work\\k8s-change-guard\\dist\\k8s-change-guard-0.3.0.tar.gz",
+    "bytes": 3481524,
+    "members": [
+      "README.md",
+      "config.example.yaml",
+      "k8s-change-guard",
+      "knowledge",
+      "knowledge/cases",
+      "knowledge/cases/alert-resolved-fingerprint.json",
+      "knowledge/cases/calico-not-ready-troubleshoot.json",
+      "knowledge/cases/drill-evidence-no-guess.json",
+      "knowledge/cases/error-drill-rollout-before-effective.json",
+      "knowledge/cases/git-revert-required.json",
+      "knowledge/cases/http500-fault.json",
+      "knowledge/cases/latency-3000-fault.json",
+      "knowledge/cases/latency-probes-not-delayed.json",
+      "knowledge/cases/persistence-pvc.json",
+      "knowledge/cases/recover-semantics.json",
+      "knowledge/cases/rolling-old-pod-not-proof.json",
+      "knowledge/cases/slo-window-not-proven.json",
+      "knowledge/cases/startup-failure-release-protection.json",
+      "knowledge/cases/startup-max-unavailable-protection.json",
+      "knowledge/cases/worker-capacity-check.json",
+      "knowledge/index.json",
+      "knowledge/sources",
+      "knowledge/sources/drills.md",
+      "knowledge/sources/fault-review.md",
+      "knowledge/sources/stage1-runbook.md"
+    ],
+    "sha256": "28ffe1c159bb39ad851c9ad9b30a34a7f66b3ea5796907218dbb7ab86ddb97e3"
+  },
+  "notes": "C:\\Users\\MYT\\Documents\\Codex\\2026-11-12\\https-github-com-hey-mmm-full-3\\work\\go-ops-notes.md"
+}

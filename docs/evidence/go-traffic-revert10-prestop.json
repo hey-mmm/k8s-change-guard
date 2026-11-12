@@ -1,0 +1,22 @@
+{
+  "stopped_at": 1794492335,
+  "stopped_at_iso": "2026-11-12T14:05:35Z",
+  "stop_record": {
+    "stopped_at": 1794492335,
+    "stopped_at_iso": "2026-11-12T14:05:35Z",
+    "pid": "124998",
+    "process_gone": true,
+    "total_requests": 727,
+    "http_2xx": 727,
+    "transport_000": 0,
+    "tail": [
+      "2026-11-12T14:05:31Z status=200 duration_seconds=0.002334 request_id=traffic-124998-725 request=725 url=http://10.104.233.119:8080/work",
+      "2026-11-12T14:05:31Z status=200 duration_seconds=0.002069 request_id=traffic-124998-726 request=726 url=http://10.104.233.119:8080/work",
+      "2026-11-12T14:05:32Z status=200 duration_seconds=0.001894 request_id=traffic-124998-727 request=727 url=http://10.104.233.119:8080/work"
+    ]
+  },
+  "post_stop_processes": [],
+  "post_stop_pid_file": "",
+  "exit": 0,
+  "stderr": ""
+}

@@ -1,0 +1,144 @@
+{
+  "steps": {
+    "ansible": {
+      "deploy": "master                     : ok=84   changed=7    unreachable=0    failed=0    skipped=13   rescued=0    ignored=0",
+      "idempotent": "master                     : ok=73   changed=0    unreachable=0    failed=0    skipped=23   rescued=0    ignored=0"
+    },
+    "backup": {
+      "dir": "/var/backups/change-guard/pre-go-0.3.2-20261112-133927",
+      "mode": "root-only 0700"
+    },
+    "live": {
+      "ai": {
+        "citations": 2,
+        "model": "deepseek-chat",
+        "status": "ok",
+        "summary": "Decision is ERROR and cannot be approved: the required AI review result is missing (AI_REQUIRED_UNAVAILABLE), so the hard guard rule blocks release regardless of other evidence. The change adds a new Deployment/demo (pod template changed), Service, and ServiceMonitor in namespace demo, with only one Ready worker and no prior resources. Capacity math shows the new pod's 50m CPU / 64Mi memory fits within available 2190m / ~9.2GB, but 35 scheduled pods have unreserved requests, so free capacity may"
+      },
+      "collect": {
+        "errors": [],
+        "nodes": 2,
+        "pods": 28
+      },
+      "daemon_once": {
+        "attempt": 1,
+        "status": "ok"
+      },
+      "final": {
+        "decision": "REVIEW",
+        "evaluation_id": null
+      },
+      "render": {
+        "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+        "chart_files": 7,
+        "resources": [
+          "Service",
+          "Deployment",
+          "ServiceMonitor"
+        ],
+        "trusted_ref": "823770eff4e9384ceb83aa1561f9b5f95239c221"
+      }
+    },
+    "preflight": {
+      "artifact": {
+        "artifact": "C:\\Users\\MYT\\Documents\\Codex\\2026-11-12\\https-github-com-hey-mmm-full-3\\work\\k8s-change-guard\\dist\\k8s-change-guard-0.3.2.tar.gz",
+        "bytes": 3485074,
+        "members": [
+          "README.md",
+          "config.example.yaml",
+          "k8s-change-guard",
+          "knowledge",
+          "knowledge/cases",
+          "knowledge/cases/alert-resolved-fingerprint.json",
+          "knowledge/cases/calico-not-ready-troubleshoot.json",
+          "knowledge/cases/drill-evidence-no-guess.json",
+          "knowledge/cases/error-drill-rollout-before-effective.json",
+          "knowledge/cases/git-revert-required.json",
+          "knowledge/cases/http500-fault.json",
+          "knowledge/cases/latency-3000-fault.json",
+          "knowledge/cases/latency-probes-not-delayed.json",
+          "knowledge/cases/persistence-pvc.json",
+          "knowledge/cases/recover-semantics.json",
+          "knowledge/cases/rolling-old-pod-not-proof.json",
+          "knowledge/cases/slo-window-not-proven.json",
+          "knowledge/cases/startup-failure-release-protection.json",
+          "knowledge/cases/startup-max-unavailable-protection.json",
+          "knowledge/cases/worker-capacity-check.json",
+          "knowledge/index.json",
+          "knowledge/sources",
+          "knowledge/sources/drills.md",
+          "knowledge/sources/fault-review.md",
+          "knowledge/sources/stage1-runbook.md"
+        ],
+        "sha256": "3929180048fbfc107eaf18bfb22b19983be56f326467d15dcc6a511d2b074be8"
+      },
+      "notes": "C:\\Users\\MYT\\Documents\\Codex\\2026-11-12\\https-github-com-hey-mmm-full-3\\work\\go-ops-notes.md"
+    },
+    "stage": {
+      "artifact_sha256": "3929180048fbfc107eaf18bfb22b19983be56f326467d15dcc6a511d2b074be8",
+      "staging_backup": "/home/myt/change-guard-private/pre-0.3.2-ansible-scripts-20261112-133921.tar.gz",
+      "synced_sources": [
+        "ansible",
+        "scripts"
+      ],
+      "vars_backup": "/home/myt/change-guard-private/deploy-vars-pre-0.3.2.yml"
+    },
+    "verify": {
+      "knowledge": {
+        "case_count": 15,
+        "root": "/opt/change-guard/releases/0.3.2/knowledge",
+        "source_count": 3,
+        "source_hashes": {
+          "drills": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+          "fault-review": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+          "stage1-runbook": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d"
+        }
+      },
+      "rbac": {
+        "argo_patch": "no",
+        "argo_read": "yes",
+        "deployment_write": "no",
+        "nodes_read": "yes",
+        "pod_exec": "no",
+        "pod_logs_read": "no",
+        "pods_list_all": "yes",
+        "secrets_read": "no"
+      },
+      "runtime": {
+        "active": "active",
+        "check_timer": "active",
+        "config": "kubectl: \"/usr/bin/kubectl\"\nhelm: \"/usr/local/bin/helm\"\nbwrap: \"/usr/bin/bwrap\"\napproved_chart_digest: \"194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d\"\nai_required: true\ndeepseek_url: \"https://api.deepseek.com/chat/completions\"\nknowledge_dir: \"/opt/change-guard/current/knowledge\"\nmerge_required_ci: \"Test, lint, render\"",
+        "current": "/opt/change-guard/releases/0.3.2",
+        "enabled": "enabled",
+        "exe": "/opt/change-guard/releases/0.3.2/k8s-change-guard",
+        "file": "/opt/change-guard/current/k8s-change-guard: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, stripped",
+        "ldd": "not a dynamic executable",
+        "processes": "93006 /opt/change-guard/current/k8s-change-guard daemon --config /etc/change-guard/config.yaml",
+        "python_files": "",
+        "python_units": "",
+        "release_listing": "total 7964\ndrwxr-xr-x  3 root root    4096 Nov 12 21:39 .\ndrwxr-xr-x 11 root root    4096 Nov 12 21:39 ..\n-rw-r--r--  1 root root      65 Nov 12 21:39 .artifact.sha256\n-rw-r--r--  1 root root       0 Nov 12 21:39 .complete\n-rw-r--r--  1 root root    4401 Jan  1  1970 config.example.yaml\n-rwxr-xr-x  1 root root 8118420 Jan  1  1970 k8s-change-guard\ndrwxr-xr-x  4 root root    4096 Jan  1  1970 knowledge\n-rw-r--r--  1 root root    7030 Jan  1  1970 README.md",
+        "renew_timer": "active",
+        "service_show": "MainPID=93006\nNRestarts=0\nExecMainStartTimestamp=Thu 2026-11-12 21:39:47 CST\nActiveState=active\nSubState=running",
+        "timers": "NEXT                        LEFT          LAST                        PASSED       UNIT                           ACTIVATES\nThu 2026-11-12 22:17:52 CST 37min left    Thu 2026-11-12 21:17:52 CST 22min ago    change-guard-token-check.timer change-guard-token-check.service\nFri 2026-11-13 03:19:04 CST 5h 38min left Thu 2026-11-12 19:28:51 CST 2h 11min ago change-guard-token-renew.timer change-guard-token-renew.service\n\n2 timers listed.\nPass --all to see loaded but inactive timers, too.",
+        "unit": "# /etc/systemd/system/change-guard.service\n[Unit]\nDescription=k8s change guard (GitHub release gate)\nDocumentation=https://github.com/hey-mmm/k8s-change-guard\nAfter=network-online.target\nWants=network-online.target\nConditionPathIsReadWrite=/var/lib/change-guard\n\n[Service]\nType=simple\nUser=change-guard\nGroup=change-guard\nWorkingDirectory=/opt/change-guard/current\nExecStartPre=/usr/bin/test -x /opt/change-guard/current/k8s-change-guard\nExecStart=/opt/change-guard/current/k8s-change-guard daemon --config /etc/change-guard/config.yaml\nEnvironmentFile=-/etc/change-guard/proxy.env\nRestart=on-failure\nRestartSec=10\nTimeoutStartSec=60\nTimeoutStopSec=45\nKillMode=mixed\nSyslogIdentifier=change-guard\nStandardOutput=journal\nStandardError=journal\n\nStateDirectory=change-guard\nStateDirectoryMode=0700\nUMask=0077\nNoNewPrivileges=yes\nCapabilityBoundingSet=\nAmbientCapabilities=\nPrivateTmp=yes\nPrivateDevices=yes\nProtectSystem=strict\nProtectHome=yes\nProtectKernelTunables=yes\nProtectKernelModules=yes\nProtectKernelLogs=yes\nProtectControlGroups=yes\nProtectClock=yes\nProtectHostname=yes\nProtectProc=invisible\nInaccessiblePaths=/root /home\nReadOnlyPaths=/etc/change-guard /opt/change-guard\nReadWritePaths=/var/lib/change-guard\nRestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK\n# bubblewrap --unshare-all creates user, mount, network, PID, IPC, UTS and\n# (when possible) cgroup namespaces.  RestrictNamespaces=~user ... (or a\n# positive list that omits any of them) makes bwrap fail before Helm runs, so\n# namespace creation must remain available to the unprivileged service user.\nRestrictNamespaces=false\nRestrictRealtime=yes\nRestrictSUIDSGID=yes\nLockPersonality=yes\nMemoryDenyWriteExecute=yes\nSystemCallArchitectures=native\n# bubblewrap must be able to create user/mount/net/pid namespaces and mount a\n# temporary root.  The general service filter remains in force.\nSystemCallFilter=@system-service mount umount2 pivot_root unshare setns clone clone3 chroot setuid setgid\n# Go-based helpers (helm/kubectl) reserve a large *virtual* address space and\n# start several runtime threads.  Do not cap RLIMIT_AS and keep NPROC/Tasks\n# high enough for Go; MemoryMax is a cgroup limit on resident memory, which does\n# not count Go's unused virtual reservations.\nLimitNOFILE=8192\nLimitNPROC=8192\nTasksMax=8192\nLimitCORE=0\nMemoryHigh=1536M\nMemoryMax=2G\n\n[Install]\nWantedBy=multi-user.target",
+        "user": "change-guard:x:998:998::/var/lib/change-guard:/usr/sbin/nologin\nuid=998(change-guard) gid=998(change-guard) groups=998(change-guard)",
+        "version": "change-guard 0.3.2 (rules go-2026-11-12.1)"
+      },
+      "token": {
+        "after": {
+          "expires_at": 1794534015,
+          "remaining_seconds": 43200,
+          "status": "valid"
+        },
+        "before": {
+          "expires_at": 1794532744,
+          "remaining_seconds": 41929,
+          "status": "valid"
+        },
+        "unit_result": "success"
+      }
+    }
+  },
+  "updated_at": 1794493071,
+  "version": "0.3.2"
+}

@@ -1,0 +1,24 @@
+{
+  "base_ancestor": true,
+  "base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "decision": "REVIEW",
+  "evaluated_head": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+  "evaluation_id": "ev-84b855038c1eb1ab7e6ce3ce",
+  "evidence_expires_at": 1794492497,
+  "github_merge_api_used": false,
+  "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+  "head_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+  "merge_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+  "merged_at": 1794492320,
+  "pr": 10,
+  "result": "MERGED",
+  "rollback": {
+    "command": "git revert 88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "commit": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "mainline": null,
+    "strategy": "git-revert"
+  },
+  "strategy": "fast-forward",
+  "synthetic_merge_sha": "7177677552adbbc1362ffea4ee9e040bb7156269",
+  "synthetic_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574"
+}

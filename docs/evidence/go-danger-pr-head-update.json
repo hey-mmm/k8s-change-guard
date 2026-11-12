@@ -1,0 +1,9 @@
+{
+  "updated_at": 1794489995,
+  "updated_at_iso": "2026-11-12T13:26:35Z",
+  "pr": 8,
+  "branch": "acceptance/go-block-zero-replicas-20261112212451",
+  "old_head_sha": "273c033dd6f539a53df1008619a58e2d1d1104e0",
+  "new_head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+  "expected": "old report invalidated; new head evaluated independently as BLOCK"
+}

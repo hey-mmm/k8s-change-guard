@@ -1,0 +1,110 @@
+{
+  "checks": [
+    {
+      "detail": "Argo is Synced/Healthy at the expected revision",
+      "evidence": {
+        "application": "demo",
+        "health_status": "Healthy",
+        "operation_phase": "Succeeded",
+        "revision": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+        "sync_status": "Synced"
+      },
+      "name": "argo",
+      "status": "pass"
+    },
+    {
+      "detail": "Deployment image and replica status match",
+      "evidence": {
+        "available_replicas": 1,
+        "generation": 18,
+        "images": [
+          "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7"
+        ],
+        "name": "demo",
+        "namespace": "demo",
+        "observed_generation": 18,
+        "ready_replicas": 1,
+        "replicas": 1,
+        "target_container": "demo-service",
+        "updated_replicas": 1
+      },
+      "name": "deployment",
+      "status": "pass"
+    },
+    {
+      "detail": "running Pods are ready and run the expected image",
+      "evidence": {
+        "digest_caveats": [],
+        "pod_count": 1,
+        "pods": [
+          {
+            "container": "demo-service",
+            "image": "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+            "image_id": "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+            "image_id_digest": "sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+            "name": "demo-547488b54d-5g2zs",
+            "node": "worker",
+            "ready": true,
+            "runtime_image": "sha256:a21e1e264efe0529343e954b476c94f44241ccb7580e7ec69ebffb4758c2f506"
+          }
+        ]
+      },
+      "name": "pods",
+      "status": "pass"
+    },
+    {
+      "detail": "Service has ready endpoint addresses",
+      "evidence": {
+        "addresses": [
+          "10.244.171.113"
+        ],
+        "not_ready_addresses": 0,
+        "ready_addresses": 1
+      },
+      "name": "endpoints",
+      "status": "pass"
+    },
+    {
+      "detail": "HTTP /version provenance and readiness endpoints are healthy",
+      "evidence": {
+        "gitSha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+        "status": 200,
+        "version": ""
+      },
+      "name": "http_version",
+      "status": "pass"
+    },
+    {
+      "detail": "observation window shows positive traffic within SLO bounds",
+      "evidence": {
+        "collected_at": 1794491905,
+        "error_ratio": 0,
+        "firing_alerts": [],
+        "p95_seconds": 0.00475,
+        "request_rate": 1.9367809437596706,
+        "source_errors": [],
+        "window_seconds": 60
+      },
+      "name": "metrics",
+      "status": "pass"
+    }
+  ],
+  "expected_app_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "expected_image": "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+  "expected_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "finished_at": 1794491905,
+  "observation": {
+    "collected_at": 1794491905,
+    "error_ratio": 0,
+    "firing_alerts": [],
+    "p95_seconds": 0.00475,
+    "request_rate": 1.9367809437596706,
+    "source_errors": [],
+    "window_seconds": 60
+  },
+  "recommendation": null,
+  "schema_version": 1,
+  "started_at": 1794491844,
+  "status": "ok",
+  "verifier": "change-guard-postdeploy"
+}

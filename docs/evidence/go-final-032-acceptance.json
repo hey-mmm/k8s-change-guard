@@ -1,0 +1,286 @@
+{
+  "captured_at": 1794493079,
+  "captured_at_iso": "2026-11-12T14:17:59Z",
+  "expected_main": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+  "expected_image": "sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+  "main": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+  "service": {
+    "exit": 0,
+    "lines": [
+      "active",
+      "/opt/change-guard/releases/0.3.2",
+      "change-guard 0.3.2 (rules go-2026-11-12.1)",
+      "{ path=/opt/change-guard/current/k8s-change-guard ; argv[]=/opt/change-guard/current/k8s-change-guard daemon --config /etc/change-guard/config.yaml ; ignore_errors=no ; start_time=[Thu 2026-11-12 22:05:20 CST] ; stop_time=[n/a] ; pid=134501 ; code=(null) ; status=0/0 }"
+    ],
+    "stderr": ""
+  },
+  "nodes": [
+    {
+      "name": "master",
+      "ready": "True"
+    },
+    {
+      "name": "worker",
+      "ready": "True"
+    }
+  ],
+  "argo": {
+    "sync": "Synced",
+    "health": "Healthy",
+    "revision": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "operation_revision": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "operation_phase": "Succeeded",
+    "observed_at": "2026-11-12T14:14:32Z"
+  },
+  "deployment": {
+    "replicas": 1,
+    "ready_replicas": 1,
+    "available_replicas": 1,
+    "updated_replicas": 1,
+    "containers": [
+      {
+        "name": "demo-service",
+        "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+        "env": [
+          {
+            "name": "APP_VERSION",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "GIT_SHA",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "TMPDIR",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "APP_ENV",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_ERROR_RATE",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_LATENCY_MS",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_STARTUP_FAIL",
+            "value": "<redacted>",
+            "valueFrom": false
+          }
+        ]
+      }
+    ]
+  },
+  "open_prs": [],
+  "traffic": {
+    "pid_file": "",
+    "processes": []
+  },
+  "rulesets": {
+    "before_ids": [
+      27101186,
+      27101219
+    ],
+    "after_ids": [
+      27101186,
+      27101219
+    ],
+    "before_projection": [
+      {
+        "id": 27101186,
+        "name": "change-guard-main-updates",
+        "target": "branch",
+        "source_type": "Repository",
+        "source": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "enforcement": "active",
+        "conditions": {
+          "ref_name": {
+            "exclude": [],
+            "include": [
+              "refs/heads/main"
+            ]
+          }
+        },
+        "bypass_actors": [
+          {
+            "actor_id": null,
+            "actor_type": "DeployKey",
+            "bypass_mode": "always"
+          }
+        ],
+        "rules": [
+          {
+            "type": "update"
+          },
+          {
+            "type": "deletion"
+          },
+          {
+            "type": "non_fast_forward"
+          },
+          {
+            "type": "pull_request",
+            "parameters": {
+              "required_approving_review_count": 0,
+              "dismiss_stale_reviews_on_push": true,
+              "required_reviewers": [],
+              "require_code_owner_review": false,
+              "require_last_push_approval": false,
+              "required_review_thread_resolution": true,
+              "require_extra_approval_for_unattributed_changes": true,
+              "allowed_merge_methods": [
+                "merge"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 27101219,
+        "name": "change-guard-main-required-checks",
+        "target": "branch",
+        "source_type": "Repository",
+        "source": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "enforcement": "active",
+        "conditions": {
+          "ref_name": {
+            "exclude": [],
+            "include": [
+              "refs/heads/main"
+            ]
+          }
+        },
+        "bypass_actors": [],
+        "rules": [
+          {
+            "type": "required_status_checks",
+            "parameters": {
+              "strict_required_status_checks_policy": true,
+              "do_not_enforce_on_create": false,
+              "required_status_checks": [
+                {
+                  "context": "change-guard/release"
+                },
+                {
+                  "context": "Test, lint, render",
+                  "integration_id": 15368
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "after_projection": [
+      {
+        "id": 27101186,
+        "name": "change-guard-main-updates",
+        "target": "branch",
+        "source_type": "Repository",
+        "source": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "enforcement": "active",
+        "conditions": {
+          "ref_name": {
+            "exclude": [],
+            "include": [
+              "refs/heads/main"
+            ]
+          }
+        },
+        "bypass_actors": [
+          {
+            "actor_id": null,
+            "actor_type": "DeployKey",
+            "bypass_mode": "always"
+          }
+        ],
+        "rules": [
+          {
+            "type": "update"
+          },
+          {
+            "type": "deletion"
+          },
+          {
+            "type": "non_fast_forward"
+          },
+          {
+            "type": "pull_request",
+            "parameters": {
+              "required_approving_review_count": 0,
+              "dismiss_stale_reviews_on_push": true,
+              "required_reviewers": [],
+              "require_code_owner_review": false,
+              "require_last_push_approval": false,
+              "required_review_thread_resolution": true,
+              "require_extra_approval_for_unattributed_changes": true,
+              "allowed_merge_methods": [
+                "merge"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 27101219,
+        "name": "change-guard-main-required-checks",
+        "target": "branch",
+        "source_type": "Repository",
+        "source": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "enforcement": "active",
+        "conditions": {
+          "ref_name": {
+            "exclude": [],
+            "include": [
+              "refs/heads/main"
+            ]
+          }
+        },
+        "bypass_actors": [],
+        "rules": [
+          {
+            "type": "required_status_checks",
+            "parameters": {
+              "strict_required_status_checks_policy": true,
+              "do_not_enforce_on_create": false,
+              "required_status_checks": [
+                {
+                  "context": "change-guard/release"
+                },
+                {
+                  "context": "Test, lint, render",
+                  "integration_id": 15368
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "unchanged": true,
+    "classic_unchanged": true
+  },
+  "checks": {
+    "main_expected": true,
+    "service_active_0_3_2": true,
+    "two_nodes_ready": true,
+    "argo_synced_healthy_at_expected_main": true,
+    "deployment_image_expected": true,
+    "deployment_ready": true,
+    "no_open_prs": true,
+    "rulesets_unchanged": true,
+    "classic_protection_unchanged": true,
+    "traffic_cleaned": true
+  },
+  "all_pass": true
+}

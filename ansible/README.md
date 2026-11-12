@@ -5,11 +5,18 @@ independent unprivileged user, grants read-only Kubernetes access, and gives the
 service a short-lived TokenRequest kubeconfig. It does **not** copy the
 controller's bootstrap/admin kubeconfig to the service identity.
 
-The current Go `0.3.0` migration, Windows/Linux tests, and single-binary release
-build are complete and ready to deploy. It is **not deployed yet**; the root
-deployment round will execute this playbook and the live acceptance steps.
-Historical Python `0.2.3` deployment and live evidence remain in
-`docs/acceptance.md` as history only; do not treat it as Go live acceptance.
+Go 0.3.2 is deployed and passed the complete release/revert acceptance, including two Ansible passes (second changed=0), read-only RBAC, token renewal, real GitHub blocking/approval/guarded merge, and 6/6 postdeploy checks for both release and revert. See [final acceptance](../docs/go-acceptance-final.md).
+
+`0.3.1` **succeeded at deployment and deployment-level live** and completed the
+dangerous PR8 BLOCK, new-head re-evaluation, PR9 REVIEW exact approval; however
+the formal merge was safely refused first for a missing evaluation ID and then
+for anonymous CI 403. `main` did not move, so 0.3.1 is partial acceptance, not a
+full release success. `0.3.2` (commit `41f2ba1`) fixes those two merge defects.
+`0.3.0` **failed its first Ansible deployment** on the `check-token` positional
+argument order and was rolled back to Python `0.2.3`; the `0.3.0` release
+directory and artifact are retained unchanged. Historical Python `0.2.3`
+deployment and live evidence remain in `docs/acceptance.md` as history only; do
+not treat it as Go live acceptance.
 
 ## 1. Supported target
 
@@ -31,16 +38,24 @@ pinned SHA-256.
 ## 2. Build the trusted artifact
 
 ```sh
-VERSION='0.3.0'
+VERSION='0.3.2'
 scripts/build-release.sh --version "$VERSION"
-# -> dist/k8s-change-guard-0.3.0.tar.gz and SHA-256 in the JSON output
+# -> dist/k8s-change-guard-0.3.2.tar.gz and SHA-256 in the JSON output
 ```
 
 On Windows:
 
 ```powershell
-pwsh -NoProfile -File scripts/build-release.ps1 -Go E:/Go/bin/go.exe -Version 0.3.0
+pwsh -NoProfile -File scripts/build-release.ps1 -Go E:/Go/bin/go.exe -Version 0.3.2
 ```
+
+The current 0.3.2 artifact is `3485074` bytes, 22 files, SHA-256
+`3929180048fbfc107eaf18bfb22b19983be56f326467d15dcc6a511d2b074be8`. The retained
+0.3.1 artifact is `3482084` bytes, SHA-256
+`51c42df2b07a13e60c6558df09fd320e058533818a4b45fe41c08faf3240f9ec`; the retained
+0.3.0 artifact is `3481524` bytes, SHA-256
+`28ffe1c159bb39ad851c9ad9b30a34a7f66b3ea5796907218dbb7ab86ddb97e3`; do not
+overwrite or relabel any of them.
 
 The release version is the `Version` constant in `internal/guard/common.go`;
 `--version` only changes the artifact name/JSON field. The tarball contains only:
@@ -167,6 +182,15 @@ a different artifact digest is refused instead of reused.
   `0600`, preserving server/CA; it never prints the token.
 - `change-guard check-token /etc/change-guard/kubeconfig --min-remaining N`
   decodes the JWT `exp` locally and exits 0 valid / 1 rotate / 2 error.
+  0.3.1 and later accept both the positional-first form used here (and by the
+  unit/verify tasks) and the flag-first form; 0.3.0 accepted only the latter,
+  which broke its first deployment. The unit must still use the documented
+  positional-first order so a rollback to 0.3.0 does not silently repeat the
+  failure.
+- The `ansible/roles/change_guard/tasks/token.yml`, `verify.yml`, and
+  `change-guard-token-check.service.j2` all use the positional-first form. Do not
+  change only one caller; 0.3.1 makes both valid, but consistency keeps the
+  failure visible.
 - The daemon reads the kubeconfig per kubectl invocation, so renewal does not
   require a restart.
 - The service user cannot execute the root helper, read
@@ -256,26 +280,25 @@ sudo scripts/merge-release.sh <number>
 
 The wrapper stops `change-guard.service`, uses `trap ... EXIT` to restore the
 previous polling state, reads `/etc/change-guard/proxy.env` after dropping to
-`change-guard` via `runuser`, and executes the fixed Go merge command. To run
-the binary directly, stop the daemon/serialize first; otherwise it may fail
-with a daemon lock error:
+`change-guard` via `runuser`, and executes the fixed Go merge command. In 0.3.2
+the Go merge resolves the PR's current indexed evaluation under the state lock,
+so the operator supplies only the PR number. An explicit `--evaluation-id` is
+optional and accepted only if it exactly matches the current index; old or
+unindexed IDs fail closed.
 
-```sh
-sudo systemctl stop change-guard.service
-sudo -u change-guard \
-  env HTTP_PROXY=http://11.0.1.1:7890 \
-      HTTPS_PROXY=http://11.0.1.1:7890 \
-      NO_PROXY='127.0.0.1,localhost,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local' \
-  /opt/change-guard/current/k8s-change-guard merge \
-  --config /etc/change-guard/config.yaml --pr <number>
-sudo systemctl start change-guard.service
-```
+Do **not** build a manual fallback shell around this step. The 0.3.1 incident
+(script omitted the evaluation ID, then a fallback shell hit anonymous CI 403)
+is why 0.3.2 changed the merge path. On `REFUSED`, fix the report/approval/CI or
+permission cause; do not stop the daemon and run the binary directly, and do not
+push `main` by another route.
 
 It validates the current report schema/policy binding, exact head/base, approval,
 workflow tree equality, independently recomputed chart pin, head-bound GitHub
 Actions CI, synthetic parents/tree, report digest, and exact lease before pushing.
-It does not push the synthetic commit, call the GitHub Merge API, or check out
-candidate code.
+The CI lookup uses the existing service token with a fixed GitHub URL, redirects
+disabled, a 2 MiB response limit, and exact head/`github-actions` app/required
+name/latest-success checks. It does not push the synthetic commit, call the
+GitHub Merge API, or check out candidate code.
 
 Post-deploy verifier:
 
@@ -292,6 +315,11 @@ sudo -u change-guard \
 source commit exposed by `/version`. They are normally different and both must
 be supplied. The verifier is read-only; on failure it returns an
 `open_revert_pr` recommendation and never rolls back or mutates the cluster.
+The 60-second wait after rollout only lets Argo/workloads settle; error and
+latency metrics use the latest **5-minute** rate window, not a 60-second
+new-version bucket. Low traffic is a REVIEW condition, not zero errors. The lab
+has one worker and a local PVC with no node/disk HA; a 99.9% SLO needs a full
+**seven days** of data and is not proven by one deployment.
 
 ## 10. Known deployment caveats
 
@@ -307,5 +335,13 @@ be supplied. The verifier is read-only; on failure it returns an
 - The root-only token helper depends on the local
   `/etc/kubernetes/admin.conf`; a separate guard host needs controller-side
   rotation.
-- Go `0.3.0` is built and ready to deploy, but live deployment acceptance has not
-  run yet; the historical Python `0.2.3` evidence is not current Go proof.
+- Go `0.3.0` is built but its first deployment failed at the token check and was
+  rolled back; the release directory is retained. Go `0.3.1` fixed the CLI and
+  must not reuse the 0.3.0 version directory.
+- Go `0.3.1` deployment-level acceptance passed; PR8 BLOCK and PR9 REVIEW
+  approval also passed, but the formal merge was refused (missing evaluation ID,
+  then anonymous CI 403) with `main` unchanged. This is partial acceptance.
+- Go `0.3.2` fixes the current-index evaluation selection and authenticated CI
+  lookup; deployment-level verification passed. Final live, PR re-run,
+  postdeploy and revert are complete; see the final acceptance report. The historical Python `0.2.3`
+  evidence is not current Go proof.

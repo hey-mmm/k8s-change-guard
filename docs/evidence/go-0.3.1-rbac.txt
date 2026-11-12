@@ -1,0 +1,8 @@
+### nodes_read: rc=0 answer='yes' expected=yes
+### pods_list_all: rc=0 answer='yes' expected=yes
+### argo_read: rc=0 answer='yes' expected=yes
+### secrets_read: rc=1 answer='no' expected=no
+### pod_logs_read: rc=1 answer='no' expected=no
+### pod_exec: rc=1 answer='no' expected=no
+### deployment_write: rc=1 answer='no' expected=no
+### argo_patch: rc=1 answer='no' expected=no

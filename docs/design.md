@@ -2,7 +2,9 @@
 
 ## 决策优先级
 
-规则逐项产生包含 `rule_id / severity / field / message / evidence` 的发现，最终按 `BLOCK > ERROR > REVIEW > PASS` 汇总。报告同时保留渲染差异、规则版本、AI 结果、来源与时间。
+规则逐项产生包含 `rule_id / severity / field / message / evidence` 的发现，最终按 `BLOCK > ERROR > REVIEW > PASS` 汇总。报告同时保留渲染差异、规则版本、AI 结果、来源与时间。AI 只能解释已有证据、检索受信案例和提出额外风险，不能降低硬规则，也不能推翻 `BLOCK`；模型新增风险最多把结果提升到 `REVIEW`。真实正常发布通常是 REVIEW + 人工精确批准，不是自动 PASS。
+
+0.3.1 的 PR9 中，AI 把被脱敏但实际未改动的 env 值误报为演练故障风险；独立 reviewer 用 base/head 精确 Git blob 证明相关行未变，该风险不成立。之后的人工审批由用户授权的 dsh 操作员以 owner 身份发出，不是模型自批；在线 DeepSeek 无 GitHub/集群执行权限，不能审批、合并或回滚。AI 建议必须可被证据推翻，额外风险只到 REVIEW。
 
 副本归零、删除 Deployment/就绪探针、故障开关、非白名单镜像、非法 digest、额外容器/执行命令、envFrom、危险权限、`.github/workflows/` 变更以及 `charts/demo` 与操作员 chart pin 不一致等硬规则不可审批覆盖。资源显著缩减、容量不足、当前错误/延迟/告警、未预留资源、模板变更和 AI 新风险需人工确认。数据缺失、过期、非数、渲染失败、模型失败均拒绝自动放行。
 
@@ -42,6 +44,8 @@ systemd 保留 bubblewrap 必须的 namespace 能力，通过独立用户、空 
 每份不可变报告绑定仓库、PR、候选 head SHA、当时 main SHA、树和渲染摘要、采集时间、规则/模型信息。追加提交或基线变化会使旧评估失效；REVIEW 评论须匹配精确 `/guard approve <evaluation_id>`、允许名单、当前权限与有效期，标签或旧评论不能永久放行。
 
 daemon 定期重评/撤销过期状态，但停机时无法撤销 GitHub 旧状态，因此另限制 main 更新入口。显式合并程序检查当前 head/base、有效报告摘要、策略绑定、审批、workflow tree、chart pin 和 head SHA 上的 GitHub Actions `Test, lint, render` 成功结果；随后读取 GitHub synthetic merge commit，独立确认其两个 parent 正好是当前基线和候选 head，且 synthetic tree 精确等于 head commit tree。只有这些条件都成立，才用旧 main SHA 的精确 lease 将**已评估的 head**快进推送到 main，而不是推送 synthetic merge commit；不会 checkout 或执行候选代码，也不使用 GitHub Merge API。
+
+0.3.2 的合并入口只接收 PR 号码，在 state lock 内从当前索引解析该 PR 的 evaluation，避免调用方漏传/传旧 ID；显式 `--evaluation-id` 仅作核对，必须等于当前记录。CI 查询使用服务已有的最小 token（无需新增 Checks/Administration），固定 `api.github.com`、显式禁 redirect，并保留 2 MiB 上限、分页完整性、精确 head SHA、`github-actions` app、required name 和 latest-success 校验；错误不输出 token。0.3.1 曾在同一处先拒绝缺省 ID，后因匿名出口 403 拒绝，`main` 未变，这两条失败路径都有回归测试。
 
 GitHub Actions 的 `pull_request` check 绑定 head SHA，synthetic merge 的 check-runs 在真实环境可能为空，因此不能用 synthetic 的成功状态冒充。成功状态写到 head，main 快进后即对应新 head。main 上因此是普通单父提交；回退使用普通 `git revert <head>`，不加 `-m 1`。
 

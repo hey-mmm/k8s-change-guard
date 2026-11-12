@@ -1,0 +1,6 @@
+{
+  "deleted_at": 1794490080,
+  "branch": "release/823770eff4e9-af77edde",
+  "api_result": null,
+  "reason": "stale branch from prior Python acceptance, based on 823770e; no open PR; recreated from current main by the trusted release script"
+}

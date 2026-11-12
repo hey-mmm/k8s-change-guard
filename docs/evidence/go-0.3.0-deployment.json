@@ -1,0 +1,95 @@
+{
+  "blocker": {
+    "command_order": "check-token KUBECONFIG --min-remaining 7200",
+    "exit_code": 2,
+    "kind": "go-cli-flag-order",
+    "production_rollback": "current -> /opt/change-guard/releases/0.2.3; Python 0.2.3 service left active",
+    "stdout": "{\"status\":\"error\",\"error\":\"usage: change-guard check-token KUBECONFIG [--min-remaining SECONDS]\"}",
+    "task": "ansible/roles/change_guard/tasks/token.yml: Check remaining token lifetime with the installed Go binary",
+    "working_order": "check-token --min-remaining 7200 KUBECONFIG"
+  },
+  "status": "blocked",
+  "steps": {
+    "ansible": {
+      "deploy_recap": "master : ok=48 changed=6 unreachable=0 failed=1 skipped=6 rescued=0 ignored=0",
+      "idempotent_recap": null,
+      "status": "failed-before-service-switch"
+    },
+    "backup": {
+      "dir": "/var/backups/change-guard/pre-go-0.3.0-20261112-130258",
+      "mode": "root-only 0700"
+    },
+    "preflight": {
+      "artifact": {
+        "artifact": "C:\\Users\\MYT\\Documents\\Codex\\2026-11-12\\https-github-com-hey-mmm-full-3\\work\\k8s-change-guard\\dist\\k8s-change-guard-0.3.0.tar.gz",
+        "bytes": 3481524,
+        "members": [
+          "README.md",
+          "config.example.yaml",
+          "k8s-change-guard",
+          "knowledge",
+          "knowledge/cases",
+          "knowledge/cases/alert-resolved-fingerprint.json",
+          "knowledge/cases/calico-not-ready-troubleshoot.json",
+          "knowledge/cases/drill-evidence-no-guess.json",
+          "knowledge/cases/error-drill-rollout-before-effective.json",
+          "knowledge/cases/git-revert-required.json",
+          "knowledge/cases/http500-fault.json",
+          "knowledge/cases/latency-3000-fault.json",
+          "knowledge/cases/latency-probes-not-delayed.json",
+          "knowledge/cases/persistence-pvc.json",
+          "knowledge/cases/recover-semantics.json",
+          "knowledge/cases/rolling-old-pod-not-proof.json",
+          "knowledge/cases/slo-window-not-proven.json",
+          "knowledge/cases/startup-failure-release-protection.json",
+          "knowledge/cases/startup-max-unavailable-protection.json",
+          "knowledge/cases/worker-capacity-check.json",
+          "knowledge/index.json",
+          "knowledge/sources",
+          "knowledge/sources/drills.md",
+          "knowledge/sources/fault-review.md",
+          "knowledge/sources/stage1-runbook.md"
+        ],
+        "sha256": "28ffe1c159bb39ad851c9ad9b30a34a7f66b3ea5796907218dbb7ab86ddb97e3"
+      },
+      "notes": "C:\\Users\\MYT\\Documents\\Codex\\2026-11-12\\https-github-com-hey-mmm-full-3\\work\\go-ops-notes.md"
+    },
+    "probe": {
+      "ai": {
+        "citations": 4,
+        "model": "deepseek-chat",
+        "status": "ok",
+        "summary": "Decision is ERROR and cannot be approved: the required DeepSeek review result is missing (AI_REQUIRED_UNAVAILABLE), so the hard guard rule blocks release. Beyond that blocker, the report shows a first-time add of Deployment/Service/ServiceMonitor demo in namespace demo with a changed pod template, s"
+      },
+      "collect": {
+        "errors": [],
+        "nodes": 2,
+        "pods": 28
+      },
+      "final": {
+        "decision": "REVIEW",
+        "evaluation_id": null
+      },
+      "pre_decision": "ERROR",
+      "render": {
+        "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+        "kinds": [
+          "Service",
+          "Deployment",
+          "ServiceMonitor"
+        ]
+      }
+    },
+    "stage": {
+      "artifact_sha256": "28ffe1c159bb39ad851c9ad9b30a34a7f66b3ea5796907218dbb7ab86ddb97e3",
+      "staging_backup": "/home/myt/change-guard-private/pre-0.3.0-ansible-scripts.tar.gz",
+      "synced_sources": [
+        "ansible",
+        "scripts"
+      ],
+      "vars_backup": "/home/myt/change-guard-private/deploy-vars-pre-0.3.0.yml"
+    }
+  },
+  "updated_at": 1794488578,
+  "version": "0.3.0"
+}

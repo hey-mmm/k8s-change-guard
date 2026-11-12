@@ -1,0 +1,54 @@
+{
+  "additional_risks": [
+    {
+      "detail": "35 scheduled Pods have no CPU/memory requests and are treated as zero, so the reported free capacity (2190m CPU / ~9.2GB) may be overstated. A KubeCPUOvercommit warning is also firing. Verify actual requests before trusting the headroom for the new replica plus surge Pod.",
+      "severity": "REVIEW",
+      "title": "Capacity estimate rests on unreserved Pod requests"
+    },
+    {
+      "detail": "Request rate is ~0.0035 rps against a 0.1 rps threshold, so the observed zero error ratio and 4.75ms p95 cannot be treated as evidence the new Deployment is healthy. Re-check after real traffic or explicit synthetic load.",
+      "severity": "REVIEW",
+      "title": "Low traffic makes health signals non-informative"
+    },
+    {
+      "detail": "The change adds a Deployment with a changed pod template plus Service and ServiceMonitor; no evidence confirms the new Pods reach Ready or that the ServiceMonitor scrapes successfully. Confirm rollout and scrape targets before relying on metrics.",
+      "severity": "REVIEW",
+      "title": "New workload rollout unverified"
+    }
+  ],
+  "citations": [
+    {
+      "case_id": "worker-capacity-check",
+      "line_end": 145,
+      "line_start": 134,
+      "quote": "- \u6070\u597d 2 \u4e2a\u8282\u70b9\uff0c`master`/`worker` \u5747 Ready\uff0cInternalIP \u5206\u522b\u4e3a `11.0.1.10`/`11.0.1.11`\uff0c\u5bb9\u5668\u8fd0\u884c\u65f6\u4e3a containerd\u3002",
+      "snapshot": "sources/stage1-runbook.md",
+      "source": "docs/stage1-runbook.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d"
+    },
+    {
+      "case_id": "startup-failure-release-protection",
+      "line_end": 15,
+      "line_start": 15,
+      "quote": "- \u542f\u52a8\u5931\u8d25\uff1a\u65b0 Pod \u8f93\u51fa StartupError/`startup_failed`\u3001CrashLoopBackOff\uff0c\u65e7 Pod \u4fdd\u6301 Ready \u5e76\u8fd4\u56de 200\uff1b\u89e6\u53d1 DemoPodCrashLooping\u3002\u8fd9\u662f\u53d1\u5e03\u4fdd\u62a4\uff0c\u4e0d\u662f\u5168\u670d\u52a1\u4e2d\u65ad\u3002",
+      "snapshot": "sources/fault-review.md",
+      "source": "docs/fault-review.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f"
+    },
+    {
+      "case_id": "alert-resolved-fingerprint",
+      "line_end": 14,
+      "line_start": 13,
+      "quote": "- 500\uff1a`DEMO_ERROR_RATE=1`\uff0c\u771f\u5b9e\u8bf7\u6c42\u65e5\u5fd7\u8fd4\u56de 500\uff1b\u89e6\u53d1 DemoHighErrorRate\uff0c\u6062\u590d\u4e3a 200 \u540e\u6536\u5230\u540c\u6307\u7eb9 resolved\u3002",
+      "snapshot": "sources/fault-review.md",
+      "source": "docs/fault-review.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f"
+    }
+  ],
+  "model": "deepseek-chat",
+  "status": "ok",
+  "summary": "Decision is ERROR and cannot be approved: the required AI review result is missing (AI_REQUIRED_UNAVAILABLE), so the hard guard rule blocks release. Beyond that blocker, the report itself flags review-level concerns: 35 scheduled Pods lack CPU/memory requests and are counted as zero, so free capacity may be overstated; a KubeCPUOvercommit warning alert is firing; and request rate (~0.0035 rps) is far below the 0.1 rps threshold, so zero errors and low p95 are not evidence of health. Capacity math (50m CPU / 64Mi per replica, 1 surge Pod, 2190m available) looks nominally sufficient but rests on the unreserved-request assumption. The change adds a new Deployment, Service, and ServiceMonitor with a changed pod template, so rollout behavior is unverified. Recommend resolving the missing AI review, confirming real requests on all scheduled Pods, and re-evaluating under meaningful traffic before any approval."
+}

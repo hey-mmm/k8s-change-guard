@@ -1,0 +1,150 @@
+
+### current link (rc=0)
+/opt/change-guard/releases/0.3.1
+
+### release contents (rc=0)
+total 7964
+drwxr-xr-x  3 root root    4096 Nov 12 21:17 .
+drwxr-xr-x 10 root root    4096 Nov 12 21:17 ..
+-rw-r--r--  1 root root      65 Nov 12 21:17 .artifact.sha256
+-rw-r--r--  1 root root       0 Nov 12 21:17 .complete
+-rw-r--r--  1 root root    4401 Jan  1  1970 config.example.yaml
+-rwxr-xr-x  1 root root 8118420 Jan  1  1970 k8s-change-guard
+drwxr-xr-x  4 root root    4096 Jan  1  1970 knowledge
+-rw-r--r--  1 root root    5797 Jan  1  1970 README.md
+
+### binary version (rc=0)
+change-guard 0.3.1 (rules go-2026-11-12.1)
+
+### file (rc=0)
+/opt/change-guard/current/k8s-change-guard: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, stripped
+
+### ldd (rc=0)
+	not a dynamic executable
+
+### service active (rc=0)
+active
+
+### service enabled (rc=0)
+enabled
+
+### service show (rc=0)
+MainPID=69722
+NRestarts=0
+ExecMainStartTimestamp=Thu 2026-11-12 21:17:58 CST
+ActiveState=active
+SubState=running
+
+### service unit (rc=0)
+# /etc/systemd/system/change-guard.service
+[Unit]
+Description=k8s change guard (GitHub release gate)
+Documentation=https://github.com/hey-mmm/k8s-change-guard
+After=network-online.target
+Wants=network-online.target
+ConditionPathIsReadWrite=/var/lib/change-guard
+
+[Service]
+Type=simple
+User=change-guard
+Group=change-guard
+WorkingDirectory=/opt/change-guard/current
+ExecStartPre=/usr/bin/test -x /opt/change-guard/current/k8s-change-guard
+ExecStart=/opt/change-guard/current/k8s-change-guard daemon --config /etc/change-guard/config.yaml
+EnvironmentFile=-/etc/change-guard/proxy.env
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=60
+TimeoutStopSec=45
+KillMode=mixed
+SyslogIdentifier=change-guard
+StandardOutput=journal
+StandardError=journal
+
+StateDirectory=change-guard
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+InaccessiblePaths=/root /home
+ReadOnlyPaths=/etc/change-guard /opt/change-guard
+ReadWritePaths=/var/lib/change-guard
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+# bubblewrap --unshare-all creates user, mount, network, PID, IPC, UTS and
+# (when possible) cgroup namespaces.  RestrictNamespaces=~user ... (or a
+# positive list that omits any of them) makes bwrap fail before Helm runs, so
+# namespace creation must remain available to the unprivileged service user.
+RestrictNamespaces=false
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+# bubblewrap must be able to create user/mount/net/pid namespaces and mount a
+# temporary root.  The general service filter remains in force.
+SystemCallFilter=@system-service mount umount2 pivot_root unshare setns clone clone3 chroot setuid setgid
+# Go-based helpers (helm/kubectl) reserve a large *virtual* address space and
+# start several runtime threads.  Do not cap RLIMIT_AS and keep NPROC/Tasks
+# high enough for Go; MemoryMax is a cgroup limit on resident memory, which does
+# not count Go's unused virtual reservations.
+LimitNOFILE=8192
+LimitNPROC=8192
+TasksMax=8192
+LimitCORE=0
+MemoryHigh=1536M
+MemoryMax=2G
+
+[Install]
+WantedBy=multi-user.target
+
+### renew timer (rc=0)
+active
+
+### check timer (rc=0)
+active
+
+### timers (rc=0)
+NEXT                        LEFT          LAST                        PASSED       UNIT                           ACTIVATES
+Thu 2026-11-12 22:17:52 CST 58min left    Thu 2026-11-12 21:17:52 CST 1min 10s ago change-guard-token-check.timer change-guard-token-check.service
+Fri 2026-11-13 01:46:54 CST 4h 27min left Thu 2026-11-12 19:28:51 CST 1h 50min ago change-guard-token-renew.timer change-guard-token-renew.service
+
+2 timers listed.
+Pass --all to see loaded but inactive timers, too.
+
+### service user (rc=0)
+change-guard:x:998:998::/var/lib/change-guard:/usr/sbin/nologin
+uid=998(change-guard) gid=998(change-guard) groups=998(change-guard)
+
+### service processes (rc=0)
+69722 /opt/change-guard/current/k8s-change-guard daemon --config /etc/change-guard/config.yaml
+
+### main exe (rc=0)
+/opt/change-guard/releases/0.3.1/k8s-change-guard
+
+### python files (rc=0)
+
+
+### python units (rc=0)
+
+
+### config (rc=0)
+kubectl: "/usr/bin/kubectl"
+helm: "/usr/local/bin/helm"
+bwrap: "/usr/bin/bwrap"
+approved_chart_digest: "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+ai_required: true
+deepseek_url: "https://api.deepseek.com/chat/completions"
+knowledge_dir: "/opt/change-guard/current/knowledge"
+merge_required_ci: "Test, lint, render"

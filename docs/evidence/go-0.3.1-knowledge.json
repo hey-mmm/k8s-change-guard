@@ -1,0 +1,668 @@
+{
+  "cases": [
+    {
+      "actions": [
+        "Reject any fault-injection value in the candidate Deployment.",
+        "Require the normal value DEMO_ERROR_RATE=0."
+      ],
+      "analysis": "A release that sets DEMO_ERROR_RATE to a non-zero value injects deliberate /work 500 responses and is a hard release risk.",
+      "cautions": [
+        "Do not treat a recovered local drill as approval for shipping fault settings."
+      ],
+      "excerpt": "- 500\uff1a`DEMO_ERROR_RATE=1`\uff0c\u771f\u5b9e\u8bf7\u6c42\u65e5\u5fd7\u8fd4\u56de 500\uff1b\u89e6\u53d1 DemoHighErrorRate\uff0c\u6062\u590d\u4e3a 200 \u540e\u6536\u5230\u540c\u6307\u7eb9 resolved\u3002",
+      "excerpt_sha256": "d14b11fcaef1d96686e1eaffb100bdf75bb87f382b13bed478e10a041d915eb1",
+      "id": "http500-fault",
+      "line_end": 13,
+      "line_start": 13,
+      "rollback": "Restore DEMO_ERROR_RATE=0 and wait for a healthy rollout before considering the release again.",
+      "signals": [
+        "DEMO_ERROR_RATE=1",
+        "DemoHighErrorRate",
+        "resolved fingerprint"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "\u6545\u969c\u6f14\u7ec3\u9a8c\u6536\u4e0e\u590d\u76d8"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "http500",
+        "fault-injection",
+        "error-rate",
+        "alert"
+      ],
+      "title": "HTTP 500 \u6545\u969c\u6ce8\u5165"
+    },
+    {
+      "actions": [
+        "Reject non-zero DEMO_LATENCY_MS.",
+        "Review p95 latency separately from probe health."
+      ],
+      "analysis": "A release that sets DEMO_LATENCY_MS above zero injects business latency; readiness/liveness probes themselves are not delayed, so probes passing does not make the release safe.",
+      "cautions": [
+        "Do not infer low latency from healthy probes."
+      ],
+      "excerpt": "- \u6162\u8bf7\u6c42\uff1a`DEMO_LATENCY_MS=3000`\uff0c\u8bf7\u6c42\u65e5\u5fd7\u8017\u65f6\u7ea6 3.00\u20133.01 \u79d2\uff1b\u89e6\u53d1 DemoP95LatencyHigh\uff0c\u6062\u590d\u540e\u6536\u5230 resolved\u3002",
+      "excerpt_sha256": "55fd07443153dc97f49277e2d9dc1fd6b96381df3c6583917bad9ab5117de5fc",
+      "id": "latency-3000-fault",
+      "line_end": 14,
+      "line_start": 14,
+      "rollback": "Restore DEMO_LATENCY_MS=0 and verify the 5m p95 returns below the review threshold.",
+      "signals": [
+        "DEMO_LATENCY_MS=3000",
+        "DemoP95LatencyHigh",
+        "3.00-3.01s"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "\u6545\u969c\u6f14\u7ec3\u9a8c\u6536\u4e0e\u590d\u76d8"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "latency",
+        "fault-injection",
+        "p95",
+        "alert"
+      ],
+      "title": "3000ms \u6162\u8bf7\u6c42\u6545\u969c\u6ce8\u5165"
+    },
+    {
+      "actions": [
+        "Reject DEMO_STARTUP_FAIL=true.",
+        "Separate old-Pod availability from new-Pod health and version verification."
+      ],
+      "analysis": "A startup-failure drill demonstrates maxUnavailable=0/maxSurge=1 release protection; it does not prove that the new version works, and the old Pod still serving is not new-version provenance.",
+      "cautions": [
+        "Do not claim a successful release because the old Pod stayed Ready."
+      ],
+      "excerpt": "- \u542f\u52a8\u5931\u8d25\uff1a\u65b0 Pod \u8f93\u51fa StartupError/`startup_failed`\u3001CrashLoopBackOff\uff0c\u65e7 Pod \u4fdd\u6301 Ready \u5e76\u8fd4\u56de 200\uff1b\u89e6\u53d1 DemoPodCrashLooping\u3002\u8fd9\u662f\u53d1\u5e03\u4fdd\u62a4\uff0c\u4e0d\u662f\u5168\u670d\u52a1\u4e2d\u65ad\u3002",
+      "excerpt_sha256": "43ee6e4f31e30d5d932f78ba24fcfe21acab0a1a8c7f4bba05d60faa64e86209",
+      "id": "startup-failure-release-protection",
+      "line_end": 15,
+      "line_start": 15,
+      "rollback": "Restore DEMO_STARTUP_FAIL=false, roll out a healthy new Pod, and verify endpoints and version separately.",
+      "signals": [
+        "DEMO_STARTUP_FAIL=true",
+        "CrashLoopBackOff",
+        "old Pod remains Ready"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "\u6545\u969c\u6f14\u7ec3\u9a8c\u6536\u4e0e\u590d\u76d8"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "startup-failure",
+        "fault-injection",
+        "rolling-update",
+        "old-pod"
+      ],
+      "title": "\u542f\u52a8\u5931\u8d25\u53ea\u9a8c\u8bc1\u6eda\u52a8\u53d1\u5e03\u4fdd\u62a4"
+    },
+    {
+      "actions": [
+        "Use firing and resolved evidence as context, not as a release approval.",
+        "Do not claim recovery when the resolved fingerprint is absent."
+      ],
+      "analysis": "Alert recovery evidence must match the firing alert by fingerprint; unrelated or missing resolved events are insufficient.",
+      "cautions": [
+        "A local webhook notification is not production notification reliability."
+      ],
+      "excerpt": "- 500\uff1a`DEMO_ERROR_RATE=1`\uff0c\u771f\u5b9e\u8bf7\u6c42\u65e5\u5fd7\u8fd4\u56de 500\uff1b\u89e6\u53d1 DemoHighErrorRate\uff0c\u6062\u590d\u4e3a 200 \u540e\u6536\u5230\u540c\u6307\u7eb9 resolved\u3002\n- \u6162\u8bf7\u6c42\uff1a`DEMO_LATENCY_MS=3000`\uff0c\u8bf7\u6c42\u65e5\u5fd7\u8017\u65f6\u7ea6 3.00\u20133.01 \u79d2\uff1b\u89e6\u53d1 DemoP95LatencyHigh\uff0c\u6062\u590d\u540e\u6536\u5230 resolved\u3002",
+      "excerpt_sha256": "46c8a66f7d003aa521314d088a3eaf6d9b102946d8520dcd450a7bee3cd456c7",
+      "id": "alert-resolved-fingerprint",
+      "line_end": 14,
+      "line_start": 13,
+      "rollback": "Recover the injected condition and verify a matching resolved event.",
+      "signals": [
+        "same fingerprint",
+        "DemoHighErrorRate",
+        "DemoP95LatencyHigh"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "\u6545\u969c\u6f14\u7ec3\u9a8c\u6536\u4e0e\u590d\u76d8"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "alert",
+        "firing",
+        "resolved",
+        "fingerprint"
+      ],
+      "title": "\u544a\u8b66 firing \u4e0e\u540c\u6307\u7eb9 resolved"
+    },
+    {
+      "actions": [
+        "Preserve PVC identity, timestamp, and marker evidence in reports.",
+        "Do not interpret local-path persistence as HA or backup."
+      ],
+      "analysis": "Persistence evidence is tied to unchanged PVCs and exact query timestamps, not to a vague claim that storage survived.",
+      "cautions": [
+        "Single worker local-path storage is not replicated and can be lost with the node disk."
+      ],
+      "excerpt": "- \u6570\u636e\u6301\u4e45\u5316\uff1a\u89c1 `evidence/persistence.json`\u3002Prometheus \u4e0e Loki Pod UID \u5747\u6539\u53d8\uff0c\u539f PVC \u76f8\u540c\uff1b\u56fa\u5b9a\u67e5\u8be2\u65f6\u95f4\u7684\u6307\u6807\u503c\u4ecd\u4e3a 67\uff0c\u91cd\u5efa\u524d marker \u7684\u539f\u65f6\u95f4\u6233\u548c\u65e5\u5fd7\u5168\u6587\u5b8c\u5168\u76f8\u540c\u3002",
+      "excerpt_sha256": "fe3b4437a2ddbb2db970bdc91e86dfccff79758ddf415bbee9820cd5a62dc927",
+      "id": "persistence-pvc",
+      "line_end": 16,
+      "line_start": 16,
+      "rollback": "Restore the workload and re-query the same fixed time and marker.",
+      "signals": [
+        "Pod UID changed",
+        "same PVC",
+        "fixed query value 67"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "\u6545\u969c\u6f14\u7ec3\u9a8c\u6536\u4e0e\u590d\u76d8"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "persistence",
+        "pvc",
+        "prometheus",
+        "loki"
+      ],
+      "title": "Pod \u91cd\u5efa\u540e PVC \u6301\u4e45\u5316"
+    },
+    {
+      "actions": [
+        "Require new-Pod-specific readiness and version evidence.",
+        "Do not collapse rollout success into Service availability."
+      ],
+      "analysis": "During a rolling update an old Ready Pod can keep the Service available while the new Pod is not yet proven; endpoints, image digest, and /version must be verified.",
+      "cautions": [
+        "Do not use Service 200 responses alone as new-version proof."
+      ],
+      "excerpt": "\u53d1\u73b0\u5e76\u4fee\u590d\uff1aService port-forward \u968f\u65e7 Pod \u9000\u51fa\uff1bWindows \u590d\u5236\u7684\u6062\u590d\u811a\u672c\u7f3a\u5c11\u6267\u884c\u4f4d\uff1bShell \u540c\u4e00 local \u58f0\u660e\u5f15\u7528\u672a\u8d4b\u503c\u53d8\u91cf\uff1b\u6eda\u52a8\u53d1\u5e03\u65f6\u65e7 Pod Ready \u4e0d\u80fd\u8bc1\u660e\u65b0\u7248\u672c\u5b8c\u6210\u3002Alloy \u914d\u7f6e\u5148\u901a\u8fc7\u81ea\u8eab validate\uff0c\u518d\u68c0\u67e5\u5b9e\u9645\u65e5\u5fd7\u6d41\u3002",
+      "excerpt_sha256": "a5232a38812db2ee8c6cf3c53969cb5316289fb49666f2842fa10772b7c76f08",
+      "id": "rolling-old-pod-not-proof",
+      "line_end": 18,
+      "line_start": 18,
+      "rollback": "Roll back through Git desired state and verify the resulting image and /version.",
+      "signals": [
+        "old Pod Ready",
+        "rolling release",
+        "version verification"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "\u6545\u969c\u6f14\u7ec3\u9a8c\u6536\u4e0e\u590d\u76d8"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "rolling-update",
+        "readiness",
+        "provenance"
+      ],
+      "title": "\u65e7 Pod Ready \u4e0d\u80fd\u8bc1\u660e\u65b0\u7248\u672c\u5b8c\u6210"
+    },
+    {
+      "actions": [
+        "Keep SLO claims out of release approval unless the full window exists.",
+        "Report only observed metrics and their timestamps."
+      ],
+      "analysis": "A short drill window cannot prove a 7-day SLO or a percentage improvement; reports must state the evidence boundary.",
+      "cautions": [
+        "Do not fabricate recovery-efficiency percentages."
+      ],
+      "excerpt": "\u544a\u8b66\u53ea\u9a8c\u8bc1\u672c\u5730 webhook \u901a\u77e5\u94fe\u8def\u3002Prometheus 7 \u5929 SLO \u76ee\u6807\u4e3a 99.9%\uff0c\u672c\u6b21\u672a\u79ef\u7d2f\u5b8c\u6574 7 \u5929\u7a97\u53e3\uff0c\u4e0d\u5ba3\u79f0 SLO \u5df2\u8fbe\u6807\uff0c\u4e5f\u4e0d\u7f16\u9020\u6062\u590d\u6548\u7387\u63d0\u5347\u767e\u5206\u6bd4\u3002",
+      "excerpt_sha256": "5b2d440837fc9570e138953aa401d64eda3ec1b2156793edbc57c36f5c0541ba",
+      "id": "slo-window-not-proven",
+      "line_end": 22,
+      "line_start": 22,
+      "rollback": "Collect a complete window before making an SLO claim.",
+      "signals": [
+        "7 day SLO 99.9%",
+        "incomplete window",
+        "local webhook only"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "\u6545\u969c\u6f14\u7ec3\u9a8c\u6536\u4e0e\u590d\u76d8"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "slo",
+        "availability",
+        "evidence-boundary"
+      ],
+      "title": "SLO \u58f0\u660e\u8fb9\u754c"
+    },
+    {
+      "actions": [
+        "Wait for new Pod readiness before judging fault effect.",
+        "Record the exact rollout and readiness timestamps."
+      ],
+      "analysis": "A drill fault is effective only after rollout and new-Pod readiness; an old Pod still serving can hide the injected condition.",
+      "cautions": [
+        "Do not mark a drill effective solely because a patch was submitted."
+      ],
+      "excerpt": "### 3.1 \u9519\u8bef\u7387\uff08100% /work 500\uff09\n\n```bash\nscripts/drills/inject.sh --fault error --suspend-gitops\n# \u89c2\u5bdf\u544a\u8b66/\u6307\u6807/\u65e5\u5fd7\uff0c\u4f8b\u5982\uff1a\n#   sum(rate(demo_http_requests_total{route=\"/work\",status=~\"5..\"}[5m]))\n#   kubectl -n demo logs deploy/demo --tail=50\nscripts/drills/recover.sh\n```\n\nenv\uff1a`DEMO_ERROR_RATE=1`\uff0c\u5e76\u786e\u4fdd latency/startup \u4e3a\u6b63\u5e38\u503c\u3002rollout \u5b8c\u6210\u3001\n\u65b0 Pod Ready \u540e\u624d\u8bb0\u5f55 `fault_fully_effective=true`\u3002",
+      "excerpt_sha256": "c04aafbfb9fed288086090c9afb109597efee165ba240b4d6d579542b8492598",
+      "id": "error-drill-rollout-before-effective",
+      "line_end": 68,
+      "line_start": 57,
+      "rollback": "Run recover.sh and wait for rollout, /healthz, and /readyz.",
+      "signals": [
+        "inject error",
+        "rollout complete",
+        "new Pod Ready",
+        "fault_fully_effective=true"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo \u6545\u969c\u6f14\u7ec3\u624b\u518c\uff08runbook\uff09"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "http500",
+        "drill",
+        "rollout",
+        "effective"
+      ],
+      "title": "\u9519\u8bef\u7387\u6f14\u7ec3\u9700\u7b49\u5f85\u65b0 Pod Ready"
+    },
+    {
+      "actions": [
+        "Check the business p95 metric, not only probe status.",
+        "Reject non-zero latency injection values."
+      ],
+      "analysis": "The demo deliberately keeps health probes fast during latency injection, so passing probes are not evidence of low business latency.",
+      "cautions": [
+        "Do not infer business performance from probe success."
+      ],
+      "excerpt": "env\uff1a`DEMO_LATENCY_MS=3000`\u3002`/healthz`\u3001`/readyz` \u4e0d\u6ce8\u5165\u5ef6\u8fdf\uff0c\u907f\u514d\u63a2\u9488\u8bef\u6740\uff1b\n\u4e1a\u52a1\u5ef6\u8fdf\u770b histogram\uff1a\n\n```promql\nhistogram_quantile(0.95,\n  sum by (le) (rate(demo_http_request_duration_seconds_bucket{route=\"/work\"}[5m])))\n```",
+      "excerpt_sha256": "ccc41aa6c3bfff4994c797552f1693b650021fd767ec3c5aad8f00ebfad6631b",
+      "id": "latency-probes-not-delayed",
+      "line_end": 83,
+      "line_start": 77,
+      "rollback": "Restore DEMO_LATENCY_MS=0 and watch the histogram p95 recover.",
+      "signals": [
+        "DEMO_LATENCY_MS=3000",
+        "healthz/readyz not delayed",
+        "histogram p95"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo \u6545\u969c\u6f14\u7ec3\u624b\u518c\uff08runbook\uff09"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "latency",
+        "probes",
+        "p95",
+        "fault-injection"
+      ],
+      "title": "\u63a2\u9488\u4e0d\u6ce8\u5165\u5ef6\u8fdf"
+    },
+    {
+      "actions": [
+        "Reject DEMO_STARTUP_FAIL=true.",
+        "Account for retained old Pod plus surge Pod in capacity checks."
+      ],
+      "analysis": "The chart rolling strategy retains the old Ready Pod while a failing new Pod is replaced; this is release protection, not proof the new revision works.",
+      "cautions": [
+        "Do not manufacture business outage by scaling or deleting Pods as part of this drill."
+      ],
+      "excerpt": "### 3.3 \u542f\u52a8\u5931\u8d25\uff08\u9a8c\u8bc1\u53d1\u5e03\u4fdd\u62a4\uff0c\u4e0d\u662f\u4e1a\u52a1\u5168\u505c\uff09\n\n```bash\nscripts/drills/inject.sh --fault startup-failure --suspend-gitops\nscripts/drills/recover.sh\n```\n\nenv\uff1a`DEMO_STARTUP_FAIL=true`\u3002\u5e94\u7528\u4f1a\u6253\u5370\u660e\u786e\u7684 `startup_failed` \u65e5\u5fd7\u5e76\u9000\u51fa\n\uff08\u53d7 liveness/readiness \u5f71\u54cd\uff0c\u65b0 Pod \u8fdb\u5165 CrashLoop\uff09\u3002**\u4e0d\u8981**\u628a\n`kubectl rollout status` \u5931\u8d25\u76f4\u63a5\u8bb0\u5f55\u6210\u201c\u542f\u52a8\u6545\u969c\u5b8c\u5168\u751f\u6548\u201d\uff1a\n\n- Chart \u4f7f\u7528 `maxUnavailable: 0` / `maxSurge: 1`\uff1b\n- \u65b0 Pod \u5931\u8d25\u65f6\uff0c\u65e7 Pod \u4ecd\u4fdd\u6301 Ready \u5e76\u7ee7\u7eed\u670d\u52a1\uff1b\n- \u56e0\u6b64\u8fd9\u9879\u6f14\u7ec3\u9a8c\u8bc1\u7684\u662f**\u6eda\u52a8\u53d1\u5e03\u4fdd\u62a4**\uff0c\u4e0d\u662f\u5236\u9020\u4e1a\u52a1\u4e0d\u53ef\u7528\uff1b\n- \u811a\u672c\u89c2\u5bdf\u65b0 Pod/\u4e8b\u4ef6/\u65e5\u5fd7\uff0c\u8bb0\u5f55 `old_pod_still_serving`\u3001\n  `fault_fully_effective=false`\u3001`release_protection_observed`\u3002\n\n\u5982\u679c\u786e\u5b9e\u9700\u8981\u9a8c\u8bc1\u201c\u4e1a\u52a1\u4e0d\u53ef\u7528\u201d\uff0c\u5fc5\u987b\u53e6\u884c\u8bbe\u8ba1**\u660e\u786e\u3001\u53ef\u6062\u590d**\u7684\u6f14\u7ec3\uff08\u4f8b\u5982\u663e\u5f0f\nscale deployment\uff09\uff0c\u5e76\u5355\u72ec\u8bc4\u5ba1\u6062\u590d\u6b65\u9aa4\uff1b\u672c\u76ee\u5f55\u811a\u672c\u4e0d\u4f1a\u5077\u5077\u5220 Pod/scale \u6216\u5236\u9020\n\u4e0d\u53ef\u63a7\u4e2d\u65ad\u3002",
+      "excerpt_sha256": "0230408c384455b718862f6578dcb498dbb1641efacd68d2478951e9e7b7e414",
+      "id": "startup-max-unavailable-protection",
+      "line_end": 104,
+      "line_start": 85,
+      "rollback": "Restore normal startup and verify the new Pod image digest and /version.",
+      "signals": [
+        "maxUnavailable: 0",
+        "maxSurge: 1",
+        "old Pod still serving",
+        "old_pod_still_serving"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo \u6545\u969c\u6f14\u7ec3\u624b\u518c\uff08runbook\uff09"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "startup-failure",
+        "maxUnavailable",
+        "maxSurge",
+        "release-protection"
+      ],
+      "title": "\u542f\u52a8\u5931\u8d25\u65f6\u65e7 Pod \u4ecd\u670d\u52a1"
+    },
+    {
+      "actions": [
+        "Treat every recovery step as required evidence.",
+        "Do not restore only selected env values when full state is available."
+      ],
+      "analysis": "Recovery restores the exact prior env, waits for rollout, verifies health, restores Argo auto-sync, and records a recovered event; any step failing returns non-zero.",
+      "cautions": [
+        "The fallback cannot restore the original Argo auto-sync value."
+      ],
+      "excerpt": "## 4. \u6062\u590d\u8bed\u4e49\n\n`recover.sh` \u987a\u5e8f\uff1a\n\n1. \u4ece state \u8bfb\u53d6\u6ce8\u5165\u524d\u7684\u5b8c\u6574 container `env`\uff0c\u7528 JSON patch \u7cbe\u786e\u6062\u590d\uff1b\u5931\u8d25\u5219\n   \u56de\u9000\u4e3a `DEMO_ERROR_RATE=0 DEMO_LATENCY_MS=0 DEMO_STARTUP_FAIL=false`\uff1b\n2. \u7b49\u5f85 Deployment rollout\uff08\u5e26\u603b\u8d85\u65f6\uff09\uff1b\n3. \u901a\u8fc7 port-forward \u68c0\u67e5 `/healthz` \u548c `/readyz`\uff0c\u8bb0\u5f55\u6210\u529f UTC\uff1b\n4. \u6062\u590d `argocd/demo` \u7684\u539f auto-sync \u5e76\u6821\u9a8c\uff1b\n5. \u5199 `recovered` JSONL\uff1b\u4efb\u4f55\u4e00\u6b65\u5931\u8d25\u8fd4\u56de\u975e 0\u3002\n\n```bash\n# \u6700\u8fd1\u4e00\u6b21\nscripts/drills/recover.sh\n# \u6307\u5b9a\u72b6\u6001\nscripts/drills/recover.sh --state scripts/drills/.state/<drill-id>.json\n# \u72b6\u6001\u4e22\u5931\u7684\u515c\u5e95\uff08\u53ea\u628a\u4e09\u4e2a DEMO_* \u8bbe\u6b63\u5e38\uff0c\u65e0\u6cd5\u6062\u590d Argo \u539f\u503c\uff09\nscripts/drills/recover.sh --force-normal\n```\n\n\u6062\u590d\u4e0d\u4f1a\u5220\u9664 state\uff1b\u9700\u8981\u4fdd\u7559\u8bc1\u636e\u3002\u518d\u6b21 recover \u662f\u5e42\u7b49\u7684\u3002",
+      "excerpt_sha256": "d0d9440a6b5ac6f96b2200b04aa1fc6ba603fcc34cfe1f41b8662d65ab6caebf",
+      "id": "recover-semantics",
+      "line_end": 126,
+      "line_start": 106,
+      "rollback": "Use the stored state file; fall back to forcing the three DEMO_* values normal only when state is lost.",
+      "signals": [
+        "restore exact env",
+        "wait rollout",
+        "healthz/readyz",
+        "restore auto-sync"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo \u6545\u969c\u6f14\u7ec3\u624b\u518c\uff08runbook\uff09"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "recovery",
+        "gitops",
+        "rollout",
+        "health"
+      ],
+      "title": "\u6545\u969c\u6062\u590d\u987a\u5e8f"
+    },
+    {
+      "actions": [
+        "Recommend a revert commit and Argo resync.",
+        "Verify the resulting Application revision, image, and /version."
+      ],
+      "analysis": "A GitOps rollback is a revert commit to Git, not argocd app rollback or kubectl rollout undo. The image tag must remain immutable.",
+      "cautions": [
+        "Do not claim GitOps rollback from an imperative cluster-only operation."
+      ],
+      "excerpt": "## 6. Git \u56de\u6eda\u6d41\u7a0b\n\n\u6f14\u7ec3 `recover.sh` \u53ea\u6062\u590d\u672c\u5730\u88ab patch \u7684 env\uff0c\u4e0d\u7b49\u4e8e GitOps \u56de\u6eda\u3002\u9700\u8981\u56de\u6eda\u53d1\u5e03\u65f6\uff1a\n\n```bash\ngit revert <bad-desired-state-commit>\ngit push origin main\n# \u7b49\u5f85 Argo \u540c\u6b65\uff1b\u6838\u5bf9\nkubectl -n demo rollout status deployment/demo --timeout=180s\n```\n\n**\u7981\u6b62**\u53ea\u6267\u884c `argocd app rollback` \u6216 `kubectl rollout undo` \u540e\u5c31\u58f0\u79f0\u5b8c\u6210\u4e86\nGitOps \u56de\u6eda\uff1bArgo CD \u7684\u5386\u53f2/\u81ea\u6108\u4e0d\u80fd\u66ff\u4ee3 Git desired state \u7684 revert commit\u3002\nGitOps \u7684 `targetRevision: main` \u662f Git \u5206\u652f\uff0c\u4e0d\u662f\u955c\u50cf `latest`\uff1b\u955c\u50cf tag \u5fc5\u987b\n\u662f\u4e0d\u53ef\u53d8 `sha-<commit>`\u3002",
+      "excerpt_sha256": "39ec7f97657ee01bc84740ed1b88e9065f9a54c2a42dda7b6b5fccf340ec07bd",
+      "id": "git-revert-required",
+      "line_end": 173,
+      "line_start": 159,
+      "rollback": "git revert the bad desired-state commit, push main, wait for Argo sync, then verify rollout and endpoints.",
+      "signals": [
+        "git revert",
+        "git push origin main",
+        "do not use argocd app rollback as substitute",
+        "sha-<commit>"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo \u6545\u969c\u6f14\u7ec3\u624b\u518c\uff08runbook\uff09"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "rollback",
+        "gitops",
+        "git-revert",
+        "immutable-tag"
+      ],
+      "title": "GitOps \u56de\u9000\u5fc5\u987b\u6539\u53d8 Git desired state"
+    },
+    {
+      "actions": [
+        "Represent unknown alert state explicitly and do not treat it as healthy.",
+        "Require actual output before confirming root cause."
+      ],
+      "analysis": "If the alert receiver is unavailable or the response cannot be parsed, alert_fired stays null; the runbook does not guess that no alert fired.",
+      "cautions": [
+        "Do not write a root-cause confirmation without observed metrics, logs, or alert IDs."
+      ],
+      "excerpt": "\u89c4\u5219\uff1a\n\n- UTC \u6545\u969c\u5f00\u59cb\u3001alert \u89c2\u6d4b\u3001rollout \u5b8c\u6210\u3001health \u6210\u529f\u90fd\u6709\u72ec\u7acb\u65f6\u95f4\u5b57\u6bb5\u3002\n- `alert_fired` \u4ec5\u5f53 receiver API \u5b9e\u9645\u67e5\u8be2\u6210\u529f\u4e14\u80fd\u5224\u5b9a\u65f6\u662f true/false\uff1b\n  \u672a\u914d\u7f6e\u3001\u4e0d\u53ef\u8fbe\u3001\u975e 2xx\u3001\u54cd\u5e94\u65e0\u6cd5\u89e3\u6790\u65f6\u4e00\u5f8b `null`\uff0c**\u4e0d\u731c\u6d4b\u672a\u544a\u8b66**\u3002\n  receiver \u652f\u6301 Alertmanager \u98ce\u683c `{\"alerts\":[...]}`\uff08\u5339\u914d namespace/deployment/\n  app/service=demo \u4e14 status=firing\uff09\uff0c\u6216 `{\"firing\":true|false}`\u3002\n- `root_cause_confirmed` \u9ed8\u8ba4\u59cb\u7ec8\u662f `false`\uff0c\u811a\u672c\u4e0d\u4f1a\u81ea\u52a8\u58f0\u79f0\u6839\u56e0\u3002\n  \u64cd\u4f5c\u8005\u5b9e\u9645\u6838\u5bf9\u6307\u6807\u3001\u65e5\u5fd7\u3001\u544a\u8b66\u540e\uff0c\u7528\uff1a\n\n```bash\nscripts/drills/record.sh \\\n  --drill-id '<drill-id>' \\\n  --command 'sum(rate(demo_http_requests_total{route=\"/work\",status=~\"5..\"}[5m])) + logs' \\\n  --evidence '\u5b9e\u9645\u89c2\u6d4b\u5230\u7684\u6570\u503c/\u65e5\u5fd7/\u544a\u8b66 ID' \\\n  --confirmed\n```\n\n\u4e0d\u52a0 `--confirmed` \u53ea\u8ffd\u52a0\u672a\u786e\u8ba4\u7684\u89c2\u6d4b\u8bc1\u636e\u3002\u6ca1\u6709\u5b9e\u9645\u8f93\u51fa\u4e0d\u8981\u5199\u786e\u8ba4\u3002",
+      "excerpt_sha256": "6c1458d47caa9a8ec3f5f9e430f221e1a2fea982ea426d31a1aea98d3f632d50",
+      "id": "drill-evidence-no-guess",
+      "line_end": 157,
+      "line_start": 139,
+      "rollback": "Re-query a reachable receiver and record actual evidence before changing the claim.",
+      "signals": [
+        "alert_fired null",
+        "non-2xx/unreachable",
+        "root_cause_confirmed false"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo \u6545\u969c\u6f14\u7ec3\u624b\u518c\uff08runbook\uff09"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "alert-evidence",
+        "unknown",
+        "audit"
+      ],
+      "title": "\u544a\u8b66\u672a\u77e5\u65f6\u4e0d\u5f97\u731c\u6d4b"
+    },
+    {
+      "actions": [
+        "Use only Ready, schedulable non-control-plane workers for capacity.",
+        "Reserve resources for retained old Pods and surge Pods."
+      ],
+      "analysis": "Capacity reasoning depends on Ready, schedulable workers and retained control-plane taints; a single worker leaves little room for surge during rolling updates.",
+      "cautions": [
+        "Do not count the control-plane node as schedulable worker capacity."
+      ],
+      "excerpt": "- API `/readyz`\u3002\n- \u6070\u597d 2 \u4e2a\u8282\u70b9\uff0c`master`/`worker` \u5747 Ready\uff0cInternalIP \u5206\u522b\u4e3a `11.0.1.10`/`11.0.1.11`\uff0c\u5bb9\u5668\u8fd0\u884c\u65f6\u4e3a containerd\u3002\n- kubeadm `podSubnet` \u4e0e Calico \u9ed8\u8ba4 IPv4 IPPool \u5747\u4e3a `10.244.0.0/16`\u3002\n- kube-apiserver\u3001controller-manager\u3001scheduler\u3001etcd Ready\u3002\n- kube-proxy\u3001calico-node\u3001calico-kube-controllers\u3001CoreDNS Ready\u3002\n- `kubernetes` Service \u4e3a `10.96.0.1`\uff0c`kube-dns` \u4e3a `10.96.0.10`\u3002\n- master \u7684 control-plane taint \u4ecd\u5b58\u5728\uff0cCalico \u6709 `Exists` toleration\u3002\n- \u521b\u5efa\u4e34\u65f6 master/worker \u6d4b\u8bd5 Pod\uff08\u56fa\u5b9a `busybox:1.36.1`\uff0c\u65e0 latest\uff09\uff0c\u9a8c\u8bc1\uff1a\n  - \u4e24 Pod \u83b7\u5f97\u4e0d\u540c Pod IP\uff1b\n  - \u96c6\u7fa4 DNS \u89e3\u6790 `kubernetes.default.svc.cluster.local`\uff1b\n  - master\u2192worker \u548c worker\u2192master \u53cc\u5411 ICMP \u8de8\u8282\u70b9 Pod \u7f51\u7edc\u3002\n- \u9000\u51fa\u65f6\u5220\u9664\u4e34\u65f6\u547d\u540d\u7a7a\u95f4\uff1b\u4e0d\u5220\u9664 taint\uff0c\u4e0d\u6267\u884c reset\u3002",
+      "excerpt_sha256": "88379d057403a251e9c3f76c92b7f6f9db07b8e0bc53c53e48e6a9adb48c0bbe",
+      "id": "worker-capacity-check",
+      "line_end": 145,
+      "line_start": 134,
+      "rollback": "Free capacity or reduce the rollout demand; do not remove the control-plane taint as a workaround.",
+      "signals": [
+        "exactly two nodes",
+        "master/worker Ready",
+        "control-plane taint remains"
+      ],
+      "source": {
+        "id": "stage1-runbook",
+        "line_count": 189,
+        "path": "docs/stage1-runbook.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+        "snapshot": "sources/stage1-runbook.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "\u9636\u6bb5 1 \u8fd0\u884c\u4e0e\u9a8c\u6536\u8bf4\u660e\uff08runbook\uff09"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "stage1-runbook",
+      "source_path": "docs/stage1-runbook.md",
+      "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+      "tags": [
+        "capacity",
+        "worker",
+        "ready",
+        "single-worker"
+      ],
+      "title": "\u5355 worker \u5bb9\u91cf\u4e0e Ready \u68c0\u67e5"
+    },
+    {
+      "actions": [
+        "Keep troubleshooting read-only and evidence-based.",
+        "Do not bypass readiness by removing taints."
+      ],
+      "analysis": "When networking Pods are not Ready, inspect Pods, logs, and CIDR instead of deleting the control-plane taint or changing image tags to latest.",
+      "cautions": [
+        "Do not use latest or skip checks to make an acceptance pass."
+      ],
+      "excerpt": "| \u73b0\u8c61 | \u5904\u7406 |\n| --- | --- |\n| `admin.conf` \u5b58\u5728\u4f46\u7248\u672c\u4e3a 1.28 \u6216 `/readyz` \u5931\u8d25 | \u505c\u6b62\u3002\u64cd\u4f5c\u8005\u5728 playbook \u5916\u6e05\u7406\u65e7\u96c6\u7fa4\uff1b\u672c\u4ed3\u5e93\u4e0d\u4f1a\u81ea\u52a8 reset\u3002 |\n| \u53ea\u6709 `kube-apiserver.yaml`\uff0c\u65e0 `admin.conf` | \u505c\u6b62\u3002\u68c0\u67e5\u90e8\u5206\u521d\u59cb\u5316\u72b6\u6001\uff0c\u4e0d\u8981\u76f4\u63a5\u5220\u9664\u8bc1\u4e66\u6216\u518d\u6b21 init\u3002 |\n| worker `kubelet.conf` \u5b58\u5728\u4f46 API server/Node/IP \u4e0d\u5339\u914d | \u505c\u6b62\u3002\u8be5 enrollment \u4e0d\u5c5e\u4e8e\u76ee\u6807\u96c6\u7fa4\uff0c\u6309\u64cd\u4f5c\u8005\u6d41\u7a0b\u6e05\u7406\u540e\u518d join\u3002 |\n| containerd \u542f\u52a8\u5931\u8d25\u6216 CRI \u63d2\u4ef6\u672a\u52a0\u8f7d | \u68c0\u67e5 `/etc/containerd/config.toml`\uff08v3\uff09\u548c `journalctl -u containerd`\uff1b\u4e0d\u5f97\u56de\u9000\u5230\u65e7 2.2.3 \u914d\u7f6e\u3002 |\n| Calico Pod \u4e0d Ready | \u68c0\u67e5 `kubectl -n kube-system get pods -o wide`\u3001Calico \u65e5\u5fd7\u3001Pod CIDR \u662f\u5426\u4e3a `10.244.0.0/16`\uff1b\u4e0d\u8981\u5220\u9664 master taint \u6765\u4ee3\u66ff\u6392\u67e5\u3002 |\n| \u6d4b\u8bd5\u955c\u50cf\u62c9\u53d6\u5931\u8d25 | \u8bb0\u5f55\u7f51\u7edc/\u955c\u50cf\u4ed3\u5e93\u9519\u8bef\uff1b\u4e0d\u8981\u6539\u6210 `latest` \u6216\u8df3\u8fc7\u8de8\u8282\u70b9\u7f51\u7edc\u68c0\u67e5\u6765\u5ba3\u544a\u901a\u8fc7\u3002 |",
+      "excerpt_sha256": "ade42b948b4b47612af392160296e398494111acb032a967a5598a9874b3e48f",
+      "id": "calico-not-ready-troubleshoot",
+      "line_end": 174,
+      "line_start": 167,
+      "rollback": "Restore the identified networking fault before retrying the release.",
+      "signals": [
+        "kubectl get pods -o wide",
+        "Calico logs",
+        "pod CIDR",
+        "do not remove taint"
+      ],
+      "source": {
+        "id": "stage1-runbook",
+        "line_count": 189,
+        "path": "docs/stage1-runbook.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+        "snapshot": "sources/stage1-runbook.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "\u9636\u6bb5 1 \u8fd0\u884c\u4e0e\u9a8c\u6536\u8bf4\u660e\uff08runbook\uff09"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "stage1-runbook",
+      "source_path": "docs/stage1-runbook.md",
+      "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+      "tags": [
+        "calico",
+        "node-not-ready",
+        "troubleshooting"
+      ],
+      "title": "Calico \u4e0d Ready \u7684\u53ea\u8bfb\u6392\u67e5"
+    }
+  ],
+  "root": "/opt/change-guard/releases/0.3.1/knowledge",
+  "sources": {
+    "drills": {
+      "id": "drills",
+      "line_count": 186,
+      "path": "docs/drills.md",
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "snapshot": "sources/drills.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "title": "Demo \u6545\u969c\u6f14\u7ec3\u624b\u518c\uff08runbook\uff09"
+    },
+    "fault-review": {
+      "id": "fault-review",
+      "line_count": 22,
+      "path": "docs/fault-review.md",
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "snapshot": "sources/fault-review.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "title": "\u6545\u969c\u6f14\u7ec3\u9a8c\u6536\u4e0e\u590d\u76d8"
+    },
+    "stage1-runbook": {
+      "id": "stage1-runbook",
+      "line_count": 189,
+      "path": "docs/stage1-runbook.md",
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+      "snapshot": "sources/stage1-runbook.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "title": "\u9636\u6bb5 1 \u8fd0\u884c\u4e0e\u9a8c\u6536\u8bf4\u660e\uff08runbook\uff09"
+    }
+  }
+}

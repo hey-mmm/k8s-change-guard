@@ -1,0 +1,57 @@
+{
+  "evaluation_id": "ev-78c8a50fe61439c39c1a05d8",
+  "pr": 9,
+  "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "decision": "REVIEW",
+  "reason": "Independent 0.3.2 post-deploy approval of Go evaluation ev-78c8a50fe61439c39c1a05d8 for PR #9. Decision REVIEW; no BLOCK or ERROR. Head a9a29da30832380bbdbda091177c738d7a7fde4b / base 321eb9517b83dc0e9261e16dcdb26016332dd7c3 are byte-identical to the previously reviewed 0.3.1 candidate; changed scope is only gitops/demo/values.yaml (digest sha256:af77edde… to image, app version labels, and two env values). The two redacted env values were verified from the unchanged head/base blobs in the prior review: APP_ENV=production, DEMO_ERROR_RATE=0, DEMO_LATENCY_MS=0, DEMO_STARTUP_FAIL=false (no fault injection shipped). The AI redaction concern is therefore refuted by the exact blobs, not by trusting the model. Known REVIEW limitations accepted: capacity headroom (KubeCPUOvercommit firing, unreserved pod requests), zero traffic so health must be proven by postdeploy rollout/version checks plus bounded load, and rollback must be a Git revert. Required GitHub Actions check \"Test, lint, render\" (app id 15368) is success on head. Chart pin unchanged. Report expires 2026-11-12T13:48:20Z. Approval does not change any rule/protection.",
+  "approved_at": 1794491032,
+  "approved_at_iso": "2026-11-12T13:43:52Z",
+  "report_evaluated_at": 1794491018,
+  "report_expires_at": 1794491300,
+  "remaining_seconds_at_approval": 272,
+  "comment_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/9#issuecomment-6825277923",
+  "comment_id": 6825277923,
+  "actor": "hey-mmm",
+  "comment_created_at": "2026-11-12T13:43:51Z",
+  "comment_body": "/guard approve ev-78c8a50fe61439c39c1a05d8",
+  "changed_paths": [
+    "gitops/demo/values.yaml"
+  ],
+  "findings": [
+    {
+      "rule_id": "AI_ADDITIONAL_RISK",
+      "severity": "REVIEW",
+      "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+      "field": "ai_result.additional_risks"
+    },
+    {
+      "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+      "severity": "REVIEW",
+      "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+      "field": "evidence.pods[].spec.containers[].resources.requests"
+    },
+    {
+      "rule_id": "FIRING_ALERTS",
+      "severity": "REVIEW",
+      "message": "one or more relevant alerts are firing",
+      "field": "evidence.metrics.alerts"
+    }
+  ],
+  "ai_status": "ok",
+  "ci_check_run": {
+    "id": 131214767107,
+    "name": "Test, lint, render",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "started_at": "2026-11-12T13:28:26Z",
+    "completed_at": "2026-11-12T13:28:41Z",
+    "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43227611904/job/131214767107"
+  },
+  "ci_app": {
+    "slug": "github-actions",
+    "id": 15368,
+    "name": "GitHub Actions"
+  }
+}

@@ -1,9 +1,11 @@
 # 故障复盘：开发、部署与验收中遇到的问题
 
-本文保留 Python `0.2.x` 开发、部署和验收的历史问题。当前 Go `0.3.0` 已完成迁移实现
-并通过 Windows/Linux 测试，单二进制产物已生成、可部署，但**尚未部署**，live 验收
-pending；历史 Python `0.2.3` 的真实 merge/回退/发布后结果见 `docs/acceptance.md`，不能
-当作 Go 版本的上线证明。
+本文保留 Python `0.2.x` 开发、部署和验收的历史问题。Go `0.3.1` 已修复 0.3.0 的
+`check-token` 参数顺序问题，完成部署级 live、危险 PR8 BLOCK 和 PR9 REVIEW 精确
+审批；但正式 merge 先因评估 ID 缺省被拒绝、显式 ID 后匿名 CI 403，`main` 未变。
+当前 Go `0.3.2`（commit `41f2ba1`）修复这两个合并缺陷，已完成两遍 Ansible 和
+完整真实验收；发布和回退各通过 6/6 postdeploy，见 [最终验收](go-acceptance-final.md)。历史 Python 的真实
+merge/回退/发布后结果见 `docs/acceptance.md`，不能当作 Go 版本的完整上线证明。
 
 ## 0. Go 迁移备注（2026-11-12）
 
@@ -16,6 +18,12 @@ pending；历史 Python `0.2.3` 的真实 merge/回退/发布后结果见 `docs/
   运行时不依赖 Python。
 - 修复 Windows `build-release.ps1` 的 GOOS/`go run` 与 cwd 回归；staging 删除前校验
   路径位于临时根目录。
+- 0.3.0 首次真实 Ansible 部署在 `check-token KUBECONFIG --min-remaining ...` 失败
+  （Go `flag` 在首个位置参数停止解析），已回切 Python `0.2.3`。修复为兼容两种顺序，
+  增加 `TestCheckTokenFlagsBeforeAndAfterPath`，并升版 0.3.1 以避开不可变目录冲突。
+- 0.3.1 部署成功并完成 PR8/PR9 部分验收；正式 merge 因 `merge-release.sh` 漏传
+  `--evaluation-id` 和匿名 CI 403 被拒绝，`main` 未变。0.3.2 在 state lock 内取当前
+  索引评估、CI 使用现有 token，并保留固定 URL/禁 redirect/2 MiB/head-app 校验。
 - 详细文件、测试与部署边界见 `go-migration.md`。
 
 ## 1. 历史 Python 证据等级
@@ -36,9 +44,11 @@ pending；历史 Python `0.2.3` 的真实 merge/回退/发布后结果见 `docs/
 | `docs/evidence/github-ci-head-binding.json` | head 有 check、synthetic 为 0 | GitHub Actions check 绑定 PR head |
 
 0.2.1 的 174 tests、0.2.2 的 181 tests、0.2.3 的 182 tests 都只作为历史 Python 证据
-保留。Go `0.3.0` 的 Windows/Linux 测试、151-case 对照和 25/25 场景矩阵已完成；部署和
-live 结论尚未产生，待执行清单和 accept/reject 边界由 root 在部署轮次写入
-`docs/acceptance.md`。
+保留。Go `0.3.0` 的 Windows/Linux 测试、151-case 对照和 25/25 场景矩阵已完成，但
+首次部署因 `check-token` 参数顺序失败并回切；修复后升版 `0.3.1`，已完成部署级
+验证（两遍 Ansible、服务、RBAC、timer、renew、knowledge、collect、render、DeepSeek、
+`daemon --once`），并完成 PR8 BLOCK 和 PR9 REVIEW 审批；正式 merge 被安全拒绝，
+`main` 未变。0.3.2 修复合并路径后已完成部署级 verify，完整 live/PR/发布/回退结论已写入 [最终验收](go-acceptance-final.md)。
 
 ## 2. 问题总表
 
@@ -59,6 +69,10 @@ live 结论尚未产生，待执行清单和 accept/reject 边界由 root 在部
 | F-13 | GitHub success 状态没有 TTL | daemon 停机时旧绿色状态仍在 | 设计限制；merge 前重校验 + 人工撤销 |
 | F-14 | GitOps revision 与镜像源提交混淆 | 发布后验证可能用错 SHA | 已加 `--expected-app-sha`，必须同时传 |
 | F-15 | Windows symlink 测试跳过/全链路验收 | 本地通过不等于 Linux/全链路 | 0.2.3 已部署/合并/回退/postdeploy；最终结论与 revert postdeploy 以 acceptance 为准 |
+| F-16 | Go `check-token` 只接受 flag 在前 | 0.3.0 首次 Ansible token 检查 `rc=2`，token/verify/timer 均会失败 | 已修：兼容位置参数在前/flag 在前 + CLI 回归；升版 0.3.1，0.3.0 保留 |
+| F-17 | 0.3.1 merge 可选评估 ID 未实现 | 正式发布 `REFUSED: invalid evaluation id`，`main` 未变 | 已修（0.3.2）：在 state lock 内取当前索引；显式只接受当前记录 |
+| F-18 | 0.3.1 CI check-runs 匿名查询 | 共享出口配额耗尽时 403 `public CI check lookup failed` | 已修（0.3.2）：用现有 `github.token`；不改 URL/redirect/2 MiB/head-app 校验 |
+| F-19 | AI 把未改的脱敏 env 当新风险 | PR9 产生一条误报，增加人工核对 | 已由独立 reviewer 用 base/head blob 证伪；AI 风险只到 REVIEW，不能自批 |
 
 ## 3. F-01：空仓库阻塞 CI 与分支保护（已解决）
 
@@ -460,8 +474,10 @@ postdeploy 证据。不要再用 `status.image` 判断镜像错误。
 
 - `scripts/merge-release.sh` 供 root 使用：暂停 `change-guard.service`，`trap EXIT`
   恢复；`runuser -u change-guard` 后读取 `proxy.env`，再执行底层 merge。
-- 直接运行 Go `change-guard merge` 仍可，但必须先停 daemon/串行化，否则
-  非阻塞 state lock 可能返回 `DaemonBusy`。
+- 0.3.1 曾因该脚本漏传 `--evaluation-id` 被拒绝，操作员临时用同边界的 fallback
+  shell 补传后又被匿名 CI 403 拒绝；这不是可复制的操作路径，0.3.2 已修复。当前
+  正式入口仍是 `sudo scripts/merge-release.sh <PR>`，由 merge 在 state lock 内取
+  当前评估，**不要**再手工拼 fallback 或停 daemon 后直接推 main。
 - PR closed/merged 后 daemon 会撤销旧 head 的历史 guard 状态；main/旧 head 出现
   guard error/pending 可能只是撤销，不是 postdeploy 失败。门禁证明看 merge 记录
   和当时的报告/审批/CI，不能为了好看保持永久绿。
@@ -475,3 +491,46 @@ postdeploy 证据。不要再用 `status.image` 判断镜像错误。
 声称零中断发布。根因尚未单独复现定位，端点、kube-proxy 与优雅终止的时序需要后续
 独立实验验证；当前不作无证据归因。原始错误和清理记录见
 [traffic-cleanup.json](evidence/traffic-cleanup.json)。
+
+## 22. Go 0.3.1 PR 部分验收与 0.3.2 修复（2026-11-12）
+
+### 22.1 危险 PR8
+
+- PR8 零副本 head 得到 `REPLICAS_ZERO`/BLOCK；追加 `DEMO_STARTUP_FAIL=true` 后旧
+  head 失效，新 head 重新评估为 `FAULT_INJECTION`/BLOCK，`main` 仍是 `321eb951...`。
+- GitHub merge API 返回 405（required `change-guard/release` failing）；普通账号直接
+  更新 main 的探测返回 422（2 个 required checks + 必须走 PR）。见
+  [保护证明](evidence/go-danger-protection-proof.json) 和
+  [head 重评](evidence/go-danger-head-invalidation.json)。
+- PR7 是 test driver 中断后产生的重复 PR，已记录 BLOCK 并关闭；验收以 PR8 为准。
+
+### 22.2 正常 PR9 与审批
+
+- PR9 head `a9a29da30832380bbdbda091177c738d7a7fde4b`，base `321eb951...`，只改
+  `gitops/demo/values.yaml`；评估 REVIEW，审批 `ev-e941441d7a1f429dfbf37dd5` 由
+  用户授权的 dsh 操作员以 owner `hey-mmm` 发出，CI `Test, lint, render` 绑定 head。
+- **AI 误报**：DeepSeek 认为脱敏的 env 值可能带入故障开关；独立 reviewer 用 base/head
+  精确 blob 证明 `APP_ENV`、`DEMO_ERROR_RATE`、`DEMO_LATENCY_MS`、
+  `DEMO_STARTUP_FAIL` 均未改变。保留的真实 REVIEW 限制是未预留 requests、
+  `KubeCPUOvercommit` 和零初始流量。见
+  [独立复核](evidence/go-release-independent-review.json) 和
+  [审批记录](evidence/go-approval-ev-e941441d7a1f429dfbf37dd5.json)。
+- 在线 DeepSeek 只出建议，没有审批/合并/回滚权限；审批是人工代理动作，不是模型自批。
+
+### 22.3 两次安全拒绝与 0.3.2 修复
+
+- 第一次 `scripts/merge-release.sh 9`：脚本只传 PR 号码，Go 在入口拒绝空评估 ID，
+  `REFUSED: invalid evaluation id`；见 [首次拒绝日志](evidence/go-merge-0.3.1-refused.log)。
+- 第二次临时 shell 显式补 ID：CI check-runs 走匿名出口配额，返回
+  `REFUSED: public CI check lookup failed`；`main` 未变。见
+  [fallback 记录](evidence/go-merge-eval-fallback-9.json)。同一 head 用现有最小
+  token 读取 check-runs 为 200、2 个检查，说明不需要新权限；认证查询与后续正式合并已验证，见 [合并记录](evidence/go-merge-record-9.json)。
+- 0.3.2（`41f2ba1`）改为 state lock 内取该 PR 当前索引的 evaluation，显式 ID 只接受
+  当前记录；CI 请求使用 `github.token`，固定 URL、禁 redirect、2 MiB 上限、
+  head/app/required-name/latest-success 校验不变。`go test ./...` / `go vet ./...`
+  通过；0.3.2 preflight、两遍 Ansible（第二遍 `changed=0`）和部署级 verify 完成。
+- 0.3.2 的正式合并、发布后 6/6、反向提交回退和回退后 6/6 已通过，见 [最终验收](go-acceptance-final.md)。
+
+### 22.4 最终 live 的模型解释矛盾
+
+只读收尾探测中，DeepSeek 文本称“AI result status is invalid (ERROR)”，而结构化 `ai.status=ok`、`ai.error=null`，Go 最终决策为 REVIEW。保留原始响应，不能把模型叙述当作运行状态或门禁裁决。本次没有根据该探测新增审批或合并；已有发布与回退采用各自绑定的评估记录。见 [最终验收](go-acceptance-final.md)。

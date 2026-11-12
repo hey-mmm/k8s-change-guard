@@ -1,0 +1,57 @@
+{
+  "evaluation_id": "ev-84b855038c1eb1ab7e6ce3ce",
+  "pr": 10,
+  "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+  "base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "decision": "REVIEW",
+  "reason": "Independently reviewed the real diff for PR #10 at head 88ced0cacdb5c6ea2cefd186c51af017125e4ea3 / base a9a29da30832380bbdbda091177c738d7a7fde4b. The head is a single-parent revert commit whose tree b5edacddad17d6c827840de24cf599724f9f6574 is byte-identical to the pre-release commit 321eb951 tree; the only changed file is gitops/demo/values.yaml, restoring image ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d and app SHA c0bff8abf5625903e5b9b19b586e9660b9fe7a8c. No env values, replicas, chart, workflow, or other paths change, so the redacted-env AI concern is disproved by the actual diff. Fresh Go 0.3.2 evaluation ev-84b855038c1eb1ab7e6ce3ce is REVIEW with no BLOCK/ERROR findings; the only findings are known capacity/alert limitations and model-raised risk: KubeCPUOvercommit is a warning and Watchdog severity none, both pre-existing cluster conditions, and the revert does not increase the pod footprint. The AI prose contains an internally inconsistent ERROR sentence while structured ai.status is ok/error null; this is a narrative artifact, not a structured finding. Required CI \"Test, lint, render\" is completed/success on the exact head (GitHub Actions app id 15368, run 43232556254). Approved for the trusted Go merge followed by 300s warmup, 60s observation, and 600s traffic verification at the restored image; rollback scope is one values file and is fully recoverable.",
+  "approved_at": 1794492241,
+  "approved_at_iso": "2026-11-12T14:04:01Z",
+  "report_evaluated_at": 1794492217,
+  "report_expires_at": 1794492497,
+  "remaining_seconds_at_approval": 260,
+  "comment_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/10#issuecomment-6825754470",
+  "comment_id": 6825754470,
+  "actor": "hey-mmm",
+  "comment_created_at": "2026-11-12T14:04:00Z",
+  "comment_body": "/guard approve ev-84b855038c1eb1ab7e6ce3ce",
+  "changed_paths": [
+    "gitops/demo/values.yaml"
+  ],
+  "findings": [
+    {
+      "rule_id": "AI_ADDITIONAL_RISK",
+      "severity": "REVIEW",
+      "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+      "field": "ai_result.additional_risks"
+    },
+    {
+      "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+      "severity": "REVIEW",
+      "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+      "field": "evidence.pods[].spec.containers[].resources.requests"
+    },
+    {
+      "rule_id": "FIRING_ALERTS",
+      "severity": "REVIEW",
+      "message": "one or more relevant alerts are firing",
+      "field": "evidence.metrics.alerts"
+    }
+  ],
+  "ai_status": "ok",
+  "ci_check_run": {
+    "id": 131231410125,
+    "name": "Test, lint, render",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "started_at": "2026-11-12T13:59:15Z",
+    "completed_at": "2026-11-12T13:59:34Z",
+    "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43232556254/job/131231410125"
+  },
+  "ci_app": {
+    "slug": "github-actions",
+    "id": 15368,
+    "name": "GitHub Actions"
+  }
+}

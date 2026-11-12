@@ -1,0 +1,5 @@
+{
+  "expires_at": 1794534015,
+  "remaining_seconds": 43200,
+  "status": "valid"
+}

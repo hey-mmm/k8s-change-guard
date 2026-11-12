@@ -1,0 +1,27 @@
+{
+  "status": "ok",
+  "time": 1794489569,
+  "proxy": "http://11.0.1.1:7890",
+  "master_results": {
+    "api.github.com": {
+      "exit": 0,
+      "http_status": "200"
+    },
+    "github.com": {
+      "exit": 0,
+      "http_status": "200"
+    }
+  },
+  "fix": "User added scoped inbound Windows firewall rule for lab subnet",
+  "worker_results": {
+    "github.com": {
+      "exit": 0,
+      "http_status": "200"
+    },
+    "api.github.com": {
+      "connect_tunnel": 200,
+      "http_status": 403,
+      "reason": "Unauthenticated shared-egress GitHub rate limit: remaining=0; transport works; agent API uses authenticated credentials on master"
+    }
+  }
+}

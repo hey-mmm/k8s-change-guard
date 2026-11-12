@@ -1,0 +1,15 @@
+exit=1
+stdout:
+{
+  "approval": null,
+  "approval_error": "",
+  "decision": "REVIEW",
+  "evaluation_id": "ev-78c8a50fe61439c39c1a05d8",
+  "number": 9,
+  "reused": false,
+  "state": "pending",
+  "status_error": null
+}
+
+stderr:
+

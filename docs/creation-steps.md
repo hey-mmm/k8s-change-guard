@@ -1,6 +1,6 @@
 # 项目二完整创建步骤（Go 单二进制版）
 
-本文按当前工作树中的 **Go 0.3.0** 实现编写，目标是把
+本文按当前工作树中的 **Go 0.3.2** 实现编写，目标是把
 `k8s-change-guard` 以单个静态 Linux 二进制部署到 `11.0.1.10`（master），让它只读
 Kubernetes/Prometheus、轮询项目一仓库、发布 `change-guard/release` 状态，并只在当前
 报告、审批、CI 和精确 Git 父提交都成立时才允许更新项目一 `main`。
@@ -8,12 +8,36 @@ Kubernetes/Prometheus、轮询项目一仓库、发布 `change-guard/release` �
 > **状态声明（必须先读）**
 >
 > - 历史最终服务是 Python `0.2.3`；其部署、合并、回退和 postdeploy 证据见
->   [验收报告](acceptance.md)，只是历史证据。
-> - 当前 Go `0.3.0` 已完成代码、单二进制打包、Ansible 和本地工具，Windows/Linux
->   测试通过，产物已生成并可部署；**尚未部署**。Go 版本的 live 验收保持 pending，
->   文档不把本地测试或历史 Python 结果当作 Go 上线成功。
+>   [验收报告](acceptance.md)，只是历史证据。源码备份在
+>   `backup/python-0.2.3` / `python-v0.2.3`（`d21cef44...`），恢复命令见
+>   [迁移记录](go-migration.md#python-备份)。
+> - Go `0.3.0` 首次 Ansible 部署因 `check-token` 位置参数顺序失败，已回切 Python
+>   `0.2.3`。该失败 release 目录保留，不修改、不覆盖；不能把 0.3.0 称为已上线。
+> - Go `0.3.1` 已成功部署并完成危险 PR8 BLOCK 和 PR9 REVIEW 精确审批；正式 merge
+>   先因评估 ID 缺省被拒绝、显式 ID 后匿名 CI 403，`main` 未变。这是保留的部分验收
+>   历史，不是完整发布成功。
+> - Go 0.3.2 已完成真实门禁、发布、回退和最终环境验收。危险 PR8 被阻断；PR9 与回退 PR10 均经新评估、精确审批、可信 CI 和受限 fast-forward 合入，发布与回退各通过 6/6 postdeploy。最终两节点 Ready、ArgoCD Synced / Healthy、业务恢复旧镜像，测试流量已清理。
+>   详见 [Go 最终验收](go-acceptance-final.md)；历史版本记录保留各自的时间和范围。
 > - 示例版本统一写 `<新版本>`。发布时 `internal/guard/common.go` 的 `Version` 与
 >   `scripts/build-release.sh` 的 tarball 版本必须一致；`--version` 只改变产物名/JSON。
+
+## 0. 从零操作清单
+
+1. 克隆项目二仓库并确认 `internal/guard/common.go` 的 `Version` 是目标版本（当前
+   `0.3.2`，commit `41f2ba1`）；确认 `git status` 没有意外改动。
+2. 准备构建主机（Go 1.25+）和目标主机（Debian/Ubuntu、systemd、`amd64`/`arm64`），
+   按第 2、3 节准备网络、目录和凭据。
+3. 在控制器构建 artifact，记录 JSON 中的 `sha256`、`bytes`、`files`；用第 4 节命令
+   在本地跑测试（不部署）。
+4. 复制 `ansible/group_vars/all.yml.example` 为 `all.yml`，填版本、artifact 路径、
+   SHA-256、凭据 staging 路径和两个策略值；第 5 节执行 Ansible 两遍。
+5. 按第 6、7 节验证 service、token、timer、RBAC、健康检查；再用一次真实 PR 走
+   REVIEW 审批和受限合并（第 8 节）。
+6. 按第 8.2 节做发布后验证，按 runbook 做回退；把真实结果写入
+   [验收报告](acceptance.md)，不要把历史 Python 或合成场景当作 Go 成功。
+7. 如需回到 Python `0.2.3`，按第 3.5 节恢复源码，并按
+   [runbook 回切小节](runbook.md#13-回切到-python-023) 使用 master 上保留的旧 release；
+   不要让恢复出的源码直接覆盖 Go release 目录。
 
 ## 1. 架构与信任边界
 
@@ -116,6 +140,32 @@ git check-attr text -- knowledge/sources/drills.md
 
 不要对 `knowledge/sources/` 重新规范化行尾。
 
+### 2.6 构建与控制器工具（从零）
+
+在控制器克隆仓库并准备 Ansible（本轮验证环境为 Ansible 2.21.6；以实际
+`ansible-playbook --version` 为准）：
+
+```sh
+git clone https://github.com/hey-mmm/k8s-change-guard.git
+cd k8s-change-guard
+
+python3 -m venv ~/.venvs/ansible
+~/.venvs/ansible/bin/python -m pip install --upgrade pip
+~/.venvs/ansible/bin/python -m pip install ansible-core
+~/.venvs/ansible/bin/ansible-playbook --version
+```
+
+在构建主机确认 Go 1.25+：
+
+```sh
+go version          # Linux；Windows 示例：E:/Go/bin/go.exe version
+```
+
+目标机需要可用的 `ssh`、`sudo` 和 `/usr/bin/python3`；Ansible 的 `become` 密码只通过
+`--ask-become-pass` 或 root-only 临时 password-file 提供，不要写进 inventory/命令历史。
+Helm/kubectl 可预装，缺失时角色按固定 SHA-256 下载；生产 Helm 渲染还需要 Linux
+bubblewrap 和可用的非特权 user namespace。
+
 ## 3. 凭据准备（只记录名称和权限，不写值）
 
 所有凭据留在受信主机/控制器的受限文件里，不进入 Git、inventory、命令历史或日志。
@@ -159,19 +209,67 @@ GitHub 的 DeployKey bypass 是**仓库级类别**，不能按单把 key ID 收�
 - root-only `change-guard renew-token` 固定读取 `/etc/kubernetes/admin.conf` 和
   `/etc/change-guard/kubeconfig`，无参数、无环境命令注入。
 
+### 3.5 Python 0.2.3 备份与恢复（不参与 Go 运行时）
+
+迁移前基线是 `d21cef44b95e74889fb92390a49f55b5e7d92631`；远端分支/标签
+`backup/python-0.2.3` / `python-v0.2.3` 都指向它。离线副本在
+`outputs/python-backup-0.2.3/`（源码 ZIP、完整历史 bundle、`sha256.json`、恢复说明）。
+备份不包含 token、私钥、kubeconfig、虚拟环境或服务配置中的秘密。
+
+```sh
+# 任意机器恢复源码
+git clone k8s-change-guard-python.bundle recovered-python
+git -C recovered-python checkout python-v0.2.3
+
+# 或从远端引用恢复
+git fetch origin backup/python-0.2.3 python-v0.2.3
+git switch --detach backup/python-0.2.3
+
+# 恢复后核对离线文件摘要
+cd outputs/python-backup-0.2.3
+jq -r '.[] | "\(.Hash|ascii_downcase)  \(.file)"' sha256.json | sha256sum -c -
+```
+
+源码恢复只用于审查或重建；生产回切必须使用 master 上保留的旧 Python release 和旧
+unit，由 root 按 [runbook 第 13 节](runbook.md#13-回切到-python-023) 执行。不要用
+备份 ZIP 覆盖 `/opt/change-guard/current`，也不要把恢复出的源码当作当前 Go 版本。
+
 ## 4. 构建与打包
 
-### 4.1 版本
+### 4.1 版本与历史
 
 Go 版本常量在 `internal/guard/common.go`：
 
 ```go
-const Version = "0.3.0"
+const Version = "0.3.2"
 const RuleVersion = "go-2026-11-12.1"
 ```
 
 发布前确认 `Version` 是要发布的版本。`build-release.sh|ps1 --version` 只影响 tarball
 文件名和 JSON，不修改源码常量。
+
+`0.3.0` 的首次真实部署在 `ansible/roles/change_guard/tasks/token.yml:19` 失败：
+`check-token /etc/change-guard/kubeconfig --min-remaining 7200` 返回 `rc=2`，因为 Go
+`flag` 在第一个位置参数处停止解析，当时只接受
+`check-token --min-remaining 7200 KUBECONFIG`。部署器立即把 `current` 回切到
+`/opt/change-guard/releases/0.2.3`，Python 服务保持 active；`releases/0.3.0` 目录及
+`.complete`/`.artifact.sha256` 原样保留。root 修复 CLI 使两种顺序都可用，并增加
+`TestCheckTokenFlagsBeforeAndAfterPath`；由于 0.3.0 的不可变目录已存在，版本升为
+`0.3.1`，没有覆盖或伪造 0.3.0 的 artifact。
+
+`0.3.1` 部署成功并完成 PR8 BLOCK 和 PR9 REVIEW 精确审批，但正式 merge 先因脚本漏传
+`--evaluation-id` 返回 `invalid evaluation id`，显式补 ID 后又因匿名 CI 配额 403 返回
+`public CI check lookup failed`，`main` 未变。`0.3.2`（commit `41f2ba1`）在 state lock
+内从当前索引解析评估 ID，并让 CI check-runs 使用现有 `github.token`；固定 GitHub URL、
+禁 redirect、2 MiB 上限以及 head/app/required-name/latest-success 校验全部保留。
+
+历史记录（全部保留，不能互相覆盖）：
+
+| 版本 | artifact | 结果 |
+| --- | --- | --- |
+| `0.3.0` | `3481524` bytes / `28ffe1c1...` | 首次 Ansible 部署失败并回切 |
+| `0.3.1` | `3482084` bytes / `51c42df2...` | 部署级 live 成功；PR8 BLOCK + PR9 REVIEW 审批；正式 merge 安全拒绝，`main` 未变 |
+| `0.3.2` | `3485074` bytes / `39291800...` | 当前；构建、部署、发布与回退验收通过 |
 
 ### 4.2 Linux
 
@@ -184,8 +282,8 @@ scripts/build-release.sh --version "$VERSION"
 ### 4.3 Windows
 
 ```powershell
-pwsh -NoProfile -File scripts/build-release.ps1 -Go E:/Go/bin/go.exe -Version 0.3.0
-# -> dist\k8s-change-guard-0.3.0.tar.gz
+pwsh -NoProfile -File scripts/build-release.ps1 -Go E:/Go/bin/go.exe -Version 0.3.2
+# -> dist\k8s-change-guard-0.3.2.tar.gz
 ```
 
 脚本已保证：
@@ -269,11 +367,17 @@ change_guard_approved_chart_digest: "194baf90afd746299e256dc0bf144a12bc6f6325bac
 
 ```sh
 # 从仓库根目录执行；首次会安装 RBAC、token、config、service 与 timers
-ansible-playbook -i ansible/inventory.example.ini ansible/site.yml
+ANSIBLE=~/.venvs/ansible/bin/ansible-playbook
+$ANSIBLE -i ansible/inventory.example.ini ansible/site.yml
 
 # 幂等检查：第二次应 changed=0（token 未进入刷新窗口时）
-ansible-playbook -i ansible/inventory.example.ini ansible/site.yml
+$ANSIBLE -i ansible/inventory.example.ini ansible/site.yml
 ```
+
+本轮 0.3.2 实际记录：第一遍 `ok=84 changed=7 failed=0 unreachable=0 skipped=13`，第二遍
+`ok=73 changed=0 failed=0 unreachable=0 skipped=23`。不同环境的 `ok/skipped` 计数会变，
+但第二次 `changed=0` 和 `failed=0` 是幂等验收的关键；不要把示例计数当作保证值。
+0.3.1 的历史计数是 `ok=85 changed=11` / `ok=73 changed=0`，不能与本轮混淆。
 
 角色顺序：
 
@@ -306,15 +410,21 @@ ansible-playbook -i ansible/inventory.example.ini ansible/site.yml
 
 ## 6. Token 续期与检查
 
-Go CLI 提供两个固定命令：
+Go CLI 提供两个固定命令（0.3.1 起兼容两种参数顺序；当前 0.3.2）：
 
 ```sh
 # 只读取 kubeconfig、解码 JWT exp，不打印 token；0=valid, 1=rotate, 2=error
 change-guard check-token /etc/change-guard/kubeconfig --min-remaining 3600
+change-guard check-token --min-remaining 3600 /etc/change-guard/kubeconfig
 
 # root-only、无参数；固定 kubectl admin.conf + change-guard/change-guard + 12h
 sudo change-guard renew-token
 ```
+
+0.3.0 只接受 flag 在前，而 Ansible 任务、systemd unit 和文档使用位置参数在前，导致
+首次部署失败并回切。0.3.1 修复后两种写法都通过
+`TestCheckTokenFlagsBeforeAndAfterPath`；仍建议在 Ansible/unit 中统一使用文档中的
+位置参数在前写法，避免回退到旧二进制时再次失败。
 
 systemd unit：
 
@@ -371,16 +481,29 @@ sudo scripts/merge-release.sh <PR>
 
 包装脚本：
 
-- 要求 root；
+- 要求 root，只接受 `PR_NUMBER`；
 - 记录 daemon 原状态，停止 `change-guard.service`；
 - `trap ... EXIT` 恢复原状态；
 - 以 `change-guard` 用户读取 `proxy.env`；
-- 执行 `change-guard merge --config ... --pr <PR>`；
+- 0.3.2 在 state lock 内读取该 PR 当前索引的 `evaluation_id`，再执行
+  `change-guard merge --config ... --pr <PR>`；显式 `--evaluation-id` 只作核对，
+  必须等于当前索引记录；
 - 不做额外 push、不改 ruleset、不调用 GitHub Merge API。
 
+**不要手工拼 fallback shell 绕过包装脚本。** 0.3.1 的失败正来自脚本漏传评估 ID 后
+使用临时 shell 补传，结果又撞上匿名 CI 403；0.3.2 已在脚本/Go merge 内修复，拒绝时
+应按报告、审批、CI、权限或网络原因处理。
+
 Go merge 仍校验报告 schema/策略绑定、精确 head/base、审批、workflow tree equality、
-独立重算 chart pin、head-bound GitHub Actions CI、synthetic parents/tree、报告摘要和精确
-lease，再 fast-forward `main` 到已评估 head。它不推送 synthetic commit。
+独立重算 chart pin、head-bound CI（固定 URL、禁 redirect、2 MiB 上限、head/app/
+required-name/latest-success）、synthetic parents/tree、报告摘要和精确 lease，再
+fast-forward `main` 到已评估 head。它不推送 synthetic commit。
+
+真实正常发布通常是 **REVIEW**（资源/容量余量、当前错误/延迟、低流量等需要人工判断），
+由用户授权的 dsh 操作员以 owner 身份写精确 `/guard approve <evaluation_id>` 后进入
+合并；不要把“没有硬 BLOCK”写成自动 PASS。在线 DeepSeek 只解释证据和提出额外风险，
+没有审批/合并/回滚权限，不能自批；它的建议需要独立核对（0.3.1 PR9 的未改 env 风险
+已被 base/head blob 证伪），AI 新增风险最多提升到 REVIEW，不能覆盖 BLOCK。
 
 ### 8.2 发布后验证
 
@@ -396,6 +519,11 @@ sudo -u change-guard /opt/change-guard/current/k8s-change-guard postdeploy verif
 `/version` 的 `gitSha`，两者通常不同。Pod 检查匹配 Pod **spec** 的容器名/镜像，并核对
 `status.containerStatuses[].imageID`；不把 containerd config ID 当 manifest 引用。
 验证器只读，失败只给 `open_revert_pr` 建议，不自动回滚。
+
+观察口径必须写清：部署后通常先等 **60 秒**让 Argo/Deployment 稳定，但 Prometheus
+错误率/延迟使用最近 **5 分钟** rate 窗口，不是只覆盖新版本的 60 秒。单 worker、本地
+PVC 没有节点/磁盘容灾；99.9% SLO 需要完整 **七天** 数据，一次发布验收或合成场景都
+不能证明它。
 
 ## 9. GitHub 规则与 CI
 
@@ -426,5 +554,6 @@ GitHub 分支保护仍应保持：
 - 模型没有集群执行工具；AI 新增风险只能提升到 REVIEW，不能覆盖硬 BLOCK。
 - 发布后验证失败只建议 Git revert PR，不自动回滚。
 - Windows 本地渲染不是生产证据；生产 Helm 渲染必须在 Linux bubblewrap 内完成。
-- 旧 Python `0.2.3` 证据不能当作 Go `0.3.0` live 通过；Go live 验收见
-  [acceptance.md](acceptance.md) 的待执行清单。
+- 旧 Python `0.2.3` 证据不能当作 Go 当前版本完整验收通过；Go 0.3.0 的失败部署、
+  0.3.1 的部署成功与合并拒绝都是历史事实，不能被 0.3.2 构建掩盖。Go 0.3.2 已完成
+  完整发布与回退验收，见 [最终验收](go-acceptance-final.md)。

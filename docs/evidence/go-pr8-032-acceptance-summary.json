@@ -1,0 +1,64 @@
+{
+  "pr": 8,
+  "state_after": "closed",
+  "head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+  "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "guard_version": "0.3.2",
+  "rule_version": "go-2026-11-12.1",
+  "evaluation_id": "ev-250e5d31f8ee30f9dd9ec867",
+  "decision": "BLOCK",
+  "findings": [
+    {
+      "severity": "BLOCK",
+      "rule_id": "FAULT_INJECTION",
+      "message": "DEMO_STARTUP_FAIL requests deliberate startup failure"
+    },
+    {
+      "severity": "REVIEW",
+      "rule_id": "AI_ADDITIONAL_RISK",
+      "message": "the model identified additional risk; it can only raise the decision to REVIEW"
+    },
+    {
+      "severity": "REVIEW",
+      "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+      "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated"
+    },
+    {
+      "severity": "REVIEW",
+      "rule_id": "FIRING_ALERTS",
+      "message": "one or more relevant alerts are firing"
+    },
+    {
+      "severity": "REVIEW",
+      "rule_id": "LOW_TRAFFIC",
+      "message": "traffic is too low to treat observed zero errors or latency as healthy"
+    }
+  ],
+  "go_status": {
+    "state": "failure",
+    "description": "BLOCK FAULT_INJECTION: DEMO_STARTUP_FAIL requests deliberate startup failure [ev-250e5d31f8ee30f9dd9ec867]",
+    "sha_bound": true
+  },
+  "github_merge_attempt_http": 405,
+  "direct_push_http": 422,
+  "main_after_probes": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "closed_at_iso": 1794490917,
+  "old_head_invalidation": {
+    "pr": 8,
+    "old_head_sha": "273c033dd6f539a53df1008619a58e2d1d1104e0",
+    "new_head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+    "old_evaluation_id": "ev-3d87ae10ddb9e993d9bc50d1",
+    "old_decision": "BLOCK",
+    "current_evaluation_id": "ev-bdf8ef451e75b79d78c072c3",
+    "current_decision": "BLOCK",
+    "current_head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+    "old_report_head_sha": "273c033dd6f539a53df1008619a58e2d1d1104e0",
+    "captured_at": 1794490040,
+    "captured_at_iso": "2026-11-12T13:27:20Z"
+  },
+  "historical_0_3_1_evidence": [
+    "go-danger-head-invalidation.json",
+    "go-danger-second-report.json",
+    "go-danger-protection-proof.json"
+  ]
+}

@@ -1,0 +1,11 @@
+exit=0
+stdout:
+{
+  "pr": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/9",
+  "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "image_digest": "sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7"
+}
+
+stderr:
+

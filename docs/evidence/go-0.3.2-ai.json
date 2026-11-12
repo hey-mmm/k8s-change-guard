@@ -1,0 +1,44 @@
+{
+  "additional_risks": [
+    {
+      "detail": "35 scheduled pods lack CPU/memory requests and are counted as zero, so the reported available capacity on the one Ready worker may not reflect real headroom for the new demo pod.",
+      "severity": "REVIEW",
+      "title": "Free capacity may be overstated on single worker"
+    },
+    {
+      "detail": "A KubeCPUOvercommit warning is firing; this should be investigated and explained before treating capacity as sufficient, and must not be assumed healthy.",
+      "severity": "REVIEW",
+      "title": "Firing KubeCPUOvercommit alert"
+    },
+    {
+      "detail": "The AI review result is absent, which is an ERROR-level guard; no approval or downgrade is possible until it is supplied.",
+      "severity": "REVIEW",
+      "title": "Missing required AI review"
+    }
+  ],
+  "citations": [
+    {
+      "case_id": "worker-capacity-check",
+      "line_end": 145,
+      "line_start": 134,
+      "quote": "- \u6070\u597d 2 \u4e2a\u8282\u70b9\uff0c`master`/`worker` \u5747 Ready\uff0cInternalIP \u5206\u522b\u4e3a `11.0.1.10`/`11.0.1.11`\uff0c\u5bb9\u5668\u8fd0\u884c\u65f6\u4e3a containerd\u3002",
+      "snapshot": "sources/stage1-runbook.md",
+      "source": "docs/stage1-runbook.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d"
+    },
+    {
+      "case_id": "drill-evidence-no-guess",
+      "line_end": 157,
+      "line_start": 139,
+      "quote": "\u672a\u914d\u7f6e\u3001\u4e0d\u53ef\u8fbe\u3001\u975e 2xx\u3001\u54cd\u5e94\u65e0\u6cd5\u89e3\u6790\u65f6\u4e00\u5f8b `null`\uff0c**\u4e0d\u731c\u6d4b\u672a\u544a\u8b66**\u3002",
+      "snapshot": "sources/drills.md",
+      "source": "docs/drills.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89"
+    }
+  ],
+  "model": "deepseek-chat",
+  "status": "ok",
+  "summary": "Decision is ERROR and cannot be approved: the required AI review result is missing (AI_REQUIRED_UNAVAILABLE), so the hard guard rule blocks release regardless of other evidence. The change adds a new Deployment/demo (pod template changed), Service, and ServiceMonitor in namespace demo, with only one Ready worker and no prior resources. Capacity math shows the new pod's 50m CPU / 64Mi memory fits within available 2190m / ~9.2GB, but 35 scheduled pods have unreserved requests, so free capacity may be overstated. A KubeCPUOvercommit warning alert is firing, which is consistent with that overcommit concern and should be investigated rather than assumed benign. Metrics look healthy (up=1, error_ratio 0, p95 ~4.75ms, low request rate), but these do not substitute for the missing AI review. Recommend supplying the AI review, confirming real free capacity on the single worker, and resolving or explaining the firing alert before re-evaluation."
+}

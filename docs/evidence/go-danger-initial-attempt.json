@@ -1,0 +1,16 @@
+{
+  "pr": 7,
+  "url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/7",
+  "head_sha": "cc92c1d7c18a2713aaf333b263852d6df78e53bd",
+  "mergeable_state": "blocked",
+  "latest_statuses": [
+    {
+      "context": "change-guard/release",
+      "state": "failure",
+      "description": "BLOCK REPLICAS_ZERO: zero replicas is not an approved release [ev-f0339399926e937dfda30a4d]",
+      "updated_at": "2026-11-12T13:22:42Z"
+    }
+  ],
+  "reason_closed": "Duplicate danger test created after operator test driver was interrupted; Go BLOCK/failure confirmed. Main acceptance continues in PR8.",
+  "closed_at": 1794489943
+}

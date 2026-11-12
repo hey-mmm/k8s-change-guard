@@ -1,0 +1,42 @@
+{
+  "captured_at": 1794489972,
+  "captured_at_iso": "2026-11-12T13:26:12Z",
+  "pr": 8,
+  "base_before": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "head_sha": "273c033dd6f539a53df1008619a58e2d1d1104e0",
+  "head_ref": "acceptance/go-block-zero-replicas-20261112212451",
+  "mergeable": true,
+  "mergeable_state": "blocked",
+  "change_guard_status": {
+    "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/statuses/273c033dd6f539a53df1008619a58e2d1d1104e0",
+    "avatar_url": "https://avatars.githubusercontent.com/u/202397327?v=4",
+    "id": 58732397913,
+    "node_id": "SC_kwDOVqRdMs8AAAANrLlFWQ",
+    "state": "failure",
+    "description": "BLOCK REPLICAS_ZERO: zero replicas is not an approved release [ev-3d87ae10ddb9e993d9bc50d1]",
+    "target_url": null,
+    "context": "change-guard/release",
+    "created_at": "2026-11-12T13:25:16Z",
+    "updated_at": "2026-11-12T13:25:16Z"
+  },
+  "github_merge_attempt": {
+    "http": 405,
+    "body": {
+      "message": "Repository rule violations found\n\nRequired status check \"change-guard/release\" is failing.\n\nCannot update this protected ref.\n\n",
+      "documentation_url": "https://docs.github.com/rest/pulls/pulls#merge-a-pull-request",
+      "status": "405"
+    }
+  },
+  "main_after": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "direct_main_update": {
+    "http": 422,
+    "body": {
+      "message": "Repository rule violations found\n\n2 of 2 required status checks are expected.\n\nCannot update this protected ref.\n\nChanges must be made through a pull request.\n\n",
+      "documentation_url": "https://docs.github.com/rest/git/refs#update-a-reference",
+      "status": "422"
+    },
+    "probe_commit": "b0efe9d639ef952d13b6ed5a56eb35bc86b2e5fc",
+    "probe_parent": "321eb9517b83dc0e9261e16dcdb26016332dd7c3"
+  },
+  "main_after_direct_probe": "321eb9517b83dc0e9261e16dcdb26016332dd7c3"
+}

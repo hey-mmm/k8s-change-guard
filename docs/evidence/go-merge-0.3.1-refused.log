@@ -1,0 +1,10 @@
+approved status: success REVIEW approved by hey-mmm [ev-e941441d7a1f429dfbf37dd5]
+evidence: C:\Users\MYT\Documents\Codex\2026-11-12\https-github-com-hey-mmm-full-3\work\k8s-change-guard\docs\evidence\go-ci-merge-9.json
+evidence: C:\Users\MYT\Documents\Codex\2026-11-12\https-github-com-hey-mmm-full-3\work\k8s-change-guard\docs\evidence\go-merge-command-9.json
+Traceback (most recent call last):
+  File "C:\Users\MYT\Documents\Codex\2026-11-12\https-github-com-hey-mmm-full-3\work\_go_merge_after_approval.py", line 10, in <module>
+    res = ops.merge_release(9, eid)
+  File "C:\Users\MYT\Documents\Codex\2026-11-12\https-github-com-hey-mmm-full-3\work/go-pr-live-ops.py", line 848, in merge_release
+    raise RuntimeError('trusted merge script failed: ' + (err or out)[-800:])
+RuntimeError: trusted merge script failed: {"result":"REFUSED","error":"invalid evaluation id"}
+

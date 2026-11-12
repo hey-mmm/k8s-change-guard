@@ -1,0 +1,90 @@
+{
+  "captured_at": 1794490918,
+  "captured_at_iso": "2026-11-12T13:41:58Z",
+  "main": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "service": {
+    "exit": 0,
+    "lines": [
+      "active",
+      "/opt/change-guard/releases/0.3.2",
+      "change-guard 0.3.2 (rules go-2026-11-12.1)",
+      "{ path=/opt/change-guard/current/k8s-change-guard ; argv[]=/opt/change-guard/current/k8s-change-guard daemon --config /etc/change-guard/config.yaml ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }"
+    ],
+    "stderr": ""
+  },
+  "nodes": [
+    {
+      "name": "master",
+      "ready": "True"
+    },
+    {
+      "name": "worker",
+      "ready": "True"
+    }
+  ],
+  "argo": {
+    "sync": "Synced",
+    "health": "Healthy",
+    "revision": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "operation_revision": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "operation_phase": "Succeeded",
+    "observed_at": "2026-11-12T13:40:28Z"
+  },
+  "deployment": {
+    "replicas": 1,
+    "ready_replicas": 1,
+    "available_replicas": 1,
+    "updated_replicas": 1,
+    "containers": [
+      {
+        "name": "demo-service",
+        "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+        "env": [
+          {
+            "name": "APP_VERSION",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "GIT_SHA",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "TMPDIR",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "APP_ENV",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_ERROR_RATE",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_LATENCY_MS",
+            "value": "<redacted>",
+            "valueFrom": false
+          },
+          {
+            "name": "DEMO_STARTUP_FAIL",
+            "value": "<redacted>",
+            "valueFrom": false
+          }
+        ]
+      }
+    ]
+  },
+  "open_prs": [
+    {
+      "number": 9,
+      "title": "Release 823770eff4e9 by digest",
+      "head": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+      "url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/9"
+    }
+  ]
+}

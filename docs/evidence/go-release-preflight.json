@@ -1,0 +1,31 @@
+{
+  "captured_at": 1794490087,
+  "captured_at_iso": "2026-11-12T13:28:07Z",
+  "actor": "hey-mmm",
+  "repo_commit": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "image": "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+  "image_source_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "platform_manifest": null,
+  "image_labels": {
+    "revision": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+    "source": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes"
+  },
+  "ci_run": {
+    "id": 43182206838,
+    "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43182206838",
+    "conclusion": "success"
+  },
+  "ci_jobs": [
+    [
+      "Test, lint, render",
+      "success",
+      "823770eff4e9384ceb83aa1561f9b5f95239c221"
+    ],
+    [
+      "Build and push image",
+      "success",
+      "823770eff4e9384ceb83aa1561f9b5f95239c221"
+    ]
+  ],
+  "main_before": "321eb9517b83dc0e9261e16dcdb26016332dd7c3"
+}

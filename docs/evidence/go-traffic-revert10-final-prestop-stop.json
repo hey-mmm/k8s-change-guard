@@ -1,0 +1,14 @@
+{
+  "stopped_at": 1794492985,
+  "stopped_at_iso": "2026-11-12T14:16:25Z",
+  "pid": "136161",
+  "process_gone": true,
+  "total_requests": 1161,
+  "http_2xx": 1161,
+  "transport_000": 0,
+  "tail": [
+    "2026-11-12T14:15:57Z status=200 duration_seconds=0.001967 request_id=traffic-136161-1159 request=1159 url=http://10.104.233.119:8080/work",
+    "2026-11-12T14:15:58Z status=200 duration_seconds=0.001713 request_id=traffic-136161-1160 request=1160 url=http://10.104.233.119:8080/work",
+    "2026-11-12T14:15:58Z status=200 duration_seconds=0.001763 request_id=traffic-136161-1161 request=1161 url=http://10.104.233.119:8080/work"
+  ]
+}

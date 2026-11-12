@@ -1,0 +1,10 @@
+{
+  "created_at": 1794489897,
+  "created_at_iso": "2026-11-12T13:24:57Z",
+  "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "branch": "acceptance/go-block-zero-replicas-20261112212451",
+  "head_sha": "273c033dd6f539a53df1008619a58e2d1d1104e0",
+  "pr": 8,
+  "url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/8",
+  "expected": "BLOCK"
+}

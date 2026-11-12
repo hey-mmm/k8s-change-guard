@@ -4,9 +4,9 @@
 
 项目一能构建镜像、发布到 GHCR，再由 Argo CD 同步 Git 中的配置。项目二在配置进入发布分支前判断风险，并把判断落实到 GitHub 合并限制。目标是：不合规发布无法进入 main，正常发布具备可追溯证据，并在部署后验证实际结果。
 
-当前 Go `0.3.0` 已完成迁移实现、Windows/Linux 测试和单二进制打包，产物可部署，但
-尚未部署；live 验收 pending。历史 Python `0.2.3` 的真实合并/回退/发布后结果见
-`docs/acceptance.md`，不能当作 Go 版本已经上线。本文不复制时效数据。
+Go 0.3.2 已完成真实门禁、发布、回退和最终环境验收。危险 PR8 被阻断；PR9 与回退 PR10 均经新评估、精确审批、可信 CI 和受限 fast-forward 合入，发布与回退各通过 6/6 postdeploy。最终两节点 Ready、ArgoCD Synced / Healthy、业务恢复旧镜像，测试流量已清理。
+
+详见 [Go 最终验收](go-acceptance-final.md)；历史版本记录保留各自的时间和范围。
 
 Agent 只读集群，不是 Kubernetes 准入控制器。集群管理员仍有直接操作 Kubernetes 的权限；仓库管理员能够修改规则或部署凭据。这些管理员属于信任边界。GitHub 的 DeployKey bypass 是仓库级能力，不能按单 key 限制；实际只保留一把写部署密钥，这是必须审计的信任边界。
 
@@ -62,6 +62,14 @@ Agent 在 master 运行，主动轮询 GitHub，无公网监听端口。worker �
 
 规则负责可复现的事实判断。AI 把字段变更、运行证据和项目一的真实故障案例联系起来，生成带引用的解释与处置建议。新增风险只触发 REVIEW。模型没有命令执行工具，不能直接操作集群，也不能修改硬规则结论。
 
+**审批不是 AI 动作。** REVIEW 的精确 `/guard approve` 由用户授权的 dsh 操作员以
+owner 身份发出；在线 DeepSeek 没有 GitHub 凭据、审批身份、合并或回滚能力，不能
+自批。0.3.1 的 PR9 就是这种人工代理审批：评论作者是 owner `hey-mmm`，AI 只提供了
+分析。该次 AI 还把被脱敏、但实际未改动的 env 值当成“可能带入演练故障开关”的新风险；
+独立 reviewer 用 base/head 精确 blob 证明 `APP_ENV`、`DEMO_ERROR_RATE`、
+`DEMO_LATENCY_MS`、`DEMO_STARTUP_FAIL` 均未变化，因此这是 AI 误报。保留的真实
+REVIEW 限制是未预留 requests、`KubeCPUOvercommit` 和零初始流量。
+
 可信知识库保存源文档、来源 URL、原文片段和摘要校验。PR 中的 runbook 不会成为评估程序或知识库。模型输出引用必须匹配本次检索到的案例，格式错误、未知引用与超时均进入明确失败状态。
 
 ## 6. 必须诚实说明的限制
@@ -77,7 +85,9 @@ Agent 在 master 运行，主动轮询 GitHub，无公网监听端口。worker �
 - DeployKey bypass 是仓库级，平台不能限制到单 key；只能靠“仓库只有一把写 key + 审计”约束。
 - `charts/demo` 模板变更必须由操作员另行更新可信 pin（当前真实 Git blob digest 为 `194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d`，旧 `0b2b...` 参考值不可用）；guard 不会自动信任新模板。发布 PR 的正常配置入口是 `gitops/demo/values.yaml`，不是 chart 自带的 `values.yaml` 默认值。
 - 发布后失败只记录结果并给出 Git revert PR 建议，不让模型直接回滚；main 是单父 head，回退用普通 `git revert`，不加 `-m 1`。
-- 当前 Go `0.3.0` 已完成测试和可部署产物，但尚未部署，live 验收 pending；历史 Python 版本（0.2.1/0.2.2/0.2.3）的验证只作历史证据，不代表 Go 已上线。
+- 正常发布的真实结果通常是 **REVIEW + 人工精确批准**，不是自动 PASS；单 worker 资源余量、低流量、当前错误/延迟都可能要求人工判断。
+- 单 worker 和本地 PVC 没有节点/磁盘容灾；Prometheus 指标是最近 5 分钟聚合，部署后 60 秒等待不是新版本专属桶；99.9% SLO 需要完整七天数据，不能用一次发布或合成场景证明。
+- Go 0.3.2 已完成真实门禁、发布、回退和最终环境验收。危险 PR8 被阻断；PR9 与回退 PR10 均经新评估、精确审批、可信 CI 和受限 fast-forward 合入，发布与回退各通过 6/6 postdeploy。最终两节点 Ready、ArgoCD Synced / Healthy、业务恢复旧镜像，测试流量已清理。 见 [最终验收](go-acceptance-final.md)。
 - 合并后 daemon 会撤销 closed/merged PR 的历史 guard 状态；main/旧 head 出现 guard error/pending 可能只是撤销，不是 postdeploy 失败；门禁证明看 merge 记录和当时报告/审批/CI，不要强留永久绿。
 
 实际完成项、未通过项与证据索引见 [验收报告](acceptance.md)。

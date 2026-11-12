@@ -1,0 +1,64 @@
+{
+  "additional_risks": [
+    {
+      "detail": "35 scheduled Pods lack CPU/memory requests and are treated as zero, so the reported free capacity (2190m CPU, ~9.2GB memory) may be optimistic. A KubeCPUOvercommit warning is also firing. Capacity should be recomputed with real requests before relying on it for this rollout.",
+      "severity": "REVIEW",
+      "title": "Capacity estimate may be overstated by unreserved Pods"
+    },
+    {
+      "detail": "Only one worker is Ready; the control-plane node carries a taint and must not be counted as schedulable worker capacity. Surge and retained old Pods must be reserved against that single worker.",
+      "severity": "REVIEW",
+      "title": "Single worker is the only schedulable capacity"
+    },
+    {
+      "detail": "Request rate is 0 with null error ratio and p95, so observed zero errors or latency cannot be treated as evidence of a healthy release; business latency must be checked via the histogram metric rather than probe status.",
+      "severity": "REVIEW",
+      "title": "Zero traffic means no health signal"
+    }
+  ],
+  "citations": [
+    {
+      "case_id": "worker-capacity-check",
+      "line_end": 145,
+      "line_start": 134,
+      "quote": "- master \u7684 control-plane taint \u4ecd\u5b58\u5728\uff0cCalico \u6709 `Exists` toleration\u3002",
+      "snapshot": "sources/stage1-runbook.md",
+      "source": "docs/stage1-runbook.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d"
+    },
+    {
+      "case_id": "worker-capacity-check",
+      "line_end": 145,
+      "line_start": 134,
+      "quote": "- \u6070\u597d 2 \u4e2a\u8282\u70b9\uff0c`master`/`worker` \u5747 Ready\uff0cInternalIP \u5206\u522b\u4e3a `11.0.1.10`/`11.0.1.11`\uff0c\u5bb9\u5668\u8fd0\u884c\u65f6\u4e3a containerd\u3002",
+      "snapshot": "sources/stage1-runbook.md",
+      "source": "docs/stage1-runbook.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d"
+    },
+    {
+      "case_id": "latency-probes-not-delayed",
+      "line_end": 83,
+      "line_start": 77,
+      "quote": "env\uff1a`DEMO_LATENCY_MS=3000`\u3002`/healthz`\u3001`/readyz` \u4e0d\u6ce8\u5165\u5ef6\u8fdf\uff0c\u907f\u514d\u63a2\u9488\u8bef\u6740\uff1b",
+      "snapshot": "sources/drills.md",
+      "source": "docs/drills.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89"
+    },
+    {
+      "case_id": "startup-failure-release-protection",
+      "line_end": 15,
+      "line_start": 15,
+      "quote": "- \u542f\u52a8\u5931\u8d25\uff1a\u65b0 Pod \u8f93\u51fa StartupError/`startup_failed`\u3001CrashLoopBackOff\uff0c\u65e7 Pod \u4fdd\u6301 Ready \u5e76\u8fd4\u56de 200\uff1b\u89e6\u53d1 DemoPodCrashLooping\u3002\u8fd9\u662f\u53d1\u5e03\u4fdd\u62a4\uff0c\u4e0d\u662f\u5168\u670d\u52a1\u4e2d\u65ad\u3002",
+      "snapshot": "sources/fault-review.md",
+      "source": "docs/fault-review.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f"
+    }
+  ],
+  "model": "deepseek-chat",
+  "status": "ok",
+  "summary": "Decision is ERROR and cannot be approved: the required DeepSeek review result is missing (AI_REQUIRED_UNAVAILABLE), so the hard guard rule blocks release. Beyond that blocker, the report shows a first-time add of Deployment/Service/ServiceMonitor demo in namespace demo with a changed pod template, so there is no prior version to fall back on. Capacity math is not trustworthy: 35 scheduled Pods have no CPU/memory requests and are counted as zero, which may overstate free capacity, and a KubeCPUOvercommit warning alert is firing. Traffic is zero (request_rate 0, no error ratio or p95), so absence of errors or latency cannot be read as health. Only one worker is Ready, and the control-plane node must not be counted as schedulable capacity. Recommend holding the release until the AI review is supplied, Pod requests are set, and the overcommit alert is explained."
+}

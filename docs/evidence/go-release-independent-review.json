@@ -1,0 +1,104 @@
+{
+  "captured_at": 1794490223,
+  "pr": 9,
+  "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "evaluation_id": "ev-e941441d7a1f429dfbf37dd5",
+  "decision": "REVIEW",
+  "expires_at": 1794490399,
+  "remaining_seconds": 176,
+  "changed_paths": [
+    "gitops/demo/values.yaml"
+  ],
+  "unified_diff": [
+    "--- base:321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "+++ head:a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "@@ -1,13 +1,12 @@",
+    "-# Verified CI image; manifest digest sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+    " image:",
+    "   repository: ghcr.io/hey-mmm/observability-demo",
+    "-  tag: sha-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+    "-  digest: sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+    "+  tag: sha-823770eff4e9384ceb83aa1561f9b5f95239c221",
+    "+  digest: sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+    "   pullPolicy: IfNotPresent",
+    " fullnameOverride: demo",
+    " replicaCount: 1",
+    "-appVersion: 0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+    "-gitSha: c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+    "+appVersion: 0.1.0-823770eff4e9384ceb83aa1561f9b5f95239c221",
+    "+gitSha: 823770eff4e9384ceb83aa1561f9b5f95239c221",
+    " env:",
+    "   APP_ENV: production",
+    "   DEMO_ERROR_RATE: '0'"
+  ],
+  "env_lines_head": [
+    "  APP_ENV: production",
+    "  DEMO_ERROR_RATE: '0'",
+    "  DEMO_LATENCY_MS: '0'",
+    "  DEMO_STARTUP_FAIL: 'false'"
+  ],
+  "env_changed": false,
+  "findings": [
+    {
+      "severity": "REVIEW",
+      "rule_id": "AI_ADDITIONAL_RISK",
+      "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+      "field": "ai_result.additional_risks"
+    },
+    {
+      "severity": "REVIEW",
+      "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+      "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+      "field": "evidence.pods[].spec.containers[].resources.requests"
+    },
+    {
+      "severity": "REVIEW",
+      "rule_id": "FIRING_ALERTS",
+      "message": "one or more relevant alerts are firing",
+      "field": "evidence.metrics.alerts"
+    },
+    {
+      "severity": "REVIEW",
+      "rule_id": "LOW_TRAFFIC",
+      "message": "traffic is too low to treat observed zero errors or latency as healthy",
+      "field": "evidence.metrics.request_rate"
+    }
+  ],
+  "ai_risks": [
+    {
+      "detail": "The pod template changes spec.template.spec.containers[0].env[0].value and env[1].value, but both old and new values are redacted, so the diff cannot be verified. Trusted cases show fault-injection env values are drill-only: DEMO_STARTUP_FAIL=true causes new Pods to CrashLoop (release protection, not a healthy release), and DEMO_ERROR_RATE=1 makes real requests return 500. Require the rendered values to be the normal production values (e.g. DEMO_ERROR_RATE=0, no startup-fail flag) before merge.",
+      "severity": "REVIEW",
+      "title": "Redacted env value changes may ship drill fault settings"
+    },
+    {
+      "detail": "KubeCPUOvercommit is firing and 35 scheduled Pods have no CPU/memory requests, so reported free capacity (2190m CPU) may be overstated. With maxUnavailable: 0 / maxSurge: 1 the rollout needs room for a surge Pod alongside the retained old Pod; verify capacity before syncing.",
+      "severity": "REVIEW",
+      "title": "Capacity headroom uncertain during rollout"
+    },
+    {
+      "detail": "request_rate is 0 and error_ratio/p95 are null, so a successful rollout cannot be judged healthy from metrics alone; verify the new image digest and /version after sync.",
+      "severity": "REVIEW",
+      "title": "No traffic-based health signal"
+    }
+  ],
+  "combined_status": {
+    "state": "pending",
+    "sha": "a9a29da30832380bbdbda091177c738d7a7fde4b"
+  },
+  "required_ci": {
+    "id": 131214767107,
+    "name": "Test, lint, render",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "app_slug": "github-actions",
+    "app_id": 15368
+  },
+  "review": {
+    "ai_redacted_env_risk": "REFUTED by exact base/head blob comparison: the diff changes only image.tag, image.digest, appVersion and gitSha; APP_ENV and DEMO_ERROR_RATE lines are unchanged context, so no fault-injection env change is shipped. AI saw redacted env values and speculated.",
+    "capacity_risk": "ACCEPTED as a known REVIEW limitation. The rollout may have limited headroom (35 pods without requests, KubeCPUOvercommit firing); postdeploy verification must prove readiness and digest/version, not just no errors.",
+    "low_traffic_risk": "ACCEPTED as a known REVIEW limitation. A bounded 2 rps traffic warmup is required to fill the 5m rate window before postdeploy verification; zero traffic is not treated as PASS.",
+    "scope": "Only gitops/demo/values.yaml changes, from current main; chart pin unchanged; required CI success is bound to the head and app id 15368."
+  }
+}

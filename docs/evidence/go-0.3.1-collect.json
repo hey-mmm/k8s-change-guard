@@ -1,0 +1,1666 @@
+{
+  "capacity": {
+    "allocatable_cpu_millicores": 4000,
+    "allocatable_memory_bytes": 12406517760,
+    "available_cpu_millicores": 2190,
+    "available_memory_bytes": 9185292288,
+    "existing_pods_requests_cpu_millicores": 1810,
+    "existing_pods_requests_memory_bytes": 3221225472,
+    "overcommitted": false,
+    "worker_names": [
+      "worker"
+    ],
+    "workers_ready": 1
+  },
+  "collected_at": 1794489608,
+  "deployment": {
+    "available_replicas": 1,
+    "containers": [
+      {
+        "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+        "name": "demo-service",
+        "resources": {
+          "limits": {
+            "cpu": "250m",
+            "memory": "192Mi"
+          },
+          "requests": {
+            "cpu": "50m",
+            "memory": "64Mi"
+          }
+        }
+      }
+    ],
+    "images": [
+      "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d"
+    ],
+    "name": "demo",
+    "namespace": "demo",
+    "pod_template_sha256": "b2b84c68c40c9e2ce5c706c30ad1d72bb13d407254e72a86170725d74b11abe2",
+    "ready_replicas": 1,
+    "replicas": 1,
+    "selector": {
+      "matchLabels": {
+        "app.kubernetes.io/component": "demo-service",
+        "app.kubernetes.io/instance": "demo",
+        "app.kubernetes.io/name": "demo"
+      }
+    },
+    "strategy": {
+      "rollingUpdate": {
+        "maxSurge": 1,
+        "maxUnavailable": 0
+      },
+      "type": "RollingUpdate"
+    },
+    "updated_replicas": 1
+  },
+  "errors": [],
+  "metrics": {
+    "alerts": [
+      {
+        "activeAt": "2026-11-12T12:50:10.464748368Z",
+        "labels": {
+          "alertname": "KubeCPUOvercommit",
+          "severity": "warning"
+        },
+        "name": "KubeCPUOvercommit",
+        "state": "firing"
+      },
+      {
+        "activeAt": "2026-11-11T11:59:55Z",
+        "labels": {
+          "alertname": "Watchdog",
+          "severity": "none"
+        },
+        "name": "Watchdog",
+        "state": "firing"
+      }
+    ],
+    "error_ratio": 0,
+    "memory_working_set_bytes": 38936576,
+    "p95_seconds": 0.00475,
+    "request_rate": 0.003508784241348215,
+    "series_presence": {
+      "latency_bucket": true,
+      "memory": true,
+      "requests_total": true,
+      "up": true
+    },
+    "source_timestamps": {
+      "alerts": 1794489608.1904204,
+      "error_ratio": 1794489599.013,
+      "memory_working_set_bytes": 1794489597.251,
+      "p95_seconds": 1794489599.013,
+      "request_rate": 1794489599.013,
+      "up": 1794489599.013
+    },
+    "up": 1
+  },
+  "nodes": [
+    {
+      "allocatable": {
+        "cpu": "2",
+        "memory": "3866360Ki"
+      },
+      "allocatable_cpu_millicores": 2000,
+      "allocatable_memory_bytes": 3959152640,
+      "capacity": {
+        "cpu": "2",
+        "memory": "3968760Ki"
+      },
+      "control_plane": false,
+      "labels": {
+        "kubernetes.io/hostname": "master",
+        "node-role.kubernetes.io/control-plane": ""
+      },
+      "name": "master",
+      "ready": true,
+      "schedulable": false,
+      "taints": [
+        {
+          "effect": "NoSchedule",
+          "key": "node-role.kubernetes.io/control-plane"
+        }
+      ],
+      "unschedulable": false
+    },
+    {
+      "allocatable": {
+        "cpu": "4",
+        "memory": "12115740Ki"
+      },
+      "allocatable_cpu_millicores": 4000,
+      "allocatable_memory_bytes": 12406517760,
+      "capacity": {
+        "cpu": "4",
+        "memory": "12218140Ki"
+      },
+      "control_plane": false,
+      "labels": {
+        "kubernetes.io/hostname": "worker"
+      },
+      "name": "worker",
+      "ready": true,
+      "schedulable": true,
+      "taints": [],
+      "unschedulable": false
+    }
+  ],
+  "pods": [
+    {
+      "container_names": [
+        "application-controller"
+      ],
+      "deleting": false,
+      "name": "argocd-application-controller-0",
+      "namespace": "argocd",
+      "node": "worker",
+      "owner": {
+        "kind": "StatefulSet",
+        "name": "argocd-application-controller"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/argoproj/argocd:v3.6.1",
+            "name": "application-controller",
+            "resources": {
+              "limits": {
+                "cpu": "500m",
+                "memory": "768Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "256Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "redis"
+      ],
+      "deleting": false,
+      "name": "argocd-redis-5bb9796b48-g2hhj",
+      "namespace": "argocd",
+      "node": "worker",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "argocd-redis-5bb9796b48"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "docker.io/library/redis:8.6.4-alpine",
+            "name": "redis",
+            "resources": {
+              "limits": {
+                "cpu": "200m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "repo-server"
+      ],
+      "deleting": false,
+      "name": "argocd-repo-server-f98f9895c-v6zrb",
+      "namespace": "argocd",
+      "node": "worker",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "argocd-repo-server-f98f9895c"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/argoproj/argocd:v3.6.1",
+            "name": "repo-server",
+            "resources": {
+              "limits": {
+                "cpu": "500m",
+                "memory": "768Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "256Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [
+          {
+            "image": "quay.io/argoproj/argocd:v3.6.1",
+            "name": "copyutil",
+            "resources": {
+              "limits": {
+                "cpu": "500m",
+                "memory": "768Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "256Mi"
+              }
+            }
+          }
+        ],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "server"
+      ],
+      "deleting": false,
+      "name": "argocd-server-85b5d8897-6jb4t",
+      "namespace": "argocd",
+      "node": "worker",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "argocd-server-85b5d8897"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/argoproj/argocd:v3.6.1",
+            "name": "server",
+            "resources": {
+              "limits": {
+                "cpu": "500m",
+                "memory": "512Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "256Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "demo-service"
+      ],
+      "deleting": false,
+      "name": "demo-8dd7bdf74-lllbl",
+      "namespace": "demo",
+      "node": "worker",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "demo-8dd7bdf74"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+            "name": "demo-service",
+            "resources": {
+              "limits": {
+                "cpu": "250m",
+                "memory": "192Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "calico-kube-controllers"
+      ],
+      "deleting": false,
+      "name": "calico-kube-controllers-846669895c-f6dcc",
+      "namespace": "kube-system",
+      "node": "master",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "calico-kube-controllers-846669895c"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 2,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/calico/calico:v3.33.0",
+            "name": "calico-kube-controllers",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "calico-node"
+      ],
+      "deleting": false,
+      "name": "calico-node-7md7n",
+      "namespace": "kube-system",
+      "node": "master",
+      "owner": {
+        "kind": "DaemonSet",
+        "name": "calico-node"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 2,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/calico/node:v3.33.0",
+            "name": "calico-node",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": "250m",
+                "memory": null
+              }
+            }
+          }
+        ],
+        "initContainers": [
+          {
+            "image": "quay.io/calico/calico:v3.33.0",
+            "name": "upgrade-ipam",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          },
+          {
+            "image": "quay.io/calico/third-party-cni-plugins:v3.33.0",
+            "name": "cni-plugins",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          },
+          {
+            "image": "quay.io/calico/calico:v3.33.0",
+            "name": "install-cni",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          },
+          {
+            "image": "quay.io/calico/node:v3.33.0",
+            "name": "ebpf-bootstrap",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          }
+        ],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "calico-node"
+      ],
+      "deleting": false,
+      "name": "calico-node-mzndw",
+      "namespace": "kube-system",
+      "node": "worker",
+      "owner": {
+        "kind": "DaemonSet",
+        "name": "calico-node"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/calico/node:v3.33.0",
+            "name": "calico-node",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": "250m",
+                "memory": null
+              }
+            }
+          }
+        ],
+        "initContainers": [
+          {
+            "image": "quay.io/calico/calico:v3.33.0",
+            "name": "upgrade-ipam",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          },
+          {
+            "image": "quay.io/calico/third-party-cni-plugins:v3.33.0",
+            "name": "cni-plugins",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          },
+          {
+            "image": "quay.io/calico/calico:v3.33.0",
+            "name": "install-cni",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          },
+          {
+            "image": "quay.io/calico/node:v3.33.0",
+            "name": "ebpf-bootstrap",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          }
+        ],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "coredns"
+      ],
+      "deleting": false,
+      "name": "coredns-559f6c778d-7cfsg",
+      "namespace": "kube-system",
+      "node": "master",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "coredns-559f6c778d"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 2,
+      "spec": {
+        "containers": [
+          {
+            "image": "registry.k8s.io/coredns/coredns:v1.14.6",
+            "name": "coredns",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": "170Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "70Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "coredns"
+      ],
+      "deleting": false,
+      "name": "coredns-559f6c778d-vbbfz",
+      "namespace": "kube-system",
+      "node": "master",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "coredns-559f6c778d"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 2,
+      "spec": {
+        "containers": [
+          {
+            "image": "registry.k8s.io/coredns/coredns:v1.14.6",
+            "name": "coredns",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": "170Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "70Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "etcd"
+      ],
+      "deleting": false,
+      "name": "etcd-master",
+      "namespace": "kube-system",
+      "node": "master",
+      "owner": {
+        "kind": "Node",
+        "name": "master"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 2,
+      "spec": {
+        "containers": [
+          {
+            "image": "registry.k8s.io/etcd:3.7.0-0",
+            "name": "etcd",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "100Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "kube-apiserver"
+      ],
+      "deleting": false,
+      "name": "kube-apiserver-master",
+      "namespace": "kube-system",
+      "node": "master",
+      "owner": {
+        "kind": "Node",
+        "name": "master"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 2,
+      "spec": {
+        "containers": [
+          {
+            "image": "registry.k8s.io/kube-apiserver:v1.37.2",
+            "name": "kube-apiserver",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": "250m",
+                "memory": null
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "kube-controller-manager"
+      ],
+      "deleting": false,
+      "name": "kube-controller-manager-master",
+      "namespace": "kube-system",
+      "node": "master",
+      "owner": {
+        "kind": "Node",
+        "name": "master"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 4,
+      "spec": {
+        "containers": [
+          {
+            "image": "registry.k8s.io/kube-controller-manager:v1.37.2",
+            "name": "kube-controller-manager",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": "200m",
+                "memory": null
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "kube-proxy"
+      ],
+      "deleting": false,
+      "name": "kube-proxy-68znv",
+      "namespace": "kube-system",
+      "node": "worker",
+      "owner": {
+        "kind": "DaemonSet",
+        "name": "kube-proxy"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "registry.k8s.io/kube-proxy:v1.37.2",
+            "name": "kube-proxy",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "kube-proxy"
+      ],
+      "deleting": false,
+      "name": "kube-proxy-qjndc",
+      "namespace": "kube-system",
+      "node": "master",
+      "owner": {
+        "kind": "DaemonSet",
+        "name": "kube-proxy"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 2,
+      "spec": {
+        "containers": [
+          {
+            "image": "registry.k8s.io/kube-proxy:v1.37.2",
+            "name": "kube-proxy",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "kube-scheduler"
+      ],
+      "deleting": false,
+      "name": "kube-scheduler-master",
+      "namespace": "kube-system",
+      "node": "master",
+      "owner": {
+        "kind": "Node",
+        "name": "master"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 4,
+      "spec": {
+        "containers": [
+          {
+            "image": "registry.k8s.io/kube-scheduler:v1.37.2",
+            "name": "kube-scheduler",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": null
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "local-path-provisioner"
+      ],
+      "deleting": false,
+      "name": "local-path-provisioner-6b9d5f5bbd-2ck98",
+      "namespace": "local-path-storage",
+      "node": "worker",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "local-path-provisioner-6b9d5f5bbd"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "docker.io/rancher/local-path-provisioner:v0.0.37",
+            "name": "local-path-provisioner",
+            "resources": {
+              "limits": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "20m",
+                "memory": "32Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "alloy",
+        "config-reloader"
+      ],
+      "deleting": false,
+      "name": "alloy-2czc9",
+      "namespace": "logging",
+      "node": "master",
+      "owner": {
+        "kind": "DaemonSet",
+        "name": "alloy"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 10,
+      "spec": {
+        "containers": [
+          {
+            "image": "docker.io/grafana/alloy:v1.21.3",
+            "name": "alloy",
+            "resources": {
+              "limits": {
+                "cpu": "200m",
+                "memory": "192Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            }
+          },
+          {
+            "image": "quay.io/prometheus-operator/prometheus-config-reloader:v0.94.2@sha256:a1897c67478bc23434534e91ad3855280771196b1daf17144db9dbcb655bef71",
+            "name": "config-reloader",
+            "resources": {
+              "limits": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "10m",
+                "memory": "32Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "alloy",
+        "config-reloader"
+      ],
+      "deleting": false,
+      "name": "alloy-zqmqk",
+      "namespace": "logging",
+      "node": "worker",
+      "owner": {
+        "kind": "DaemonSet",
+        "name": "alloy"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "docker.io/grafana/alloy:v1.21.3",
+            "name": "alloy",
+            "resources": {
+              "limits": {
+                "cpu": "200m",
+                "memory": "192Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            }
+          },
+          {
+            "image": "quay.io/prometheus-operator/prometheus-config-reloader:v0.94.2@sha256:a1897c67478bc23434534e91ad3855280771196b1daf17144db9dbcb655bef71",
+            "name": "config-reloader",
+            "resources": {
+              "limits": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "10m",
+                "memory": "32Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "loki"
+      ],
+      "deleting": false,
+      "name": "loki-0",
+      "namespace": "logging",
+      "node": "worker",
+      "owner": {
+        "kind": "StatefulSet",
+        "name": "loki"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "docker.io/grafana/loki:3.7.9",
+            "name": "loki",
+            "resources": {
+              "limits": {
+                "cpu": "500m",
+                "memory": "1Gi"
+              },
+              "requests": {
+                "cpu": "200m",
+                "memory": "512Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "receiver"
+      ],
+      "deleting": false,
+      "name": "alert-receiver-849f658bc5-2gbtz",
+      "namespace": "monitoring",
+      "node": "worker",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "alert-receiver-849f658bc5"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "python:3.13.9-slim-bookworm",
+            "name": "receiver",
+            "resources": {
+              "limits": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "20m",
+                "memory": "32Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "alertmanager",
+        "config-reloader"
+      ],
+      "deleting": false,
+      "name": "alertmanager-monitoring-kube-prometheus-alertmanager-0",
+      "namespace": "monitoring",
+      "node": "worker",
+      "owner": {
+        "kind": "StatefulSet",
+        "name": "alertmanager-monitoring-kube-prometheus-alertmanager"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/prometheus/alertmanager:v0.35.0",
+            "name": "alertmanager",
+            "resources": {
+              "limits": {
+                "cpu": "250m",
+                "memory": "256Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            }
+          },
+          {
+            "image": "quay.io/prometheus-operator/prometheus-config-reloader:v0.95.2",
+            "name": "config-reloader",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          }
+        ],
+        "initContainers": [
+          {
+            "image": "quay.io/prometheus-operator/prometheus-config-reloader:v0.95.2",
+            "name": "init-config-reloader",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          }
+        ],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "grafana-sc-dashboard",
+        "grafana-sc-datasources",
+        "grafana"
+      ],
+      "deleting": false,
+      "name": "monitoring-grafana-55f76fccdd-qgr5q",
+      "namespace": "monitoring",
+      "node": "worker",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "monitoring-grafana-55f76fccdd"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/kiwigrid/k8s-sidecar:2.14.3",
+            "name": "grafana-sc-dashboard",
+            "resources": {
+              "limits": {
+                "cpu": "250m",
+                "memory": "256Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            }
+          },
+          {
+            "image": "quay.io/kiwigrid/k8s-sidecar:2.14.3",
+            "name": "grafana-sc-datasources",
+            "resources": {
+              "limits": {
+                "cpu": "250m",
+                "memory": "256Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            }
+          },
+          {
+            "image": "docker.io/grafana/grafana:13.3.1-distroless",
+            "name": "grafana",
+            "resources": {
+              "limits": {
+                "cpu": "300m",
+                "memory": "512Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [
+          {
+            "image": "docker.io/library/busybox:1.38.0",
+            "name": "init-chown-data",
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              },
+              "requests": {
+                "cpu": "10m",
+                "memory": "16Mi"
+              }
+            }
+          }
+        ],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "kube-prometheus-stack"
+      ],
+      "deleting": false,
+      "name": "monitoring-kube-prometheus-operator-77cdf7974-kcxsg",
+      "namespace": "monitoring",
+      "node": "worker",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "monitoring-kube-prometheus-operator-77cdf7974"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/prometheus-operator/prometheus-operator:v0.95.2",
+            "name": "kube-prometheus-stack",
+            "resources": {
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "kube-state-metrics"
+      ],
+      "deleting": false,
+      "name": "monitoring-kube-state-metrics-b9f9d6498-5nsgp",
+      "namespace": "monitoring",
+      "node": "worker",
+      "owner": {
+        "kind": "ReplicaSet",
+        "name": "monitoring-kube-state-metrics-b9f9d6498"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 17,
+      "spec": {
+        "containers": [
+          {
+            "image": "registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.20.0",
+            "name": "kube-state-metrics",
+            "resources": {
+              "limits": {
+                "cpu": "150m",
+                "memory": "192Mi"
+              },
+              "requests": {
+                "cpu": "30m",
+                "memory": "64Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "node-exporter"
+      ],
+      "deleting": false,
+      "name": "monitoring-prometheus-node-exporter-c8jmd",
+      "namespace": "monitoring",
+      "node": "master",
+      "owner": {
+        "kind": "DaemonSet",
+        "name": "monitoring-prometheus-node-exporter"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 2,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/prometheus/node-exporter:v1.12.1-distroless",
+            "name": "node-exporter",
+            "resources": {
+              "limits": {
+                "cpu": "150m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "30m",
+                "memory": "32Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "node-exporter"
+      ],
+      "deleting": false,
+      "name": "monitoring-prometheus-node-exporter-p6pb7",
+      "namespace": "monitoring",
+      "node": "worker",
+      "owner": {
+        "kind": "DaemonSet",
+        "name": "monitoring-prometheus-node-exporter"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/prometheus/node-exporter:v1.12.1-distroless",
+            "name": "node-exporter",
+            "resources": {
+              "limits": {
+                "cpu": "150m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "30m",
+                "memory": "32Mi"
+              }
+            }
+          }
+        ],
+        "initContainers": [],
+        "overhead": {}
+      }
+    },
+    {
+      "container_names": [
+        "prometheus",
+        "config-reloader"
+      ],
+      "deleting": false,
+      "name": "prometheus-monitoring-kube-prometheus-prometheus-0",
+      "namespace": "monitoring",
+      "node": "worker",
+      "owner": {
+        "kind": "StatefulSet",
+        "name": "prometheus-monitoring-kube-prometheus-prometheus"
+      },
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "spec": {
+        "containers": [
+          {
+            "image": "quay.io/prometheus/prometheus:v3.16.0-distroless",
+            "name": "prometheus",
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "2Gi"
+              },
+              "requests": {
+                "cpu": "500m",
+                "memory": "1Gi"
+              }
+            }
+          },
+          {
+            "image": "quay.io/prometheus-operator/prometheus-config-reloader:v0.95.2",
+            "name": "config-reloader",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          }
+        ],
+        "initContainers": [
+          {
+            "image": "quay.io/prometheus-operator/prometheus-config-reloader:v0.95.2",
+            "name": "init-config-reloader",
+            "resources": {
+              "limits": {
+                "cpu": null,
+                "memory": null
+              },
+              "requests": {
+                "cpu": null,
+                "memory": null
+              }
+            }
+          }
+        ],
+        "overhead": {}
+      }
+    }
+  ],
+  "schema_version": "1.0",
+  "sources": {
+    "collection_started_at": 1794489607,
+    "kubernetes": {
+      "commands": [
+        [
+          "get",
+          "nodes",
+          "-o",
+          "json"
+        ],
+        [
+          "-n",
+          "demo",
+          "get",
+          "deployment",
+          "demo",
+          "-o",
+          "json"
+        ],
+        [
+          "get",
+          "pods",
+          "--all-namespaces",
+          "-o",
+          "json"
+        ]
+      ],
+      "kubeconfig_path": "/etc/change-guard/kubeconfig",
+      "timestamps": {
+        "deployment": 1794489608,
+        "nodes": 1794489608,
+        "pods": 1794489608
+      }
+    },
+    "prometheus": {
+      "queries": {
+        "alerts": {
+          "count": 2,
+          "endpoint": "/api/v1/alerts",
+          "status": "success",
+          "timestamp": 1794489608
+        },
+        "error_numerator": {
+          "expr": "sum(rate(demo_http_requests_total{namespace=\"demo\",route=\"/work\",status=~\"5..\"}[5m]))",
+          "result_type": "vector",
+          "series_count": 0,
+          "status": "success",
+          "timestamp": 1794489608
+        },
+        "latency_bucket_source": {
+          "expr": "max(timestamp(demo_http_request_duration_seconds_bucket{namespace=\"demo\",route=\"/work\"}))",
+          "result_type": "vector",
+          "series_count": 1,
+          "status": "success",
+          "timestamp": 1794489608
+        },
+        "memory_source": {
+          "expr": "max(timestamp(container_memory_working_set_bytes{namespace=\"demo\",pod=~\"demo-.*\",container!=\"\"}))",
+          "result_type": "vector",
+          "series_count": 1,
+          "status": "success",
+          "timestamp": 1794489608
+        },
+        "memory_working_set_bytes": {
+          "expr": "max_over_time((sum by (pod) (container_memory_working_set_bytes{namespace=\"demo\",pod=~\"demo-.*\",container!=\"\"}))[15m:])",
+          "result_type": "vector",
+          "series_count": 1,
+          "status": "success",
+          "timestamp": 1794489608
+        },
+        "p95_seconds": {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(demo_http_request_duration_seconds_bucket{namespace=\"demo\",route=\"/work\"}[5m])))",
+          "result_type": "vector",
+          "series_count": 1,
+          "status": "success",
+          "timestamp": 1794489608
+        },
+        "request_counter_source": {
+          "expr": "max(timestamp(demo_http_requests_total{namespace=\"demo\",route=\"/work\"}))",
+          "result_type": "vector",
+          "series_count": 1,
+          "status": "success",
+          "timestamp": 1794489608
+        },
+        "request_rate": {
+          "expr": "sum(rate(demo_http_requests_total{namespace=\"demo\",route=\"/work\"}[5m]))",
+          "result_type": "vector",
+          "series_count": 1,
+          "status": "success",
+          "timestamp": 1794489608
+        },
+        "up": {
+          "expr": "max(up{namespace=\"demo\",pod=~\"demo-.*\"})",
+          "result_type": "vector",
+          "series_count": 1,
+          "status": "success",
+          "timestamp": 1794489608
+        },
+        "up_source": {
+          "expr": "max(timestamp(up{namespace=\"demo\",pod=~\"demo-.*\"}))",
+          "result_type": "vector",
+          "series_count": 1,
+          "status": "success",
+          "timestamp": 1794489608
+        }
+      },
+      "raw": {
+        "error_numerator": {
+          "data": {
+            "result": [],
+            "resultType": "vector"
+          },
+          "status": "success"
+        },
+        "latency_bucket_source": {
+          "data": {
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1794489608.181,
+                  "1794489599.013"
+                ]
+              }
+            ],
+            "resultType": "vector"
+          },
+          "status": "success"
+        },
+        "memory_source": {
+          "data": {
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1794489608.18,
+                  "1794489597.251"
+                ]
+              }
+            ],
+            "resultType": "vector"
+          },
+          "status": "success"
+        },
+        "memory_working_set_bytes": {
+          "data": {
+            "result": [
+              {
+                "metric": {
+                  "pod": "demo-8dd7bdf74-lllbl"
+                },
+                "value": [
+                  1794489608.174,
+                  "38936576"
+                ]
+              }
+            ],
+            "resultType": "vector"
+          },
+          "status": "success"
+        },
+        "p95_seconds": {
+          "data": {
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1794489608.177,
+                  "0.00475"
+                ]
+              }
+            ],
+            "resultType": "vector"
+          },
+          "status": "success"
+        },
+        "request_counter_source": {
+          "data": {
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1794489608.181,
+                  "1794489599.013"
+                ]
+              }
+            ],
+            "resultType": "vector"
+          },
+          "status": "success"
+        },
+        "request_rate": {
+          "data": {
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1794489608.175,
+                  "0.003508784241348215"
+                ]
+              }
+            ],
+            "resultType": "vector"
+          },
+          "status": "success"
+        },
+        "up": {
+          "data": {
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1794489608.178,
+                  "1"
+                ]
+              }
+            ],
+            "resultType": "vector"
+          },
+          "status": "success"
+        },
+        "up_source": {
+          "data": {
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1794489608.179,
+                  "1794489599.013"
+                ]
+              }
+            ],
+            "resultType": "vector"
+          },
+          "status": "success"
+        }
+      },
+      "url": "http://10.98.137.77:9090"
+    },
+    "schema_version": "1.0"
+  }
+}

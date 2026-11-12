@@ -1,0 +1,260 @@
+{
+  "schema": "go-0.3.2-postdeploy-acceptance/v1",
+  "captured_at": 1794491232,
+  "captured_at_iso": "2026-11-12T13:47:12Z",
+  "scope": "post-deploy acceptance: PR9 real restricted merge; PR8 read-only BLOCK proof",
+  "guard": {
+    "service": {
+      "exit": 0,
+      "lines": [
+        "active",
+        "/opt/change-guard/releases/0.3.2",
+        "change-guard 0.3.2 (rules go-2026-11-12.1)",
+        "{ path=/opt/change-guard/current/k8s-change-guard ; argv[]=/opt/change-guard/current/k8s-change-guard daemon --config /etc/change-guard/config.yaml ; ignore_errors=no ; start_time=[Thu 2026-11-12 21:45:25 CST] ; stop_time=[n/a] ; pid=103994 ; code=(null) ; status=0/0 }"
+      ],
+      "stderr": ""
+    },
+    "main": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "argo": {
+      "sync": "Synced",
+      "health": "Healthy",
+      "revision": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+      "operation_revision": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+      "operation_phase": "Succeeded",
+      "observed_at": "2026-11-12T13:46:10Z"
+    },
+    "nodes": [
+      {
+        "name": "master",
+        "ready": "True"
+      },
+      {
+        "name": "worker",
+        "ready": "True"
+      }
+    ],
+    "open_pr_count": 0
+  },
+  "pr9": {
+    "number": 9,
+    "state": "closed",
+    "merged": true,
+    "merged_at": "2026-11-12T13:45:25Z",
+    "merge_commit_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "evaluation": {
+      "evaluation_id": "ev-78c8a50fe61439c39c1a05d8",
+      "guard_version": "0.3.2",
+      "decision": "REVIEW",
+      "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+      "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+      "report_digest": "084913505de16a801db008841b304b34b2cab5ce9e78d15e8068923d8a527e1b",
+      "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d",
+      "evaluated_at": 1794491018,
+      "expires_at": 1794491300,
+      "findings": [
+        [
+          "REVIEW",
+          "AI_ADDITIONAL_RISK"
+        ],
+        [
+          "REVIEW",
+          "CAPACITY_POD_REQUESTS_UNRESERVED"
+        ],
+        [
+          "REVIEW",
+          "FIRING_ALERTS"
+        ]
+      ]
+    },
+    "approval": {
+      "comment_id": 6825277923,
+      "comment_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/9#issuecomment-6825277923",
+      "comment_body": "/guard approve ev-78c8a50fe61439c39c1a05d8",
+      "actor": "hey-mmm",
+      "approved_at_iso": "2026-11-12T13:43:52Z",
+      "remaining_seconds_at_approval": 272
+    },
+    "ci": {
+      "name": "Test, lint, render",
+      "conclusion": "success",
+      "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+      "app_id": 15368,
+      "run_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43227611904/job/131214767107"
+    },
+    "merge": {
+      "result": "MERGED",
+      "strategy": "fast-forward",
+      "github_merge_api_used": false,
+      "evaluation_id_resolved_from_index": "ev-78c8a50fe61439c39c1a05d8",
+      "evaluated_head": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+      "merge_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+      "synthetic_merge_sha": "f1efb1e208c833990234a93a247d4427283561c6",
+      "head_tree_sha": "d84a70999466951822f4f1c0a4afa0576eb3b40c",
+      "base_ancestor": true,
+      "merged_at": 1794491124,
+      "trusted_script_sha256": "094aae10d395643202803553b620d98a12e64ef981318988c61229231f464a09",
+      "command_exit": 0,
+      "trusted_script_local_sha256": "094aae10d395643202803553b620d98a12e64ef981318988c61229231f464a09",
+      "trusted_script_omits_evaluation_id": true,
+      "merge_invocation": [
+        "exec \"$1\" merge --config /etc/change-guard/config.yaml --pr \"$2\""
+      ]
+    },
+    "post_merge_commit": {
+      "sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+      "tree_sha": "d84a70999466951822f4f1c0a4afa0576eb3b40c",
+      "tree_matches_merge_record": true
+    }
+  },
+  "pr8": {
+    "number": 8,
+    "state": "closed",
+    "merged": false,
+    "merged_at": null,
+    "closed_at": "2026-11-12T13:41:56Z",
+    "closed_by": "hey-mmm",
+    "closed_by_note": "closed by go-pr-032 per root authorization; not by this acceptance dsh",
+    "head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+    "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "evaluation": {
+      "evaluation_id": "ev-250e5d31f8ee30f9dd9ec867",
+      "guard_version": "0.3.2",
+      "decision": "BLOCK",
+      "head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+      "findings": [
+        [
+          "BLOCK",
+          "FAULT_INJECTION"
+        ],
+        [
+          "REVIEW",
+          "AI_ADDITIONAL_RISK"
+        ],
+        [
+          "REVIEW",
+          "CAPACITY_POD_REQUESTS_UNRESERVED"
+        ],
+        [
+          "REVIEW",
+          "FIRING_ALERTS"
+        ],
+        [
+          "REVIEW",
+          "LOW_TRAFFIC"
+        ]
+      ]
+    },
+    "pre_close_proof": {
+      "captured_at_iso": "2026-11-12T13:41:44Z",
+      "status_state": "failure",
+      "status_description": "BLOCK FAULT_INJECTION: DEMO_STARTUP_FAIL requests deliberate startup failure [ev-250e5d31f8ee30f9dd9ec867]",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "merge_api_http": 405,
+      "merge_api_message": "Repository rule violations found\n\nRequired status check \"change-guard/release\" is failing.\n\nCannot update this protected ref.\n\n",
+      "direct_push_http": 422,
+      "main_after_probes": "321eb9517b83dc0e9261e16dcdb26016332dd7c3"
+    },
+    "timeline": [
+      {
+        "event": "fresh 0.3.2 BLOCK report/status",
+        "at_iso": "2026-11-12T13:41:10Z"
+      },
+      {
+        "event": "unmergeable/direct-push proof",
+        "at_iso": "2026-11-12T13:41:44Z"
+      },
+      {
+        "event": "PR closed by go-pr-032",
+        "at_iso": "2026-11-12T13:41:56Z"
+      },
+      {
+        "event": "PR9 merged via Go restricted fast-forward",
+        "at_iso": "2026-11-12T13:45:25Z"
+      }
+    ]
+  },
+  "protection": {
+    "baseline_captured_at_iso": "2026-11-12T13:14:12Z",
+    "baseline_main": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "ruleset_ids": [
+      27101186,
+      27101219
+    ],
+    "rulesets_unchanged_vs_baseline": true,
+    "normalized_rules_sha256": "be5c3efb77326ad4728c5d3052a610215646c84501dd8d6d01051973b57b24c8",
+    "rulesets": [
+      {
+        "id": 27101219,
+        "name": "change-guard-main-required-checks",
+        "enforcement": "active",
+        "updated_at": "2026-11-12T16:34:15.105+08:00",
+        "rules": [
+          {
+            "type": "required_status_checks",
+            "parameters": {
+              "strict_required_status_checks_policy": true,
+              "do_not_enforce_on_create": false,
+              "required_status_checks": [
+                {
+                  "context": "change-guard/release"
+                },
+                {
+                  "context": "Test, lint, render",
+                  "integration_id": 15368
+                }
+              ]
+            }
+          }
+        ],
+        "bypass_actors": []
+      },
+      {
+        "id": 27101186,
+        "name": "change-guard-main-updates",
+        "enforcement": "active",
+        "updated_at": "2026-11-12T16:33:40.635+08:00",
+        "rules": [
+          {
+            "type": "update"
+          },
+          {
+            "type": "deletion"
+          },
+          {
+            "type": "non_fast_forward"
+          },
+          {
+            "type": "pull_request",
+            "parameters": {
+              "required_approving_review_count": 0,
+              "dismiss_stale_reviews_on_push": true,
+              "required_reviewers": [],
+              "require_code_owner_review": false,
+              "require_last_push_approval": false,
+              "required_review_thread_resolution": true,
+              "require_extra_approval_for_unattributed_changes": true,
+              "allowed_merge_methods": [
+                "merge"
+              ]
+            }
+          }
+        ],
+        "bypass_actors": [
+          {
+            "actor_id": null,
+            "actor_type": "DeployKey",
+            "bypass_mode": "always"
+          }
+        ]
+      }
+    ],
+    "classic_branch_protection": {
+      "http": 404,
+      "state": "absent",
+      "detail": "GET /repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/branches/main/protection -> 404 {\"message\": \"Branch not protected\", \"documentation_url\": \"https://docs.github.com/rest/branches/branch-protect"
+    }
+  }
+}

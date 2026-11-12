@@ -2,10 +2,9 @@
 
 适用主机：`11.0.1.10`（master，guard 与项目一控制面同机）。
 服务用户：`change-guard`。状态目录：`/var/lib/change-guard`。
-当前 Go `0.3.0` 已完成 Windows/Linux 测试和单二进制构建，产物可部署，但尚未部署，
-live 验收 pending；历史 Python `0.2.3` 的真实合并/回退/发布后结果见
-`docs/acceptance.md`。本文只描述 Go 操作，不复制时效数据，也不把历史 Python 结果
-当成本文所述 Go 版本的上线证明。
+Go 0.3.2 已完成真实门禁、发布、回退和最终环境验收。危险 PR8 被阻断；PR9 与回退 PR10 均经新评估、精确审批、可信 CI 和受限 fast-forward 合入，发布与回退各通过 6/6 postdeploy。最终两节点 Ready、ArgoCD Synced / Healthy、业务恢复旧镜像，测试流量已清理。
+
+详见 [Go 最终验收](go-acceptance-final.md)；历史版本记录保留各自的时间和范围。
 
 ## 1. 五分钟日常检查
 
@@ -87,6 +86,10 @@ gh api "repos/$REPO/commits/<head-sha>/statuses" |
 - 到期监测 timer：每 `1h` 触发一次
 - 最近一次成功：`systemctl status change-guard-token-renew.service`
 - 剩余时间：`change-guard check-token ... --min-remaining 3600` 退出 0
+
+0.3.1 起同时接受“位置参数在前”和“flag 在前”；0.3.0 只接受后者，曾导致首次部署的
+token/verify/timer 全部失败。生产当前只应运行 0.3.2；统一使用位置参数在前，既符合
+现有 unit/Ansible，也避免回退到旧二进制时再次触发该故障。
 
 ```sh
 systemctl start change-guard-token-renew.service
@@ -220,6 +223,12 @@ different artifact SHA-256`）。这是不可变 release 的保护，不要删�
 不要把 `--version` 当成版本号同步：`internal/guard/common.go` 的 `Version` 与
 tarball 名不一致时，`change-guard --version` 会暴露矛盾，Ansible 的版本核验会失败。
 
+`0.3.0` 就是一次真实教训：首次部署在 `check-token KUBECONFIG --min-remaining ...`
+处以 `rc=2` 失败，随后回切 Python `0.2.3`。修复 CLI 使两种参数顺序都可用后，由于
+`/opt/change-guard/releases/0.3.0` 已存在且 artifact 哈希会变化，不能复用同版本目录，
+因此升为 `0.3.1`。旧目录和旧 artifact 保留审计；不要删除 `.complete`、改
+`.artifact.sha256` 或重打同版本号来“修复”部署。
+
 ## 7. 标准发布演示
 
 ### 7.1 正常发布
@@ -245,14 +254,22 @@ tarball 名不一致时，`change-guard --version` 会暴露矛盾，Ansible 的
 `charts/demo` 与操作员 pin 不一致也会是 BLOCK/ERROR，不可审批。**不要**在演示中尝试
 用审批覆盖 BLOCK；它必须失败。
 
-已记录的真实证据：零副本危险 PR 的 merge API 返回 405；`DEMO_STARTUP_FAIL=true`
-在对应评估中解析为 `FAULT_INJECTION` BLOCK。详见
-[真实拒绝证据](evidence/hard-boundary-live-rejections.json)和[验收报告](acceptance.md)。
+历史 Python 已记录：零副本危险 PR 的 merge API 返回 405；`DEMO_STARTUP_FAIL=true`
+在对应评估中解析为 `FAULT_INJECTION` BLOCK。Go 0.3.1 的 PR8 也复现了：零副本先
+BLOCK，追加启动故障提交后旧 head 失效、新 head 重新评估仍 BLOCK，GitHub merge API
+405，普通账号直接更新 main 422。详见
+[Python 真实拒绝](evidence/hard-boundary-live-rejections.json)、
+[Go PR8 保护证明](evidence/go-danger-protection-proof.json)、
+[head 重评](evidence/go-danger-head-invalidation.json)和[验收报告](acceptance.md)。
+以上历史记录保留原时间窗口；Go 0.3.2 的独立重跑见最终验收。
 
 ### 7.3 REVIEW 演示
 
 资源明显缩减、当前错误率/延迟、容量不足、AI 新风险等会进入 REVIEW。REVIEW 不是
-“随便点个 approve”：必须使用当前评估 ID 的精确评论。
+“随便点个 approve”：必须使用当前评估 ID 的精确评论。Go 0.3.1 的 PR9 已完成一次
+REVIEW + `/guard approve ev-e941441d7a1f429dfbf37dd5`；但随后 merge 因 0.3.1 的
+评估 ID/匿名 CI 缺陷被拒绝，不能把“审批成功”说成“发布成功”。0.3.2 修复后仍需
+在真实发布窗口重新验证。
 
 ## 8. 精确审批与合并
 
@@ -264,7 +281,12 @@ tarball 名不一致时，`change-guard --version` 会暴露矛盾，Ansible 的
 /guard approve ev-xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-由配置的 `approvers` 在原 PR 上发一条**整条只有这个命令**的评论。审批必须：
+由配置的 `approvers` 在原 PR 上发一条**整条只有这个命令**的评论。0.3.1 的 PR9 由
+用户授权的 dsh 操作员以 owner 账号 `hey-mmm` 发出该评论；这是**人工审批的代理执行**，
+不是模型自批。在线 DeepSeek 只输出解释与额外风险，没有 GitHub 凭据、审批权限或
+执行工具，不能发审批、合并或回滚；评审时不要把“AI 建议”写成“AI 批准”。
+
+审批必须：
 
 - 作者是 allowlist 成员；
 - 作者有当前写/管理权限；
@@ -277,6 +299,13 @@ tarball 名不一致时，`change-guard --version` 会暴露矛盾，Ansible 的
 ```text
 success  REVIEW approved by <login> [ev-...]
 ```
+
+AI 的建议必须被当作待核对假设。0.3.1 的 PR9 中，DeepSeek 把被脱敏的环境变量值
+当成“可能带入演练故障开关”的新风险；独立 reviewer 用 base/head 精确 blob 证明
+`APP_ENV`、`DEMO_ERROR_RATE`、`DEMO_LATENCY_MS`、`DEMO_STARTUP_FAIL` 均未改变，
+该风险被证伪，属于 AI 误报。另有未预留 requests、`KubeCPUOvercommit`、零初始流量
+等真实 REVIEW 限制被保留。AI 新增风险只能提升到 REVIEW，不能自批，也不能把误报
+变成硬阻断或把真实风险降级。
 
 ### 8.2 合并前
 
@@ -302,30 +331,28 @@ grep -E '^(merge_required_ci|approved_chart_digest):' \
 
 ### 8.3 执行
 
-正常合并推荐 root 包装脚本（在受信部署目录执行；例如
+正常合并只使用受信 root 包装脚本（在受信部署目录执行；例如
 `/home/myt/change-guard-deploy/scripts/merge-release.sh`）：
 
 ```sh
 sudo scripts/merge-release.sh <N>
 ```
 
-它会暂停 `change-guard.service`，避免 daemon 的非阻塞 state lock 与 merge 争抢；
-`trap ... EXIT` 在退出时恢复原 polling 状态，并在 `runuser -u change-guard` 后读取
-`/etc/change-guard/proxy.env` 再执行底层 merge。
+正式脚本只接受 `PR_NUMBER`。0.3.1 的故障正是脚本只传 PR 号码、而 Go 端要求显式评估
+ID；0.3.2 改为在 state lock 内读取该 PR **当前索引**的 `evaluation_id`，自动选择当前
+评估。脚本暂停 `change-guard.service`，`trap ... EXIT` 在退出时恢复
+原 polling 状态，并在 `runuser -u change-guard` 后读取 `/etc/change-guard/proxy.env`
+再执行底层 merge。底层命令的显式 `--evaluation-id` 是可选核对项，只接受当前索引
+记录；旧 ID、未索引 PR、缺失/非法记录都 fail closed。CI 证明仍用服务现有的
+`github.token` 读取 check-runs（同一 head 实测 200、2 个检查，不需要新增
+Checks/Administration 权限），固定 `api.github.com`、禁止 redirect、保留 2 MiB
+响应上限和 head/app/required-name/latest-success 校验。
 
-底层 Go 二进制仍可直接运行，但必须先停 daemon 或串行化，否则可能得到 daemon
-busy/锁错误：
-
-```sh
-sudo systemctl stop change-guard.service
-sudo -u change-guard \
-  env HTTP_PROXY=http://11.0.1.1:7890 \
-      HTTPS_PROXY=http://11.0.1.1:7890 \
-      NO_PROXY='127.0.0.1,localhost,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local' \
-  /opt/change-guard/current/k8s-change-guard merge \
-  --config /etc/change-guard/config.yaml --pr <N>
-sudo systemctl start change-guard.service
-```
+**不要为了绕过拒绝手工拼 fallback shell，也不要停服务后直接运行底层 merge 或直接
+push main。** 0.3.1 的 fallback 本身就是事故暴露点：脚本当时漏传评估 ID，操作员用
+自定义 shell 补传后仍被匿名 CI 403 拒绝，`main` 未变。0.3.2 已修复这两个实现问题；
+遇到 `REFUSED` 应按错误修复报告/审批/CI/权限，而不是换入口。若确需排查，只读检查
+merge 记录、当前报告与 `--help`，保持 daemon 的串行化边界。
 
 成功输出 `MERGED`，记录 `strategy=fast-forward`、`merge_sha=head`、
 `synthetic_merge_sha` 和 `rollback.command=git revert <head>`。失败输出 `REFUSED`，
@@ -356,6 +383,11 @@ sudo -u change-guard \
 `--expected-sha` 是 Argo 应同步的 GitOps revision（merge 后的 main head）；
 `--expected-app-sha` 是 `/version` 暴露的镜像源提交。两者通常不同，必须同时传；
 不能用一个替代另一个。
+
+正常发布的决策通常是 **REVIEW + 精确人工批准**，不是自动 PASS。即使 6/6 postdeploy
+通过，也只证明本次窗口；单 worker、本地 PVC 没有节点/磁盘容灾，指标来自最近
+**5 分钟**聚合，部署后 60 秒等待不是新版本的专属指标桶，99.9% SLO 需要完整
+**七天**数据。不要把一次通过写成长期可用性证明。
 
 验证器按 Pod **spec** 的容器名/image 校验期望镜像，并用
 `status.containerStatuses[].imageID` 核运行 digest。containerd 的
@@ -507,3 +539,65 @@ gh api repos/$REPO/rulesets/<id> |
 - 可以展示发布后 Argo/Deployment/HTTP/metrics；
 - **不要**展示尚未跑过的“CI 已通过”“最终验收通过”或伪造的 commit；
 - 失败就说失败，记录日志和下一步，不用模型或人工审批把 BLOCK 变绿。
+
+## 13. 回切到 Python 0.2.3
+
+仅由 root 在 Go 服务确认异常且需要紧急回切时执行。源码备份和离线 bundle **不是**
+服务回切包；回切依赖 master 上保留的旧 release、旧 unit 和部署前备份。失败 0.3.0、
+历史部署 0.3.1 和当前 0.3.2 的目录都不能删除或覆盖，保留用于审计；0.3.2 的部署前
+备份是 `pre-go-0.3.2-20261112-133927`，旧版备份继续保留。
+
+1. 确认旧 release 和备份存在，先只读检查，不要直接移动目录：
+
+   ```sh
+   B=/var/backups/change-guard/pre-go-0.3.2-20261112-133927
+   sudo ls -la "$B"
+   sudo ls -la /opt/change-guard/releases/0.2.3
+   sudo readlink -f /opt/change-guard/current
+   sudo systemctl cat change-guard.service        # 记录当前 Go unit，便于再切回
+   sudo systemctl status change-guard-token-renew.timer change-guard-token-check.timer --no-pager
+   ```
+
+2. 停止 Go 服务和两个 token timer；不要删除 `/var/lib/change-guard` 的历史报告：
+
+   ```sh
+   sudo systemctl stop change-guard.service
+   sudo systemctl stop change-guard-token-renew.timer change-guard-token-check.timer
+   sudo systemctl disable change-guard-token-renew.timer change-guard-token-check.timer
+   ```
+
+3. 从备份恢复**旧的 unit 和非密配置**。先看备份里的实际文件名，逐项复制；不要把
+   备份中的 `proxy.env`、token、kubeconfig 打印到终端。若旧 unit 的 `ExecStart`
+   指向 `/opt/change-guard/current`，再切换 symlink：
+
+   ```sh
+   sudo cp "$B/<备份中的 change-guard.service>" /etc/systemd/system/change-guard.service
+   # 仅在确认旧配置文件名和内容后恢复：
+   # sudo cp "$B/<备份中的 config>" /etc/change-guard/config.yaml
+   sudo ln -sfn /opt/change-guard/releases/0.2.3 /opt/change-guard/current
+   sudo systemctl daemon-reload
+   ```
+
+   不要恢复管理员 kubeconfig，不要覆盖 `/etc/kubernetes/admin.conf`，不要把 Python
+   源码 ZIP 解到 `/opt/change-guard`。
+
+4. 启动并核对旧服务：
+
+   ```sh
+   sudo systemctl start change-guard.service
+   systemctl is-active change-guard.service
+   sudo systemctl status change-guard.service --no-pager
+   sudo journalctl -u change-guard.service --since '-10 min' --no-pager | tail -80
+   curl -fsS http://10.98.137.77:9090/-/ready
+   ```
+
+   旧 Python 版本没有 Go 的 `check-token`/`health-check.sh` 时可继续使用当时的旧
+   timer 和旧健康脚本；以旧 release 自带的入口为准，不要用 Go 二进制去验证 Python
+   release。
+
+5. 回切后记录：旧 release 路径、旧 unit 来源、回切时间、服务状态、GitHub 状态是否
+   仍在轮询、token 剩余时间和 main SHA。历史 Python 结果只能标注为历史回切，不能
+   写成 Go `0.3.2` 验收成功。
+
+6. 若要再次切回 Go，必须重新执行对应版本的 Ansible 和验证；不要把 `current` 直接
+   指回旧 Go 目录而不核对 unit、config、token 和 RBAC。

@@ -1,0 +1,100 @@
+{
+  "pr": 9,
+  "merged": true,
+  "release_head": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "evaluated_report": {
+    "evaluation_id": "ev-431f5d57734714b1da936261",
+    "guard_version": "0.3.2",
+    "rule_version": "go-2026-11-12.1",
+    "decision": "REVIEW",
+    "evaluated_at": 1794490821,
+    "expires_at": 1794491104,
+    "changed_paths": [
+      "gitops/demo/values.yaml"
+    ],
+    "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+    "findings": [
+      {
+        "severity": "REVIEW",
+        "rule_id": "AI_ADDITIONAL_RISK",
+        "message": "the model identified additional risk; it can only raise the decision to REVIEW"
+      },
+      {
+        "severity": "REVIEW",
+        "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+        "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated"
+      },
+      {
+        "severity": "REVIEW",
+        "rule_id": "FIRING_ALERTS",
+        "message": "one or more relevant alerts are firing"
+      },
+      {
+        "severity": "REVIEW",
+        "rule_id": "LOW_TRAFFIC",
+        "message": "traffic is too low to treat observed zero errors or latency as healthy"
+      }
+    ],
+    "block_or_error": [],
+    "metrics": {
+      "error_ratio": null,
+      "firing_alerts": 1,
+      "low_traffic": true,
+      "memory_working_set_bytes": 38801408,
+      "p95_seconds": null,
+      "request_rate": 0,
+      "source_timestamps": {
+        "error_ratio": null,
+        "memory_working_set_bytes": 1794490809.021,
+        "p95_seconds": 1794490814.016,
+        "request_rate": 1794490814.016,
+        "up": 1794490814.016
+      },
+      "up": 1
+    }
+  },
+  "manual_review": {
+    "scope_only_gitops_demo_values": true,
+    "base_values_sha256": "e31538bae16a0f0824f37a4de8d32b8caf351f437ad21266392ead573ba02fac",
+    "head_values_sha256": "095f335b9de3ad4f7ac1c926262cc3f78662a0a016bd23706490e81e106f6432",
+    "env_values_unchanged": {
+      "APP_ENV": "production",
+      "DEMO_ERROR_RATE": "0",
+      "DEMO_LATENCY_MS": "0",
+      "DEMO_STARTUP_FAIL": "false"
+    },
+    "redacted_env_risk_disposition": "refuted from exact base/head blobs; the two changed rendered env values are APP_VERSION/GIT_SHA derived from the digest source, not fault injection",
+    "capacity_disposition": "known REVIEW: 1 worker (both nodes Ready), KubeCPUOvercommit firing, 35 pods without requests; capacity audit says overcommitted=false and projected CPU 1860m/4000m on worker",
+    "low_traffic_disposition": "0.3.2 report window request_rate=0 rps > 0.1 threshold, error_ratio=0, p95=Nones; LOW_TRAFFIC not raised in the approved report",
+    "rollback_disposition": "git revert of release head; imperative rollback is not accepted",
+    "ci": {
+      "name": "Test, lint, render",
+      "app_id": 15368,
+      "app_slug": "github-actions",
+      "head_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+      "conclusion": "success",
+      "check_run_id": 131214767107,
+      "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43227611904/job/131214767107"
+    }
+  },
+  "approval": {
+    "evaluation_id": "ev-78c8a50fe61439c39c1a05d8",
+    "comment_body": "/guard approve ev-78c8a50fe61439c39c1a05d8",
+    "comment_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/9#issuecomment-6825277923",
+    "approved_at_iso": "2026-11-12T13:43:52Z",
+    "remaining_seconds_at_approval": 272,
+    "reason": "Independent 0.3.2 post-deploy approval of Go evaluation ev-78c8a50fe61439c39c1a05d8 for PR #9. Decision REVIEW; no BLOCK or ERROR. Head a9a29da30832380bbdbda091177c738d7a7fde4b / base 321eb9517b83dc0e9261e16dcdb26016332dd7c3 are byte-identical to the previously reviewed 0.3.1 candidate; changed scope is only gitops/demo/values.yaml (digest sha256:af77edde… to image, app version labels, and two env values). The two redacted env values were verified from the unchanged head/base blobs in the prior review: APP_ENV=production, DEMO_ERROR_RATE=0, DEMO_LATENCY_MS=0, DEMO_STARTUP_FAIL=false (no fault injection shipped). The AI redaction concern is therefore refuted by the exact blobs, not by trusting the model. Known REVIEW limitations accepted: capacity headroom (KubeCPUOvercommit firing, unreserved pod requests), zero traffic so health must be proven by postdeploy rollout/version checks plus bounded load, and rollback must be a Git revert. Required GitHub Actions check \"Test, lint, render\" (app id 15368) is success on head. Chart pin unchanged. Report expires 2026-11-12T13:48:20Z. Approval does not change any rule/protection."
+  },
+  "merge": {
+    "result": "MERGED",
+    "strategy": "fast-forward",
+    "merge_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+    "synthetic_merge_sha": "f1efb1e208c833990234a93a247d4427283561c6",
+    "github_merge_api_used": false,
+    "base_ancestor": true,
+    "trusted_script": "trusted scripts/merge-release.sh -> Go MergeRelease",
+    "main_after": "a9a29da30832380bbdbda091177c738d7a7fde4b"
+  },
+  "environment_variable_risk_was_ai_false_positive": true
+}

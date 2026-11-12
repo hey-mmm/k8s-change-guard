@@ -1,0 +1,33 @@
+{
+  "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+  "required_name": "Test, lint, render",
+  "ok": true,
+  "latest_check_run": {
+    "id": 131231410125,
+    "name": "Test, lint, render",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+    "started_at": "2026-11-12T13:59:15Z",
+    "completed_at": "2026-11-12T13:59:34Z",
+    "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43232556254/job/131231410125"
+  },
+  "app": {
+    "slug": "github-actions",
+    "id": 15368,
+    "name": "GitHub Actions"
+  },
+  "check_run_count": 1,
+  "workflow_runs": [
+    {
+      "id": 43232556254,
+      "name": "CI",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+      "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43232556254"
+    }
+  ],
+  "captured_at": 1794492286
+}

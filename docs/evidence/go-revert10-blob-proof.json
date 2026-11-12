@@ -1,0 +1,14 @@
+{
+  "release": {
+    "blob_sha": "a6008144f8b43a8af7b3f7e862d90fc8ae677a29",
+    "sha256": "2866e5ca5eabde27a74aedde3cb633a27695ac4d9e6eed037e5d9d4cd126020d"
+  },
+  "revert": {
+    "blob_sha": "24eb33f0cf8eb57143b89e8ed990ac12dd7198b1",
+    "sha256": "91df87dc8aa6625e9d1afe3fb5c3c4bf45751ba724d7e90a86c3b06631bb1954"
+  },
+  "anchor": {
+    "blob_sha": "24eb33f0cf8eb57143b89e8ed990ac12dd7198b1",
+    "sha256": "91df87dc8aa6625e9d1afe3fb5c3c4bf45751ba724d7e90a86c3b06631bb1954"
+  }
+}

@@ -1,0 +1,430 @@
+{
+  "captured_at": 1794490864,
+  "captured_at_iso": "2026-11-12T13:41:04Z",
+  "pr": {
+    "number": 8,
+    "title": "Acceptance: BLOCK zero replica release (Go 0.3.1)",
+    "state": "open",
+    "draft": false,
+    "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/8",
+    "head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+    "head_ref": "acceptance/go-block-zero-replicas-20261112212451",
+    "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "base_ref": "main",
+    "mergeable": true,
+    "mergeable_state": "blocked",
+    "merge_commit_sha": "d51d56343dcf6fc5053df8ea69de57ca5b7a65ca"
+  },
+  "index_entry": {
+    "approval": null,
+    "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "base_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+    "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+    "closed_revoked": false,
+    "decision": "ERROR",
+    "evaluation_id": "ev-16374bd35a8051b0840c26dd",
+    "expires_at": 1794491087,
+    "guard_version": "0.3.1",
+    "head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+    "head_tree_sha": "d5cbfb90378f5f920b14b0ad709c8c1210cfda86",
+    "last_error": "GitHub API returned HTTP 503",
+    "last_status": {
+      "context": "change-guard/release",
+      "description": "ERROR: GitHub API returned HTTP 503",
+      "evaluation_id": "ev-16374bd35a8051b0840c26dd",
+      "github_id": 58733644327,
+      "posted_at": 1794490787,
+      "sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+      "state": "error"
+    },
+    "number": 8,
+    "pending_base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d",
+    "render_digest": "542875c712e3919aaf6bf700a99cfd60f9f53d18b932e8eeb778d7791d1daef2",
+    "report_digest": "621def019cf9652f2d03d0b183e2d046a08a03fffb1349fda5d3fb19fd3cf2a6",
+    "updated_at": 1794490633
+  },
+  "report": {
+    "ai": {
+      "error": "GitHub API returned HTTP 503",
+      "status": "error"
+    },
+    "base_branch": "main",
+    "base_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "chart_digest": null,
+    "created_at": 1794490787,
+    "decision": "ERROR",
+    "evaluated_at": 1794490787,
+    "evaluation": {
+      "changes": [],
+      "decision": "ERROR",
+      "evaluated_at": 1794490787,
+      "expires_at": 1794491087,
+      "findings": [
+        {
+          "evidence": {},
+          "field": "evaluation",
+          "message": "GitHub API returned HTTP 503",
+          "rule_id": "DAEMON_EVALUATION_ERROR",
+          "severity": "ERROR"
+        }
+      ],
+      "render_digest": null
+    },
+    "evaluation_id": "ev-16374bd35a8051b0840c26dd",
+    "evidence": {
+      "collected_at": 1794490787,
+      "errors": [
+        "GitHub API returned HTTP 503"
+      ]
+    },
+    "evidence_digest": "83d4ff5c808e1ebd85e0f321076b430fd08dfcd3c64b00d4a7cd8e7158c6e351",
+    "expires_at": 1794491087,
+    "findings": [
+      {
+        "evidence": {},
+        "field": "evaluation",
+        "message": "GitHub API returned HTTP 503",
+        "rule_id": "DAEMON_EVALUATION_ERROR",
+        "severity": "ERROR"
+      }
+    ],
+    "guard_version": "0.3.2",
+    "head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+    "policy_binding": {
+      "guard_version": "0.3.2",
+      "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d",
+      "policy_schema_version": 1,
+      "rule_version": "go-2026-11-12.1"
+    },
+    "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d",
+    "pull_request": {
+      "author": "hey-mmm",
+      "number": 8,
+      "title": "Acceptance: BLOCK zero replica release (Go 0.3.1)"
+    },
+    "report_digest": "22f438255d1b8965a6ce5772fb0d9bc4e127c76831ab54ae2ae556b9a4c9b576",
+    "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+    "rule_version": "go-2026-11-12.1",
+    "schema_version": 2,
+    "status_context": "change-guard/release",
+    "type": "evaluation-error"
+  },
+  "status": {
+    "state": "pending",
+    "statuses": [
+      {
+        "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/statuses/9953651978cbb862e78d80fb8e582679f4ba3f19",
+        "avatar_url": "https://avatars.githubusercontent.com/u/202397327?v=4",
+        "id": 58733734460,
+        "node_id": "SC_kwDOVqRdMs8AAAANrM2qPA",
+        "state": "pending",
+        "description": "Evaluating release; pending evidence and policy checks [9953651/321eb95]",
+        "target_url": null,
+        "context": "change-guard/release",
+        "created_at": "2026-11-12T13:40:59Z",
+        "updated_at": "2026-11-12T13:40:59Z"
+      }
+    ],
+    "latest_by_context": {
+      "change-guard/release": {
+        "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/statuses/9953651978cbb862e78d80fb8e582679f4ba3f19",
+        "avatar_url": "https://avatars.githubusercontent.com/u/202397327?v=4",
+        "id": 58733734460,
+        "node_id": "SC_kwDOVqRdMs8AAAANrM2qPA",
+        "state": "pending",
+        "description": "Evaluating release; pending evidence and policy checks [9953651/321eb95]",
+        "target_url": null,
+        "context": "change-guard/release",
+        "created_at": "2026-11-12T13:40:59Z",
+        "updated_at": "2026-11-12T13:40:59Z"
+      }
+    },
+    "sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+    "combined_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19"
+  },
+  "check_run": {
+    "total_count": 2,
+    "matching": [
+      {
+        "id": 131213809503,
+        "name": "Test, lint, render",
+        "node_id": "CR_kwDOVqRdMs8AAAAejPPXXw",
+        "head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+        "external_id": "fa61dd3d-ee31-5db4-b5de-810d1d9ea711",
+        "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/check-runs/131213809503",
+        "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43227339938/job/131213809503",
+        "details_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43227339938/job/131213809503",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T13:26:41Z",
+        "completed_at": "2026-11-12T13:27:02Z",
+        "output": {
+          "title": null,
+          "summary": null,
+          "text": null,
+          "annotations_count": 0,
+          "annotations_url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/check-runs/131213809503/annotations"
+        },
+        "check_suite": {
+          "id": 117055642383
+        },
+        "app": {
+          "id": 15368,
+          "client_id": "Iv1.05c79e9ad1f6bdfa",
+          "slug": "github-actions",
+          "node_id": "MDM6QXBwMTUzNjg=",
+          "owner": {
+            "login": "github",
+            "id": 9919,
+            "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+            "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/github",
+            "html_url": "https://github.com/github",
+            "followers_url": "https://api.github.com/users/github/followers",
+            "following_url": "https://api.github.com/users/github/following{/other_user}",
+            "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+            "organizations_url": "https://api.github.com/users/github/orgs",
+            "repos_url": "https://api.github.com/users/github/repos",
+            "events_url": "https://api.github.com/users/github/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/github/received_events",
+            "type": "Organization",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "name": "GitHub Actions",
+          "description": "Automate your workflow from idea to production",
+          "external_url": "https://help.github.com/en/actions",
+          "html_url": "https://github.com/apps/github-actions",
+          "created_at": "2018-07-30T09:30:17Z",
+          "updated_at": "2026-06-18T16:17:48Z",
+          "permissions": {
+            "actions": "write",
+            "administration": "read",
+            "artifact_metadata": "write",
+            "attestations": "write",
+            "checks": "write",
+            "code_quality": "write",
+            "contents": "write",
+            "copilot_requests": "write",
+            "deployments": "write",
+            "discussions": "write",
+            "drives": "write",
+            "issues": "write",
+            "merge_queues": "write",
+            "metadata": "read",
+            "models": "read",
+            "packages": "write",
+            "pages": "write",
+            "pull_requests": "write",
+            "repository_hooks": "write",
+            "repository_projects": "write",
+            "security_events": "write",
+            "statuses": "write",
+            "vulnerability_alerts": "read"
+          },
+          "events": [
+            "branch_protection_rule",
+            "check_run",
+            "check_suite",
+            "create",
+            "delete",
+            "deployment",
+            "deployment_status",
+            "discussion",
+            "discussion_comment",
+            "fork",
+            "gollum",
+            "issues",
+            "issue_comment",
+            "label",
+            "merge_group",
+            "milestone",
+            "page_build",
+            "public",
+            "pull_request",
+            "pull_request_review",
+            "pull_request_review_comment",
+            "push",
+            "registry_package",
+            "release",
+            "repository",
+            "repository_dispatch",
+            "status",
+            "watch",
+            "workflow_dispatch",
+            "workflow_run"
+          ]
+        },
+        "pull_requests": [
+          {
+            "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/pulls/8",
+            "id": 5278216413,
+            "number": 8,
+            "head": {
+              "ref": "acceptance/go-block-zero-replicas-20261112212451",
+              "sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+              "repo": {
+                "id": 1453612338,
+                "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes",
+                "name": "Full-Stack-Observability-in-Kubernetes"
+              }
+            },
+            "base": {
+              "ref": "main",
+              "sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+              "repo": {
+                "id": 1453612338,
+                "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes",
+                "name": "Full-Stack-Observability-in-Kubernetes"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "latest": {
+      "id": 131213809503,
+      "name": "Test, lint, render",
+      "node_id": "CR_kwDOVqRdMs8AAAAejPPXXw",
+      "head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+      "external_id": "fa61dd3d-ee31-5db4-b5de-810d1d9ea711",
+      "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/check-runs/131213809503",
+      "html_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43227339938/job/131213809503",
+      "details_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/actions/runs/43227339938/job/131213809503",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-12T13:26:41Z",
+      "completed_at": "2026-11-12T13:27:02Z",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/check-runs/131213809503/annotations"
+      },
+      "check_suite": {
+        "id": 117055642383
+      },
+      "app": {
+        "id": 15368,
+        "client_id": "Iv1.05c79e9ad1f6bdfa",
+        "slug": "github-actions",
+        "node_id": "MDM6QXBwMTUzNjg=",
+        "owner": {
+          "login": "github",
+          "id": 9919,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/github",
+          "html_url": "https://github.com/github",
+          "followers_url": "https://api.github.com/users/github/followers",
+          "following_url": "https://api.github.com/users/github/following{/other_user}",
+          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+          "organizations_url": "https://api.github.com/users/github/orgs",
+          "repos_url": "https://api.github.com/users/github/repos",
+          "events_url": "https://api.github.com/users/github/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/github/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "name": "GitHub Actions",
+        "description": "Automate your workflow from idea to production",
+        "external_url": "https://help.github.com/en/actions",
+        "html_url": "https://github.com/apps/github-actions",
+        "created_at": "2018-07-30T09:30:17Z",
+        "updated_at": "2026-06-18T16:17:48Z",
+        "permissions": {
+          "actions": "write",
+          "administration": "read",
+          "artifact_metadata": "write",
+          "attestations": "write",
+          "checks": "write",
+          "code_quality": "write",
+          "contents": "write",
+          "copilot_requests": "write",
+          "deployments": "write",
+          "discussions": "write",
+          "drives": "write",
+          "issues": "write",
+          "merge_queues": "write",
+          "metadata": "read",
+          "models": "read",
+          "packages": "write",
+          "pages": "write",
+          "pull_requests": "write",
+          "repository_hooks": "write",
+          "repository_projects": "write",
+          "security_events": "write",
+          "statuses": "write",
+          "vulnerability_alerts": "read"
+        },
+        "events": [
+          "branch_protection_rule",
+          "check_run",
+          "check_suite",
+          "create",
+          "delete",
+          "deployment",
+          "deployment_status",
+          "discussion",
+          "discussion_comment",
+          "fork",
+          "gollum",
+          "issues",
+          "issue_comment",
+          "label",
+          "merge_group",
+          "milestone",
+          "page_build",
+          "public",
+          "pull_request",
+          "pull_request_review",
+          "pull_request_review_comment",
+          "push",
+          "registry_package",
+          "release",
+          "repository",
+          "repository_dispatch",
+          "status",
+          "watch",
+          "workflow_dispatch",
+          "workflow_run"
+        ]
+      },
+      "pull_requests": [
+        {
+          "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes/pulls/8",
+          "id": 5278216413,
+          "number": 8,
+          "head": {
+            "ref": "acceptance/go-block-zero-replicas-20261112212451",
+            "sha": "9953651978cbb862e78d80fb8e582679f4ba3f19",
+            "repo": {
+              "id": 1453612338,
+              "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes",
+              "name": "Full-Stack-Observability-in-Kubernetes"
+            }
+          },
+          "base": {
+            "ref": "main",
+            "sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+            "repo": {
+              "id": 1453612338,
+              "url": "https://api.github.com/repos/hey-mmm/Full-Stack-Observability-in-Kubernetes",
+              "name": "Full-Stack-Observability-in-Kubernetes"
+            }
+          }
+        }
+      ]
+    },
+    "head_sha": "9953651978cbb862e78d80fb8e582679f4ba3f19"
+  }
+}

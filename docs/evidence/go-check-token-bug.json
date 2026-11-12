@@ -1,0 +1,30 @@
+{
+  "wrong_order": {
+    "exit": 2,
+    "stdout": "{\"status\":\"error\",\"error\":\"usage: change-guard check-token KUBECONFIG [--min-remaining SECONDS]\"}",
+    "stderr": ""
+  },
+  "right_order": {
+    "exit": 0,
+    "stdout": "{\n  \"expires_at\": 1794526131,\n  \"remaining_seconds\": 37242,\n  \"status\": \"valid\"\n}",
+    "stderr": ""
+  },
+  "github": {
+    "status": "ok",
+    "login": "hey-mmm",
+    "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+    "private": false,
+    "token_kind": "fine-grained-or-unknown",
+    "scopes": [],
+    "permissions": {
+      "admin": true,
+      "maintain": true,
+      "push": true,
+      "triage": true,
+      "pull": true
+    },
+    "statuses_write": "inferred",
+    "default_branch": "main"
+  },
+  "service": "active\n/opt/change-guard/releases/0.2.3"
+}

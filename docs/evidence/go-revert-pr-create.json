@@ -1,0 +1,13 @@
+{
+  "created_at": 1794491951,
+  "created_at_iso": "2026-11-12T13:59:11Z",
+  "release_head": "a9a29da30832380bbdbda091177c738d7a7fde4b",
+  "revert_commit": "88ced0cacdb5c6ea2cefd186c51af017125e4ea3",
+  "branch": "revert/a9a29da30832",
+  "restored_tree": "b5edacddad17d6c827840de24cf599724f9f6574",
+  "restored_digest": "sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+  "restored_app_sha": "c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+  "pr": 10,
+  "url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/10",
+  "base_sha": "a9a29da30832380bbdbda091177c738d7a7fde4b"
+}
