@@ -1,0 +1,50 @@
+{
+  "cases": [
+    "cases/http500-fault.json",
+    "cases/latency-3000-fault.json",
+    "cases/startup-failure-release-protection.json",
+    "cases/alert-resolved-fingerprint.json",
+    "cases/persistence-pvc.json",
+    "cases/rolling-old-pod-not-proof.json",
+    "cases/slo-window-not-proven.json",
+    "cases/error-drill-rollout-before-effective.json",
+    "cases/latency-probes-not-delayed.json",
+    "cases/startup-max-unavailable-protection.json",
+    "cases/recover-semantics.json",
+    "cases/git-revert-required.json",
+    "cases/drill-evidence-no-guess.json",
+    "cases/worker-capacity-check.json",
+    "cases/calico-not-ready-troubleshoot.json"
+  ],
+  "generated_at": "2026-11-12T01:48:24Z",
+  "schema_version": 1,
+  "sources": {
+    "drills": {
+      "line_count": 186,
+      "path": "docs/drills.md",
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "snapshot": "sources/drills.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "title": "Demo 故障演练手册（runbook）"
+    },
+    "fault-review": {
+      "line_count": 22,
+      "path": "docs/fault-review.md",
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "snapshot": "sources/fault-review.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "title": "故障演练验收与复盘"
+    },
+    "stage1-runbook": {
+      "line_count": 189,
+      "path": "docs/stage1-runbook.md",
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+      "snapshot": "sources/stage1-runbook.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "title": "阶段 1 运行与验收说明（runbook）"
+    }
+  }
+}

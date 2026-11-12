@@ -1,0 +1,95 @@
+# k8s-change-guard example configuration.
+#
+# Copy to /etc/change-guard/config.yaml (mode 0600, owner change-guard) on the
+# trusted host.  Credentials are referenced by path; never put a token in this
+# file.  All timestamps in reports are Unix UTC seconds.
+
+repository: hey-mmm/Full-Stack-Observability-in-Kubernetes
+base_branch: main
+status_context: change-guard/release
+
+# Classic OAuth token: `repo` (or `repo:status`) is required for statuses write;
+# public repositories may use `public_repo`.  Fine-grained tokens need
+# repository contents/pulls/issues read and commit-status write (no Issues:
+# write and no Administration permission; optional report comments stay off).
+# The daemon verifies the
+# token's documented scopes/repository role at startup.  Leave this unset to
+# avoid writing a probe status; set the SHA of a safe sentinel commit only when
+# you explicitly want a real status-write capability probe.
+github_token_file: /etc/change-guard/github-token
+github_token_env: GITHUB_TOKEN
+# credential_probe_sha: null
+# credential_probe_required: false
+# require_verified_status_write: false
+github_timeout_seconds: 20
+github_retries: 2
+github_max_response_bytes: 8388608
+use_proxy_env: true
+
+state_dir: /var/lib/change-guard
+poll_seconds: 30
+evidence_ttl_seconds: 300
+max_open_prs: 2000
+
+# Manual REVIEW approval is an exact comment `/guard approve <evaluation_id>`
+# from one of these users, checked again for current repository write/admin
+# permission at approval time.  On a personal repository the current owner is
+# verified through repository metadata (owner.type=User and owner.login exact);
+# the collaborator-permission endpoint is not used because it requires
+# Administration: read for fine-grained tokens.  Organizations/non-owners still
+# require that explicit endpoint.  Labels and old comments are never accepted.
+approvers:
+  - hey-mmm
+# Optional HTTPS link for the commit-status details target.
+# status_target_url: https://ci.example.invalid/change-guard
+
+# Optional plain report comment.  Leave false for a least-privilege
+# fine-grained token without Issues: write; the required commit status is
+# still published.
+report_comment: false
+
+# Fork pull requests are rejected by default.  The guard never executes
+# candidate code; this is an additional trust boundary.
+allow_fork_prs: false
+
+# Renderer/evidence inputs.  Production rendering requires Linux bubblewrap.
+kubeconfig: /etc/change-guard/kubeconfig
+kubectl: /usr/bin/kubectl
+helm: /usr/local/bin/helm
+bwrap: /usr/bin/bwrap
+namespace: demo
+deployment: demo
+release_name: demo
+allowed_image_repository: ghcr.io/hey-mmm/observability-demo
+require_digest: true
+render_timeout_seconds: 60
+render_output_limit_bytes: 4194304
+sandbox_memory_bytes: 2147483648
+sandbox_tmpfs_bytes: 67108864
+
+prometheus_url: http://PROMETHEUS_CLUSTER_IP:9090
+demo_url: http://DEMO_CLUSTER_IP:8080
+ai_required: true
+deepseek_token_file: /etc/change-guard/deepseek-token
+deepseek_token_env: DEEPSEEK_API_KEY
+deepseek_url: https://api.deepseek.com/chat/completions
+deepseek_model: deepseek-chat
+deepseek_timeout_seconds: 30
+knowledge_dir: /opt/change-guard/current/knowledge
+
+# Post-deploy verifier (`python -m change_guard.postdeploy verify ...`).
+argocd_namespace: argocd
+argo_application: demo
+# container_name: demo
+version_path: /version
+ready_path: /readyz
+observation_seconds: 60
+postdeploy_timeout_seconds: 300
+postdeploy_poll_seconds: 5
+min_request_rate: 0.1
+max_error_ratio: 0.05
+max_p95_seconds: 0.5
+require_pod_image_id: true
+# Some multi-arch/config image IDs differ from the manifest digest.  Keep this
+# false and surface the caveat; set true only for a digest-identity-only registry.
+strict_image_id_digest: false

@@ -1,0 +1,34 @@
+{
+  "actions": [
+    "Wait for new Pod readiness before judging fault effect.",
+    "Record the exact rollout and readiness timestamps."
+  ],
+  "analysis": "A drill fault is effective only after rollout and new-Pod readiness; an old Pod still serving can hide the injected condition.",
+  "cautions": [
+    "Do not mark a drill effective solely because a patch was submitted."
+  ],
+  "excerpt": "### 3.1 错误率（100% /work 500）\n\n```bash\nscripts/drills/inject.sh --fault error --suspend-gitops\n# 观察告警/指标/日志，例如：\n#   sum(rate(demo_http_requests_total{route=\"/work\",status=~\"5..\"}[5m]))\n#   kubectl -n demo logs deploy/demo --tail=50\nscripts/drills/recover.sh\n```\n\nenv：`DEMO_ERROR_RATE=1`，并确保 latency/startup 为正常值。rollout 完成、\n新 Pod Ready 后才记录 `fault_fully_effective=true`。",
+  "excerpt_sha256": "c04aafbfb9fed288086090c9afb109597efee165ba240b4d6d579542b8492598",
+  "id": "error-drill-rollout-before-effective",
+  "line_end": 68,
+  "line_start": 57,
+  "rollback": "Run recover.sh and wait for rollout, /healthz, and /readyz.",
+  "schema_version": 1,
+  "signals": [
+    "inject error",
+    "rollout complete",
+    "new Pod Ready",
+    "fault_fully_effective=true"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "drills",
+  "source_path": "docs/drills.md",
+  "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+  "tags": [
+    "http500",
+    "drill",
+    "rollout",
+    "effective"
+  ],
+  "title": "错误率演练需等待新 Pod Ready"
+}

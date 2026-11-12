@@ -1,0 +1,34 @@
+{
+  "actions": [
+    "Reject DEMO_STARTUP_FAIL=true.",
+    "Account for retained old Pod plus surge Pod in capacity checks."
+  ],
+  "analysis": "The chart rolling strategy retains the old Ready Pod while a failing new Pod is replaced; this is release protection, not proof the new revision works.",
+  "cautions": [
+    "Do not manufacture business outage by scaling or deleting Pods as part of this drill."
+  ],
+  "excerpt": "### 3.3 启动失败（验证发布保护，不是业务全停）\n\n```bash\nscripts/drills/inject.sh --fault startup-failure --suspend-gitops\nscripts/drills/recover.sh\n```\n\nenv：`DEMO_STARTUP_FAIL=true`。应用会打印明确的 `startup_failed` 日志并退出\n（受 liveness/readiness 影响，新 Pod 进入 CrashLoop）。**不要**把\n`kubectl rollout status` 失败直接记录成“启动故障完全生效”：\n\n- Chart 使用 `maxUnavailable: 0` / `maxSurge: 1`；\n- 新 Pod 失败时，旧 Pod 仍保持 Ready 并继续服务；\n- 因此这项演练验证的是**滚动发布保护**，不是制造业务不可用；\n- 脚本观察新 Pod/事件/日志，记录 `old_pod_still_serving`、\n  `fault_fully_effective=false`、`release_protection_observed`。\n\n如果确实需要验证“业务不可用”，必须另行设计**明确、可恢复**的演练（例如显式\nscale deployment），并单独评审恢复步骤；本目录脚本不会偷偷删 Pod/scale 或制造\n不可控中断。",
+  "excerpt_sha256": "0230408c384455b718862f6578dcb498dbb1641efacd68d2478951e9e7b7e414",
+  "id": "startup-max-unavailable-protection",
+  "line_end": 104,
+  "line_start": 85,
+  "rollback": "Restore normal startup and verify the new Pod image digest and /version.",
+  "schema_version": 1,
+  "signals": [
+    "maxUnavailable: 0",
+    "maxSurge: 1",
+    "old Pod still serving",
+    "old_pod_still_serving"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "drills",
+  "source_path": "docs/drills.md",
+  "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+  "tags": [
+    "startup-failure",
+    "maxUnavailable",
+    "maxSurge",
+    "release-protection"
+  ],
+  "title": "启动失败时旧 Pod 仍服务"
+}

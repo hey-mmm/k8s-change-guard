@@ -1,0 +1,31 @@
+name: Change Guard CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: guard-ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    name: Unit and security regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e .
+      - run: python -m unittest discover -s tests -v
+      - run: python -m compileall -q change_guard
+      - name: Shell syntax
+        run: |
+          set -euo pipefail
+          if [ -d scripts ]; then
+            find scripts -name '*.sh' -print0 | xargs -0 -r -n1 bash -n
+          fi

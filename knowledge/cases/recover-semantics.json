@@ -1,0 +1,34 @@
+{
+  "actions": [
+    "Treat every recovery step as required evidence.",
+    "Do not restore only selected env values when full state is available."
+  ],
+  "analysis": "Recovery restores the exact prior env, waits for rollout, verifies health, restores Argo auto-sync, and records a recovered event; any step failing returns non-zero.",
+  "cautions": [
+    "The fallback cannot restore the original Argo auto-sync value."
+  ],
+  "excerpt": "## 4. 恢复语义\n\n`recover.sh` 顺序：\n\n1. 从 state 读取注入前的完整 container `env`，用 JSON patch 精确恢复；失败则\n   回退为 `DEMO_ERROR_RATE=0 DEMO_LATENCY_MS=0 DEMO_STARTUP_FAIL=false`；\n2. 等待 Deployment rollout（带总超时）；\n3. 通过 port-forward 检查 `/healthz` 和 `/readyz`，记录成功 UTC；\n4. 恢复 `argocd/demo` 的原 auto-sync 并校验；\n5. 写 `recovered` JSONL；任何一步失败返回非 0。\n\n```bash\n# 最近一次\nscripts/drills/recover.sh\n# 指定状态\nscripts/drills/recover.sh --state scripts/drills/.state/<drill-id>.json\n# 状态丢失的兜底（只把三个 DEMO_* 设正常，无法恢复 Argo 原值）\nscripts/drills/recover.sh --force-normal\n```\n\n恢复不会删除 state；需要保留证据。再次 recover 是幂等的。",
+  "excerpt_sha256": "d0d9440a6b5ac6f96b2200b04aa1fc6ba603fcc34cfe1f41b8662d65ab6caebf",
+  "id": "recover-semantics",
+  "line_end": 126,
+  "line_start": 106,
+  "rollback": "Use the stored state file; fall back to forcing the three DEMO_* values normal only when state is lost.",
+  "schema_version": 1,
+  "signals": [
+    "restore exact env",
+    "wait rollout",
+    "healthz/readyz",
+    "restore auto-sync"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "drills",
+  "source_path": "docs/drills.md",
+  "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+  "tags": [
+    "recovery",
+    "gitops",
+    "rollout",
+    "health"
+  ],
+  "title": "故障恢复顺序"
+}

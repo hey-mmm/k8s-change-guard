@@ -1,0 +1,33 @@
+{
+  "actions": [
+    "Keep troubleshooting read-only and evidence-based.",
+    "Do not bypass readiness by removing taints."
+  ],
+  "analysis": "When networking Pods are not Ready, inspect Pods, logs, and CIDR instead of deleting the control-plane taint or changing image tags to latest.",
+  "cautions": [
+    "Do not use latest or skip checks to make an acceptance pass."
+  ],
+  "excerpt": "| 现象 | 处理 |\n| --- | --- |\n| `admin.conf` 存在但版本为 1.28 或 `/readyz` 失败 | 停止。操作者在 playbook 外清理旧集群；本仓库不会自动 reset。 |\n| 只有 `kube-apiserver.yaml`，无 `admin.conf` | 停止。检查部分初始化状态，不要直接删除证书或再次 init。 |\n| worker `kubelet.conf` 存在但 API server/Node/IP 不匹配 | 停止。该 enrollment 不属于目标集群，按操作者流程清理后再 join。 |\n| containerd 启动失败或 CRI 插件未加载 | 检查 `/etc/containerd/config.toml`（v3）和 `journalctl -u containerd`；不得回退到旧 2.2.3 配置。 |\n| Calico Pod 不 Ready | 检查 `kubectl -n kube-system get pods -o wide`、Calico 日志、Pod CIDR 是否为 `10.244.0.0/16`；不要删除 master taint 来代替排查。 |\n| 测试镜像拉取失败 | 记录网络/镜像仓库错误；不要改成 `latest` 或跳过跨节点网络检查来宣告通过。 |",
+  "excerpt_sha256": "ade42b948b4b47612af392160296e398494111acb032a967a5598a9874b3e48f",
+  "id": "calico-not-ready-troubleshoot",
+  "line_end": 174,
+  "line_start": 167,
+  "rollback": "Restore the identified networking fault before retrying the release.",
+  "schema_version": 1,
+  "signals": [
+    "kubectl get pods -o wide",
+    "Calico logs",
+    "pod CIDR",
+    "do not remove taint"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "stage1-runbook",
+  "source_path": "docs/stage1-runbook.md",
+  "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+  "tags": [
+    "calico",
+    "node-not-ready",
+    "troubleshooting"
+  ],
+  "title": "Calico 不 Ready 的只读排查"
+}

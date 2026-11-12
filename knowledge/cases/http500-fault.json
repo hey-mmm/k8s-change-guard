@@ -1,0 +1,33 @@
+{
+  "actions": [
+    "Reject any fault-injection value in the candidate Deployment.",
+    "Require the normal value DEMO_ERROR_RATE=0."
+  ],
+  "analysis": "A release that sets DEMO_ERROR_RATE to a non-zero value injects deliberate /work 500 responses and is a hard release risk.",
+  "cautions": [
+    "Do not treat a recovered local drill as approval for shipping fault settings."
+  ],
+  "excerpt": "- 500：`DEMO_ERROR_RATE=1`，真实请求日志返回 500；触发 DemoHighErrorRate，恢复为 200 后收到同指纹 resolved。",
+  "excerpt_sha256": "d14b11fcaef1d96686e1eaffb100bdf75bb87f382b13bed478e10a041d915eb1",
+  "id": "http500-fault",
+  "line_end": 13,
+  "line_start": 13,
+  "rollback": "Restore DEMO_ERROR_RATE=0 and wait for a healthy rollout before considering the release again.",
+  "schema_version": 1,
+  "signals": [
+    "DEMO_ERROR_RATE=1",
+    "DemoHighErrorRate",
+    "resolved fingerprint"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "fault-review",
+  "source_path": "docs/fault-review.md",
+  "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+  "tags": [
+    "http500",
+    "fault-injection",
+    "error-rate",
+    "alert"
+  ],
+  "title": "HTTP 500 故障注入"
+}

@@ -1,0 +1,33 @@
+{
+  "actions": [
+    "Use firing and resolved evidence as context, not as a release approval.",
+    "Do not claim recovery when the resolved fingerprint is absent."
+  ],
+  "analysis": "Alert recovery evidence must match the firing alert by fingerprint; unrelated or missing resolved events are insufficient.",
+  "cautions": [
+    "A local webhook notification is not production notification reliability."
+  ],
+  "excerpt": "- 500：`DEMO_ERROR_RATE=1`，真实请求日志返回 500；触发 DemoHighErrorRate，恢复为 200 后收到同指纹 resolved。\n- 慢请求：`DEMO_LATENCY_MS=3000`，请求日志耗时约 3.00–3.01 秒；触发 DemoP95LatencyHigh，恢复后收到 resolved。",
+  "excerpt_sha256": "46c8a66f7d003aa521314d088a3eaf6d9b102946d8520dcd450a7bee3cd456c7",
+  "id": "alert-resolved-fingerprint",
+  "line_end": 14,
+  "line_start": 13,
+  "rollback": "Recover the injected condition and verify a matching resolved event.",
+  "schema_version": 1,
+  "signals": [
+    "same fingerprint",
+    "DemoHighErrorRate",
+    "DemoP95LatencyHigh"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "fault-review",
+  "source_path": "docs/fault-review.md",
+  "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+  "tags": [
+    "alert",
+    "firing",
+    "resolved",
+    "fingerprint"
+  ],
+  "title": "告警 firing 与同指纹 resolved"
+}

@@ -1,0 +1,33 @@
+{
+  "actions": [
+    "Preserve PVC identity, timestamp, and marker evidence in reports.",
+    "Do not interpret local-path persistence as HA or backup."
+  ],
+  "analysis": "Persistence evidence is tied to unchanged PVCs and exact query timestamps, not to a vague claim that storage survived.",
+  "cautions": [
+    "Single worker local-path storage is not replicated and can be lost with the node disk."
+  ],
+  "excerpt": "- 数据持久化：见 `evidence/persistence.json`。Prometheus 与 Loki Pod UID 均改变，原 PVC 相同；固定查询时间的指标值仍为 67，重建前 marker 的原时间戳和日志全文完全相同。",
+  "excerpt_sha256": "fe3b4437a2ddbb2db970bdc91e86dfccff79758ddf415bbee9820cd5a62dc927",
+  "id": "persistence-pvc",
+  "line_end": 16,
+  "line_start": 16,
+  "rollback": "Restore the workload and re-query the same fixed time and marker.",
+  "schema_version": 1,
+  "signals": [
+    "Pod UID changed",
+    "same PVC",
+    "fixed query value 67"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "fault-review",
+  "source_path": "docs/fault-review.md",
+  "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+  "tags": [
+    "persistence",
+    "pvc",
+    "prometheus",
+    "loki"
+  ],
+  "title": "Pod 重建后 PVC 持久化"
+}

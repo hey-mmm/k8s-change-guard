@@ -1,0 +1,32 @@
+{
+  "actions": [
+    "Keep SLO claims out of release approval unless the full window exists.",
+    "Report only observed metrics and their timestamps."
+  ],
+  "analysis": "A short drill window cannot prove a 7-day SLO or a percentage improvement; reports must state the evidence boundary.",
+  "cautions": [
+    "Do not fabricate recovery-efficiency percentages."
+  ],
+  "excerpt": "告警只验证本地 webhook 通知链路。Prometheus 7 天 SLO 目标为 99.9%，本次未积累完整 7 天窗口，不宣称 SLO 已达标，也不编造恢复效率提升百分比。",
+  "excerpt_sha256": "5b2d440837fc9570e138953aa401d64eda3ec1b2156793edbc57c36f5c0541ba",
+  "id": "slo-window-not-proven",
+  "line_end": 22,
+  "line_start": 22,
+  "rollback": "Collect a complete window before making an SLO claim.",
+  "schema_version": 1,
+  "signals": [
+    "7 day SLO 99.9%",
+    "incomplete window",
+    "local webhook only"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "fault-review",
+  "source_path": "docs/fault-review.md",
+  "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+  "tags": [
+    "slo",
+    "availability",
+    "evidence-boundary"
+  ],
+  "title": "SLO 声明边界"
+}

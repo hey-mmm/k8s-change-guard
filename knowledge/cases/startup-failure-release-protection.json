@@ -1,0 +1,33 @@
+{
+  "actions": [
+    "Reject DEMO_STARTUP_FAIL=true.",
+    "Separate old-Pod availability from new-Pod health and version verification."
+  ],
+  "analysis": "A startup-failure drill demonstrates maxUnavailable=0/maxSurge=1 release protection; it does not prove that the new version works, and the old Pod still serving is not new-version provenance.",
+  "cautions": [
+    "Do not claim a successful release because the old Pod stayed Ready."
+  ],
+  "excerpt": "- 启动失败：新 Pod 输出 StartupError/`startup_failed`、CrashLoopBackOff，旧 Pod 保持 Ready 并返回 200；触发 DemoPodCrashLooping。这是发布保护，不是全服务中断。",
+  "excerpt_sha256": "43ee6e4f31e30d5d932f78ba24fcfe21acab0a1a8c7f4bba05d60faa64e86209",
+  "id": "startup-failure-release-protection",
+  "line_end": 15,
+  "line_start": 15,
+  "rollback": "Restore DEMO_STARTUP_FAIL=false, roll out a healthy new Pod, and verify endpoints and version separately.",
+  "schema_version": 1,
+  "signals": [
+    "DEMO_STARTUP_FAIL=true",
+    "CrashLoopBackOff",
+    "old Pod remains Ready"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "fault-review",
+  "source_path": "docs/fault-review.md",
+  "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+  "tags": [
+    "startup-failure",
+    "fault-injection",
+    "rolling-update",
+    "old-pod"
+  ],
+  "title": "启动失败只验证滚动发布保护"
+}

@@ -1,0 +1,32 @@
+{
+  "actions": [
+    "Represent unknown alert state explicitly and do not treat it as healthy.",
+    "Require actual output before confirming root cause."
+  ],
+  "analysis": "If the alert receiver is unavailable or the response cannot be parsed, alert_fired stays null; the runbook does not guess that no alert fired.",
+  "cautions": [
+    "Do not write a root-cause confirmation without observed metrics, logs, or alert IDs."
+  ],
+  "excerpt": "规则：\n\n- UTC 故障开始、alert 观测、rollout 完成、health 成功都有独立时间字段。\n- `alert_fired` 仅当 receiver API 实际查询成功且能判定时是 true/false；\n  未配置、不可达、非 2xx、响应无法解析时一律 `null`，**不猜测未告警**。\n  receiver 支持 Alertmanager 风格 `{\"alerts\":[...]}`（匹配 namespace/deployment/\n  app/service=demo 且 status=firing），或 `{\"firing\":true|false}`。\n- `root_cause_confirmed` 默认始终是 `false`，脚本不会自动声称根因。\n  操作者实际核对指标、日志、告警后，用：\n\n```bash\nscripts/drills/record.sh \\\n  --drill-id '<drill-id>' \\\n  --command 'sum(rate(demo_http_requests_total{route=\"/work\",status=~\"5..\"}[5m])) + logs' \\\n  --evidence '实际观测到的数值/日志/告警 ID' \\\n  --confirmed\n```\n\n不加 `--confirmed` 只追加未确认的观测证据。没有实际输出不要写确认。",
+  "excerpt_sha256": "6c1458d47caa9a8ec3f5f9e430f221e1a2fea982ea426d31a1aea98d3f632d50",
+  "id": "drill-evidence-no-guess",
+  "line_end": 157,
+  "line_start": 139,
+  "rollback": "Re-query a reachable receiver and record actual evidence before changing the claim.",
+  "schema_version": 1,
+  "signals": [
+    "alert_fired null",
+    "non-2xx/unreachable",
+    "root_cause_confirmed false"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "drills",
+  "source_path": "docs/drills.md",
+  "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+  "tags": [
+    "alert-evidence",
+    "unknown",
+    "audit"
+  ],
+  "title": "告警未知时不得猜测"
+}

@@ -1,0 +1,33 @@
+{
+  "actions": [
+    "Use only Ready, schedulable non-control-plane workers for capacity.",
+    "Reserve resources for retained old Pods and surge Pods."
+  ],
+  "analysis": "Capacity reasoning depends on Ready, schedulable workers and retained control-plane taints; a single worker leaves little room for surge during rolling updates.",
+  "cautions": [
+    "Do not count the control-plane node as schedulable worker capacity."
+  ],
+  "excerpt": "- API `/readyz`。\n- 恰好 2 个节点，`master`/`worker` 均 Ready，InternalIP 分别为 `11.0.1.10`/`11.0.1.11`，容器运行时为 containerd。\n- kubeadm `podSubnet` 与 Calico 默认 IPv4 IPPool 均为 `10.244.0.0/16`。\n- kube-apiserver、controller-manager、scheduler、etcd Ready。\n- kube-proxy、calico-node、calico-kube-controllers、CoreDNS Ready。\n- `kubernetes` Service 为 `10.96.0.1`，`kube-dns` 为 `10.96.0.10`。\n- master 的 control-plane taint 仍存在，Calico 有 `Exists` toleration。\n- 创建临时 master/worker 测试 Pod（固定 `busybox:1.36.1`，无 latest），验证：\n  - 两 Pod 获得不同 Pod IP；\n  - 集群 DNS 解析 `kubernetes.default.svc.cluster.local`；\n  - master→worker 和 worker→master 双向 ICMP 跨节点 Pod 网络。\n- 退出时删除临时命名空间；不删除 taint，不执行 reset。",
+  "excerpt_sha256": "88379d057403a251e9c3f76c92b7f6f9db07b8e0bc53c53e48e6a9adb48c0bbe",
+  "id": "worker-capacity-check",
+  "line_end": 145,
+  "line_start": 134,
+  "rollback": "Free capacity or reduce the rollout demand; do not remove the control-plane taint as a workaround.",
+  "schema_version": 1,
+  "signals": [
+    "exactly two nodes",
+    "master/worker Ready",
+    "control-plane taint remains"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "stage1-runbook",
+  "source_path": "docs/stage1-runbook.md",
+  "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+  "tags": [
+    "capacity",
+    "worker",
+    "ready",
+    "single-worker"
+  ],
+  "title": "单 worker 容量与 Ready 检查"
+}

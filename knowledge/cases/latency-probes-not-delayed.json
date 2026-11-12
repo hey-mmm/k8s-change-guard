@@ -1,0 +1,33 @@
+{
+  "actions": [
+    "Check the business p95 metric, not only probe status.",
+    "Reject non-zero latency injection values."
+  ],
+  "analysis": "The demo deliberately keeps health probes fast during latency injection, so passing probes are not evidence of low business latency.",
+  "cautions": [
+    "Do not infer business performance from probe success."
+  ],
+  "excerpt": "env：`DEMO_LATENCY_MS=3000`。`/healthz`、`/readyz` 不注入延迟，避免探针误杀；\n业务延迟看 histogram：\n\n```promql\nhistogram_quantile(0.95,\n  sum by (le) (rate(demo_http_request_duration_seconds_bucket{route=\"/work\"}[5m])))\n```",
+  "excerpt_sha256": "ccc41aa6c3bfff4994c797552f1693b650021fd767ec3c5aad8f00ebfad6631b",
+  "id": "latency-probes-not-delayed",
+  "line_end": 83,
+  "line_start": 77,
+  "rollback": "Restore DEMO_LATENCY_MS=0 and watch the histogram p95 recover.",
+  "schema_version": 1,
+  "signals": [
+    "DEMO_LATENCY_MS=3000",
+    "healthz/readyz not delayed",
+    "histogram p95"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "drills",
+  "source_path": "docs/drills.md",
+  "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+  "tags": [
+    "latency",
+    "probes",
+    "p95",
+    "fault-injection"
+  ],
+  "title": "探针不注入延迟"
+}

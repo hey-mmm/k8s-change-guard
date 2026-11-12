@@ -1,0 +1,34 @@
+{
+  "actions": [
+    "Recommend a revert commit and Argo resync.",
+    "Verify the resulting Application revision, image, and /version."
+  ],
+  "analysis": "A GitOps rollback is a revert commit to Git, not argocd app rollback or kubectl rollout undo. The image tag must remain immutable.",
+  "cautions": [
+    "Do not claim GitOps rollback from an imperative cluster-only operation."
+  ],
+  "excerpt": "## 6. Git 回滚流程\n\n演练 `recover.sh` 只恢复本地被 patch 的 env，不等于 GitOps 回滚。需要回滚发布时：\n\n```bash\ngit revert <bad-desired-state-commit>\ngit push origin main\n# 等待 Argo 同步；核对\nkubectl -n demo rollout status deployment/demo --timeout=180s\n```\n\n**禁止**只执行 `argocd app rollback` 或 `kubectl rollout undo` 后就声称完成了\nGitOps 回滚；Argo CD 的历史/自愈不能替代 Git desired state 的 revert commit。\nGitOps 的 `targetRevision: main` 是 Git 分支，不是镜像 `latest`；镜像 tag 必须\n是不可变 `sha-<commit>`。",
+  "excerpt_sha256": "39ec7f97657ee01bc84740ed1b88e9065f9a54c2a42dda7b6b5fccf340ec07bd",
+  "id": "git-revert-required",
+  "line_end": 173,
+  "line_start": 159,
+  "rollback": "git revert the bad desired-state commit, push main, wait for Argo sync, then verify rollout and endpoints.",
+  "schema_version": 1,
+  "signals": [
+    "git revert",
+    "git push origin main",
+    "do not use argocd app rollback as substitute",
+    "sha-<commit>"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "drills",
+  "source_path": "docs/drills.md",
+  "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+  "tags": [
+    "rollback",
+    "gitops",
+    "git-revert",
+    "immutable-tag"
+  ],
+  "title": "GitOps 回退必须改变 Git desired state"
+}

@@ -1,0 +1,33 @@
+{
+  "actions": [
+    "Reject non-zero DEMO_LATENCY_MS.",
+    "Review p95 latency separately from probe health."
+  ],
+  "analysis": "A release that sets DEMO_LATENCY_MS above zero injects business latency; readiness/liveness probes themselves are not delayed, so probes passing does not make the release safe.",
+  "cautions": [
+    "Do not infer low latency from healthy probes."
+  ],
+  "excerpt": "- 慢请求：`DEMO_LATENCY_MS=3000`，请求日志耗时约 3.00–3.01 秒；触发 DemoP95LatencyHigh，恢复后收到 resolved。",
+  "excerpt_sha256": "55fd07443153dc97f49277e2d9dc1fd6b96381df3c6583917bad9ab5117de5fc",
+  "id": "latency-3000-fault",
+  "line_end": 14,
+  "line_start": 14,
+  "rollback": "Restore DEMO_LATENCY_MS=0 and verify the 5m p95 returns below the review threshold.",
+  "schema_version": 1,
+  "signals": [
+    "DEMO_LATENCY_MS=3000",
+    "DemoP95LatencyHigh",
+    "3.00-3.01s"
+  ],
+  "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+  "source_id": "fault-review",
+  "source_path": "docs/fault-review.md",
+  "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+  "tags": [
+    "latency",
+    "fault-injection",
+    "p95",
+    "alert"
+  ],
+  "title": "3000ms 慢请求故障注入"
+}
