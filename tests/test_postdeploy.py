@@ -68,7 +68,7 @@ def pods(image_id=POD_IMAGE_ID, ready=True):
         "items": [
             {
                 "metadata": {"name": "demo-abc", "namespace": "demo"},
-                "spec": {"nodeName": "worker"},
+                "spec": {"nodeName": "worker", "containers": [{"name": "demo", "image": IMAGE}]},
                 "status": {
                     "phase": "Running",
                     "conditions": [{"type": "Ready", "status": "True" if ready else "False"}],
@@ -274,6 +274,15 @@ class CheckTests(unittest.TestCase):
 
 
 class VerifyDeploymentTests(unittest.TestCase):
+    def test_containerd_config_id_is_not_a_manifest_image_reference(self):
+        payload = pods()
+        payload["items"][0]["status"]["containerStatuses"][0]["image"] = "sha256:" + "c" * 64
+        result = postdeploy._check_pods(config(), IMAGE, lambda args, timeout: payload)
+        self.assertEqual(result["status"], "pass")
+        payload["items"][0]["spec"]["containers"][0]["image"] = IMAGE.replace("a" * 64, "d" * 64)
+        result = postdeploy._check_pods(config(), IMAGE, lambda args, timeout: payload)
+        self.assertEqual(result["status"], "fail")
+
     def test_gitops_revision_and_image_source_revision_are_distinct(self):
         release_sha = "d" * 40
         kwargs = dict(kubectl_runner=Runner(argo_payload=argo(revision=release_sha)),

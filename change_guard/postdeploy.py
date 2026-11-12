@@ -627,6 +627,12 @@ def _check_pods(
             continue
         metadata = pod.get("metadata") if isinstance(pod.get("metadata"), Mapping) else {}
         status = pod.get("status") if isinstance(pod.get("status"), Mapping) else {}
+        pod_spec = pod.get("spec") if isinstance(pod.get("spec"), Mapping) else {}
+        desired_containers = {
+            item.get("name"): item.get("image")
+            for item in pod_spec.get("containers", [])
+            if isinstance(item, Mapping)
+        }
         if metadata.get("deletionTimestamp"):
             problems.append(f"Pod {metadata.get('name')} is terminating")
             continue
@@ -649,13 +655,16 @@ def _check_pods(
                 continue
             name = container_status.get("name")
             image = container_status.get("image")
+            desired_image = desired_containers.get(name)
             if not container_status.get("ready"):
                 problems.append(f"Pod {metadata.get('name')} container {name} is not ready")
             if name == config.get("container_name") or (
-                config.get("container_name") is None and image == expected_image
+                config.get("container_name") is None and desired_image == expected_image
             ):
                 target_ready = bool(container_status.get("ready"))
-                target_image_ok = image == expected_image
+                target_image_ok = desired_image == expected_image
+                if not target_image_ok:
+                    problems.append(f"Pod {metadata.get('name')} spec image differs from expected")
                 repository, digest = _parse_image_id(container_status.get("imageID"))
                 if config.get("require_pod_image_id", True) and digest is None:
                     problems.append(f"Pod {metadata.get('name')} has no verifiable imageID digest")
@@ -676,7 +685,8 @@ def _check_pods(
                         "node": pod.get("spec", {}).get("nodeName") if isinstance(pod.get("spec"), Mapping) else None,
                         "ready": ready,
                         "container": name,
-                        "image": image,
+                        "image": desired_image,
+                        "runtime_image": image,
                         "image_id": container_status.get("imageID"),
                         "image_id_digest": digest,
                     }
