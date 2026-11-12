@@ -15,6 +15,9 @@ state/
 *.pem
 *.kubeconfig
 credentials/
+secrets/
+merge-deploy-key
+master-password*
 .env
 ansible/secrets.yml
 ansible/*.retry
