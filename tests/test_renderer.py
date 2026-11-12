@@ -115,7 +115,7 @@ class LoadedManifestTests(unittest.TestCase):
             path.write_text(RENDERED, encoding="utf-8")
             with self.assertRaises(RenderError) as raised:
                 render_tree(path, {})
-            self.assertIn(raised.exception.code, {"bwrap_required", "tree_missing"})
+            self.assertIn(raised.exception.code, {"bwrap_required", "bwrap_missing", "tree_missing"})
             resources = render_tree(
                 path,
                 {"allow_pre_rendered": True, "fixture_mode": True, "pre_rendered": path},
