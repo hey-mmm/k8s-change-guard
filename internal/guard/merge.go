@@ -309,53 +309,74 @@ func mergeValidateSyntheticMerge(github mergeAPI, repository string, pullRequest
 	}, nil
 }
 
-// mergeFetchCheckRuns reads check runs for sha from the public GitHub API.
-func mergeFetchCheckRuns(repository, sha string) (M, error) {
+// mergeCIDo performs one CI lookup with a client that always refuses redirects
+// and strips any Authorization header before a redirect decision. The token is
+// therefore never forwarded to a redirect target.
+func mergeCIDo(request *http.Request) (*http.Response, error) {
+	client := &http.Client{
+		Transport: mergeHTTPClient.Transport,
+		Timeout:   mergeHTTPClient.Timeout,
+		CheckRedirect: func(redirect *http.Request, _ []*http.Request) error {
+			redirect.Header.Del("Authorization")
+			return http.ErrUseLastResponse
+		},
+	}
+	return client.Do(request)
+}
+
+// mergeFetchCheckRuns reads check runs for sha from the fixed GitHub API with
+// the configured GitHub credential. token is variadic only to preserve the
+// existing internal test call shape; production merge calls always pass
+// github.token.
+func mergeFetchCheckRuns(repository, sha string, token ...string) (M, error) {
 	if !daemonSHARegex.MatchString(sha) {
 		return nil, mergeRefuse("CI lookup SHA is invalid")
 	}
 	requestURL := mergeAPIBaseURL + "/repos/" + repository + "/commits/" + sha + "/check-runs?per_page=100"
 	request, err := http.NewRequestWithContext(context.Background(), "GET", requestURL, nil)
 	if err != nil {
-		return nil, mergeRefuse("public CI check lookup failed")
+		return nil, mergeRefuse("CI check lookup failed")
 	}
 	request.Header.Set("Accept", "application/vnd.github+json")
 	request.Header.Set("User-Agent", "change-guard")
-	response, err := mergeHTTPClient.Do(request)
+	if len(token) > 0 && token[0] != "" {
+		request.Header.Set("Authorization", "Bearer "+token[0])
+	}
+	response, err := mergeCIDo(request)
 	if err != nil {
-		return nil, mergeRefuse("public CI check lookup failed")
+		return nil, mergeRefuse("CI check lookup failed")
 	}
 	defer response.Body.Close()
 	if response.StatusCode != 200 {
-		return nil, mergeRefuse("public CI check lookup failed")
+		return nil, mergeRefuse("CI check lookup failed")
 	}
 	raw, err := io.ReadAll(io.LimitReader(response.Body, mergeMaxCheckRunBytes+1))
 	if err != nil || len(raw) > mergeMaxCheckRunBytes {
-		return nil, mergeRefuse("public CI check lookup failed")
+		return nil, mergeRefuse("CI check lookup failed")
 	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.UseNumber()
 	var payload any
 	if err = decoder.Decode(&payload); err != nil {
-		return nil, mergeRefuse("public CI check payload is invalid")
+		return nil, mergeRefuse("CI check payload is invalid")
 	}
 	object, ok := payload.(map[string]any)
 	if !ok {
-		return nil, mergeRefuse("public CI check payload is invalid")
+		return nil, mergeRefuse("CI check payload is invalid")
 	}
 	runs, ok := object["check_runs"].([]any)
 	if !ok {
-		return nil, mergeRefuse("public CI check payload is invalid")
+		return nil, mergeRefuse("CI check payload is invalid")
 	}
 	if total, ok := ghInt(object["total_count"]); ok && total > int64(len(runs)) {
-		return nil, mergeRefuse("public CI check-run response is incomplete")
+		return nil, mergeRefuse("CI check-run response is incomplete")
 	}
 	return object, nil
 }
 
 // mergeValidateHeadCI validates GitHub Actions checks bound to headSHA.
-func mergeValidateHeadCI(repository, headSHA, requiredName string) (M, error) {
-	payload, err := mergeFetchCheckRuns(repository, headSHA)
+func mergeValidateHeadCI(repository, headSHA, requiredName string, token ...string) (M, error) {
+	payload, err := mergeFetchCheckRuns(repository, headSHA, token...)
 	if err != nil {
 		return nil, err
 	}
@@ -604,13 +625,42 @@ func mergeBuildRecord(number int64, headSHA, baseSHA string, synthetic, local, r
 	}
 }
 
+// mergeResolveEvaluationID resolves the optional explicit evaluation id
+// against the PR's current index record while the caller holds the state lock.
+// An omitted id selects the recorded report; an explicit id must be exactly
+// that recorded id so an unindexed report can never be merged by naming it.
+func mergeResolveEvaluationID(index M, number int, requestedID string) (string, error) {
+	if number < 1 {
+		return "", mergeRefuse("invalid PR number")
+	}
+	if index == nil {
+		return "", mergeRefuse("state index is unavailable")
+	}
+	prs, ok := index["prs"].(map[string]any)
+	if !ok || prs == nil {
+		return "", mergeRefuse("state index is unavailable")
+	}
+	entry := asM(prs[strconv.Itoa(number)])
+	recordedID := Str(entry["evaluation_id"])
+	if recordedID == "" {
+		return "", mergeRefuse("no evaluation report is recorded for this PR")
+	}
+	if !daemonApprovalIDRE.MatchString(recordedID) {
+		return "", mergeRefuse("recorded evaluation id is invalid")
+	}
+	if requestedID != "" && requestedID != recordedID {
+		return "", mergeRefuse("explicit evaluation id is not the recorded evaluation for this PR")
+	}
+	return recordedID, nil
+}
+
 // MergeRelease performs the explicit constrained release merge of one exact
 // evaluated head SHA. It never calls the GitHub merge API.
 func MergeRelease(config M, number int, evaluationID string) (M, error) {
 	if number < 1 {
 		return nil, mergeRefuse("invalid PR number")
 	}
-	if !daemonApprovalIDRE.MatchString(evaluationID) {
+	if evaluationID != "" && !daemonApprovalIDRE.MatchString(evaluationID) {
 		return nil, mergeRefuse("invalid evaluation id")
 	}
 	if CfgString(config, "base_branch", "main") != "main" {
@@ -643,16 +693,15 @@ func MergeRelease(config M, number int, evaluationID string) (M, error) {
 	if err != nil {
 		return nil, err
 	}
-	entry := asM(daemonEnsurePRMap(index)[strconv.Itoa(number)])
-	recordedID := Str(entry["evaluation_id"])
-	if recordedID != "" && recordedID != evaluationID {
-		return nil, mergeRefuse("explicit evaluation id is not the recorded evaluation for this PR")
+	resolvedID, err := mergeResolveEvaluationID(index, number, evaluationID)
+	if err != nil {
+		return nil, err
 	}
-	report, err := daemon.store.readReport(evaluationID)
+	report, err := daemon.store.readReport(resolvedID)
 	if err != nil {
 		return nil, mergeRefuse("cannot read evaluation report: %s", daemonSafeText(err, 500))
 	}
-	if Str(report["evaluation_id"]) != evaluationID {
+	if Str(report["evaluation_id"]) != resolvedID {
 		return nil, mergeRefuse("evaluation report id mismatch")
 	}
 	pr, err := github.GetPullRequest(int64(number))
@@ -719,7 +768,7 @@ func MergeRelease(config M, number int, evaluationID string) (M, error) {
 		return nil, err
 	}
 	requiredCI := CfgString(daemon.config, "merge_required_ci", mergeDefaultRequiredCI)
-	if _, err = mergeValidateHeadCI(repository, pr.HeadSHA, requiredCI); err != nil {
+	if _, err = mergeValidateHeadCI(repository, pr.HeadSHA, requiredCI, github.token); err != nil {
 		return nil, err
 	}
 

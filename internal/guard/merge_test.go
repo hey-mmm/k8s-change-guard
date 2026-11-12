@@ -15,6 +15,7 @@ const (
 	mtBase      = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 	mtSynthetic = "cccccccccccccccccccccccccccccccccccccccc"
 	mtTree      = "1111111111111111111111111111111111111111"
+	mtCIToken   = "ghs_synthetic_ci_token_0123456789"
 )
 
 func mtPR() PullRequestInfo {
@@ -311,6 +312,139 @@ type roundTripFunc func(*http.Request) (*http.Response, error)
 
 func (f roundTripFunc) RoundTrip(request *http.Request) (*http.Response, error) {
 	return f(request)
+}
+
+func TestMergeHeadCILookupAuthenticatesAndFailsClosed(t *testing.T) {
+	oldBaseURL, oldClient := mergeAPIBaseURL, mergeHTTPClient
+	t.Cleanup(func() {
+		mergeAPIBaseURL = oldBaseURL
+		mergeHTTPClient = oldClient
+	})
+
+	t.Run("bearer token is sent on the head check-run request", func(t *testing.T) {
+		var authorization string
+		server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			authorization = request.Header.Get("Authorization")
+			writer.Header().Set("Content-Type", "application/json")
+			_, _ = fmt.Fprintf(writer, `{"total_count":1,"check_runs":[{"id":1,"name":%q,"app":{"slug":"github-actions"},"status":"completed","conclusion":"success","head_sha":%q}]}`, mergeDefaultRequiredCI, mtHead)
+		}))
+		t.Cleanup(server.Close)
+		mergeAPIBaseURL = server.URL
+		mergeHTTPClient = server.Client()
+
+		if _, err := mergeValidateHeadCI("o/r", mtHead, mergeDefaultRequiredCI, mtCIToken); err != nil {
+			t.Fatalf("authenticated CI lookup failed: %v", err)
+		}
+		if authorization != "Bearer "+mtCIToken {
+			t.Fatalf("CI lookup did not send the expected bearer credential")
+		}
+	})
+
+	t.Run("403 stays fail closed and errors do not leak the token", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			if got := request.Header.Get("Authorization"); got != "Bearer "+mtCIToken {
+				t.Errorf("forbidden request missed the bearer credential")
+			}
+			writer.WriteHeader(http.StatusForbidden)
+			_, _ = fmt.Fprintf(writer, "denied for %s", mtCIToken)
+		}))
+		t.Cleanup(server.Close)
+		mergeAPIBaseURL = server.URL
+		mergeHTTPClient = server.Client()
+
+		err := func() error {
+			_, err := mergeValidateHeadCI("o/r", mtHead, mergeDefaultRequiredCI, mtCIToken)
+			return err
+		}()
+		mtRefused(t, "403 CI lookup", err)
+		if strings.Contains(err.Error(), mtCIToken) {
+			t.Fatalf("CI lookup error leaked the bearer credential")
+		}
+	})
+}
+
+func TestMergeHeadCILookupRefusesRedirectWithoutForwardingToken(t *testing.T) {
+	oldBaseURL, oldClient := mergeAPIBaseURL, mergeHTTPClient
+	t.Cleanup(func() {
+		mergeAPIBaseURL = oldBaseURL
+		mergeHTTPClient = oldClient
+	})
+
+	targetHits := 0
+	target := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		targetHits++
+		if request.Header.Get("Authorization") != "" {
+			t.Error("redirect target received an Authorization header")
+		}
+		writer.Header().Set("Content-Type", "application/json")
+		_, _ = fmt.Fprintf(writer, `{"total_count":1,"check_runs":[]}`)
+	}))
+	t.Cleanup(target.Close)
+
+	redirect := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if got := request.Header.Get("Authorization"); got != "Bearer "+mtCIToken {
+			t.Errorf("redirecting CI request missed the bearer credential")
+		}
+		http.Redirect(writer, request, target.URL+"/stolen", http.StatusFound)
+	}))
+	t.Cleanup(redirect.Close)
+	mergeAPIBaseURL = redirect.URL
+	// Deliberately use a client with its default redirect policy. Production
+	// CI requests must still refuse redirects and must never forward the token.
+	mergeHTTPClient = redirect.Client()
+
+	err := func() error {
+		_, err := mergeValidateHeadCI("o/r", mtHead, mergeDefaultRequiredCI, mtCIToken)
+		return err
+	}()
+	mtRefused(t, "redirected CI lookup", err)
+	if targetHits != 0 {
+		t.Fatalf("CI lookup followed a redirect %d time(s)", targetHits)
+	}
+	if strings.Contains(err.Error(), mtCIToken) {
+		t.Fatalf("redirect refusal leaked the bearer credential")
+	}
+}
+
+func TestMergeResolveEvaluationIDUsesCurrentRecordedReport(t *testing.T) {
+	recorded := "ev-" + strings.Repeat("a", 24)
+	oldID := "ev-" + strings.Repeat("b", 24)
+	index := func(id any) M {
+		return M{"prs": M{"3": M{"evaluation_id": id}}}
+	}
+
+	if got, err := mergeResolveEvaluationID(index(recorded), 3, ""); err != nil || got != recorded {
+		t.Fatalf("omitted id did not select the recorded report: %q %v", got, err)
+	}
+	if got, err := mergeResolveEvaluationID(index(recorded), 3, recorded); err != nil || got != recorded {
+		t.Fatalf("matching explicit id was refused: %q %v", got, err)
+	}
+
+	mtRefused(t, "explicit old evaluation id", func() error {
+		_, err := mergeResolveEvaluationID(index(recorded), 3, oldID)
+		return err
+	}())
+	mtRefused(t, "empty recorded evaluation id", func() error {
+		_, err := mergeResolveEvaluationID(index(nil), 3, "")
+		return err
+	}())
+	if got, err := mergeResolveEvaluationID(index(nil), 3, recorded); err == nil || got != "" {
+		t.Fatalf("missing recorded report allowed an explicit unindexed id: %q %v", got, err)
+	}
+	for _, invalid := range []string{"../bad", "ev-not-hex", "", "ev-" + strings.Repeat("a", 15)} {
+		mtRefused(t, "invalid recorded evaluation id", func() error {
+			_, err := mergeResolveEvaluationID(index(invalid), 3, "")
+			return err
+		}())
+	}
+	mtRefused(t, "path traversal explicit evaluation id", func() error {
+		_, err := mergeResolveEvaluationID(index(recorded), 3, "../bad")
+		return err
+	}())
+	mtRefused(t, "missing PR record", func() error {
+		_, err := mergeResolveEvaluationID(index(recorded), 4, "")
+		return err
+	}())
 }
 
 func TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch(t *testing.T) {
