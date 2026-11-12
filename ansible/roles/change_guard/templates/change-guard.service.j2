@@ -10,10 +10,8 @@ Type=simple
 User={{ change_guard_user }}
 Group={{ change_guard_group }}
 WorkingDirectory={{ change_guard_current_link }}
-ExecStartPre=/usr/bin/test -x {{ change_guard_current_link }}/venv/bin/python
-ExecStart={{ change_guard_current_link }}/venv/bin/python -m change_guard.daemon --config {{ change_guard_config_dir }}/config.yaml
-Environment=PYTHONDONTWRITEBYTECODE=1
-Environment=PYTHONUNBUFFERED=1
+ExecStartPre=/usr/bin/test -x {{ change_guard_binary }}
+ExecStart={{ change_guard_binary }} daemon --config {{ change_guard_config_dir }}/config.yaml
 EnvironmentFile=-{{ change_guard_config_dir }}/proxy.env
 Restart=on-failure
 RestartSec=10

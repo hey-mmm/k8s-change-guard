@@ -67,8 +67,9 @@ max_p95_seconds: 0.5
 require_pod_image_id: true
 strict_image_id_digest: false
 
-# Root-owned merge integration.  The deploy key can only be used by merge.py
-# after the guard proof/approval/CI checks; it is never an admin credential.
+# Root-owned merge integration.  The deploy key can only be used by the Go
+# merge command after the guard proof/approval/CI checks; it is never an admin
+# credential.
 {% if change_guard_merge_deploy_key is defined %}
 merge_deploy_key: {{ change_guard_merge_deploy_key | to_json }}
 merge_known_hosts: {{ change_guard_merge_known_hosts | to_json }}

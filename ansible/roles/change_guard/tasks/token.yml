@@ -16,11 +16,11 @@
     path: "{{ change_guard_config_dir }}/kubeconfig"
   register: change_guard_kubeconfig_stat
 
-- name: Check remaining token lifetime when a kubeconfig already exists
+- name: Check remaining token lifetime with the installed Go binary
   ansible.builtin.command:
     argv:
-      - "{{ change_guard_python }}"
-      - /usr/local/lib/change-guard/check-token-expiry.py
+      - "{{ change_guard_binary }}"
+      - check-token
       - "{{ change_guard_config_dir }}/kubeconfig"
       - "--min-remaining"
       - "{{ change_guard_token_refresh_before_seconds }}"

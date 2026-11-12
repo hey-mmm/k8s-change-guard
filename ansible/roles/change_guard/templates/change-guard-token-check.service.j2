@@ -1,0 +1,16 @@
+[Unit]
+Description=Check change-guard service token expiry every hour
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart={{ change_guard_binary }} check-token {{ change_guard_config_dir }}/kubeconfig --min-remaining {{ change_guard_token_check_min_remaining }}
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadOnlyPaths={{ change_guard_config_dir }} {{ change_guard_root }}
+RestrictAddressFamilies=AF_UNIX
+TimeoutStartSec=30

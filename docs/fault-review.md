@@ -1,13 +1,28 @@
 # 故障复盘：开发、部署与验收中遇到的问题
 
-本文保留历史问题，并在末尾记录真实发布闭环。当前版本、合并/回退/发布后结果和最终
-验收结论以 `docs/acceptance.md` 为准；本文不替代验收报告。
+本文保留 Python `0.2.x` 开发、部署和验收的历史问题。当前 Go `0.3.0` 已完成迁移实现
+并通过 Windows/Linux 测试，单二进制产物已生成、可部署，但**尚未部署**，live 验收
+pending；历史 Python `0.2.3` 的真实 merge/回退/发布后结果见 `docs/acceptance.md`，不能
+当作 Go 版本的上线证明。
 
-## 1. 当前证据等级
+## 0. Go 迁移备注（2026-11-12）
+
+- 运行入口改为单个静态 Go 二进制；Ansible 不再创建 venv、不再安装 Python 包，也不再
+  调用 `change_guard.*` 模块。
+- token 续期/到期检查改为 Go `renew-token` / `check-token`，systemd 指向
+  `/opt/change-guard/current/k8s-change-guard`。
+- 健康、验收、场景矩阵、RBAC、token 轮换脚本改为 shell，不再调用 Python。
+- 新增 `testdata/python-oracle.json` 作为 151-case 冻结决策 oracle；Go 测试直接读取，
+  运行时不依赖 Python。
+- 修复 Windows `build-release.ps1` 的 GOOS/`go run` 与 cwd 回归；staging 删除前校验
+  路径位于临时根目录。
+- 详细文件、测试与部署边界见 `go-migration.md`。
+
+## 1. 历史 Python 证据等级
 
 | 证据 | 结果 | 能说明什么 |
 | --- | --- | --- |
-| 项目二 `b96937e`（0.2.3） | 已推送 | 当前最终实现；包含 postdeploy 容器镜像修复 |
+| 项目二 `b96937e`（Python 0.2.3） | 已推送 | 历史 Python 实现；包含 postdeploy 容器镜像修复 |
 | Actions run `43193175196` | 成功 | 0.2.3 的 GitHub Actions 成功 |
 | 上级 `work/final-0.2.3-deployment.json` | 0.2.3 已部署 | 部署探针、版本/policy binding、active |
 | 上级 `final-0.2.3-deploy.txt` | `ok=87 changed=11` | 0.2.3 首次部署 |
@@ -20,8 +35,10 @@
 | `docs/evidence/hard-boundary-live-rejections.json` | PR3/4/5 BLOCK + 405 | CI 绿仍被硬边界挡住，均关闭 |
 | `docs/evidence/github-ci-head-binding.json` | head 有 check、synthetic 为 0 | GitHub Actions check 绑定 PR head |
 
-0.2.1 的 174 tests、0.2.2 的 181 tests 只作为历史证据保留；当前 0.2.3 为 182 tests。
-最终验收结论、PR 链接和接受/不接受项由 root 写入 `docs/acceptance.md`。
+0.2.1 的 174 tests、0.2.2 的 181 tests、0.2.3 的 182 tests 都只作为历史 Python 证据
+保留。Go `0.3.0` 的 Windows/Linux 测试、151-case 对照和 25/25 场景矩阵已完成；部署和
+live 结论尚未产生，待执行清单和 accept/reject 边界由 root 在部署轮次写入
+`docs/acceptance.md`。
 
 ## 2. 问题总表
 
@@ -123,7 +140,7 @@ Helm 渲染成功、服务不能读 `/etc/kubernetes/admin.conf`、`/root`、`/h
 
 **修复/实现**：
 
-- root-only `/usr/local/lib/change-guard/renew-service-token.py`（`0700`）；
+- root-only Go `change-guard renew-token`（二进制 `0755 root`）；
 - 固定命令：
   `/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf -n change-guard create token change-guard --duration=12h`；
 - 原子替换 `/etc/change-guard/kubeconfig`（`0600 change-guard`），保留 server/CA，
@@ -188,7 +205,7 @@ git ls-files --eol knowledge/sources
 - synthetic merge `6809c2a...` 的 check-runs 是 `[]`；
 - 虽然 Actions checkout 的是 synthetic merge，但 `pull_request` check 绑定 head。
 
-旧 `merge.py` 查询 synthetic 的 check-runs，真实环境永远缺 CI；向 synthetic 写
+旧 Python merge 查询 synthetic 的 check-runs，真实环境永远缺 CI；向 synthetic 写
 required status 也不会成为 main 上 head 的状态。详见上级
 `work/merge-runtime-fix-notes.md`。
 
@@ -226,7 +243,7 @@ job 改成空操作，仍得到同名成功检查。
   任何变更加 `WORKFLOW_CHANGE_BLOCKED`，severity **BLOCK**，不可审批；
 - `_build_context()` 同时用 tree signature，不依赖可能截断的 changed path 列表；
 - `_load_valid_cached()` 拒绝记录 workflow 变更的旧 PASS；
-- `merge.py` 独立调用 Git Trees API 比较 base/head，不信任报告结论；报告记录
+- 旧 merge 程序独立调用 Git Trees API 比较 base/head，不信任报告结论；报告记录
   `workflow_changed=true` 也拒绝。
 
 **证据/测试**：`tests/test_daemon.py`、`tests/test_merge.py` 覆盖 workflow 硬阻断、
@@ -278,7 +295,7 @@ merge API 405，并已关闭未合并。
   Argo/demo 配置等），排除凭据值/路径、state_dir、poll_seconds 等运行性配置；
 - `_load_valid_cached()` 比较 schema/binding/guard/rule/policy digest/report digest/
   workflow/chart pin；
-- `merge.py` 在初始、push 前 15s、13s 校验都使用当前 policy binding；不一致拒绝。
+- 旧 merge 程序在初始、push 前 15s、13s 校验都使用当前 policy binding；不一致拒绝。
 
 **验证**：0.2.1 证明显示所有报告 schema 2、policy binding/chart pin 匹配；旧
 schema 1 缓存自然失效并重评。测试覆盖代码/规则/策略升级使旧报告失效。
@@ -295,14 +312,14 @@ non-fast-forward/PR 限制；ruleset 2（required checks）没有 bypass，仍�
 
 **约束**：项目一仓库只保留一把专用写部署密钥；定期审计
 `GET /repos/{owner}/{repo}/keys`，发现未知 `read_only=false` 立即撤销；部署密钥
-泄漏按安全事件处理。文档不能把该 bypass 描述成“只允许 merge.py 的 key”。
+泄漏按安全事件处理。文档不能把该 bypass 描述成“只允许 merge 程序的 key”。
 
 ## 15. F-13：旧 success 状态没有 TTL
 
 **事实**：GitHub commit status 不会因时间过去自动失效；head 不变时旧 success 仍
 被分支保护看到。
 
-**缓解**：daemon 在报告过期后主动改旧状态；`merge.py` 推送前重新读取
+**缓解**：daemon 在报告过期后主动改旧状态；merge 程序推送前重新读取
 report/policy/审批/head/base/CI/workflow/chart pin，并用旧 main SHA lease；但 daemon
 停机时无法撤销旧状态，人工必须把旧 success 改为 error/pending。不能声称“状态会
 自动过期”。
@@ -318,7 +335,7 @@ report/policy/审批/head/base/CI/workflow/chart pin，并用旧 main SHA lease�
 `/version` 的 `gitSha` 是构建镜像的**应用代码提交**。两者通常不同。只传一个会导致
 错误的 provenance 校验。
 
-**修复**：`postdeploy.py` 新增 `--expected-app-sha`；未提供时默认使用
+**修复**：旧 postdeploy 新增 `--expected-app-sha`；未提供时默认使用
 `--expected-sha`（兼容旧命令），但正式发布必须显式同时传：
 
 ```sh
@@ -363,9 +380,8 @@ report/policy/审批/head/base/CI/workflow/chart pin，并用旧 main SHA lease�
 
 ## 20. 版本与命令注意
 
-- 示例版本统一写 `<新版本>`；发布前让 `pyproject.toml` 的 `version` 与
-  `change_guard/__init__.py` 的 `__version__` 相等；
-- `build-release.sh --version` 只改 tarball 名/JSON，不改元数据；
+- 示例版本统一写 `<新版本>`；发布前让 `internal/guard/common.go` 的 `Version` 等于该版本；
+- `build-release.sh --version` 只改 tarball 名/JSON，不改二进制内版本；
 - 正常发布修改 `gitops/demo/values.yaml`，不是 `charts/demo` 自带默认 values；
 - 回退普通 head 用 `git revert <head>`，不加 `-m 1`；
 - 所有合并/发布后命令以当前版本实际 `--help` 和 `docs/acceptance.md` 的记录为准；正常
@@ -444,7 +460,7 @@ postdeploy 证据。不要再用 `status.image` 判断镜像错误。
 
 - `scripts/merge-release.sh` 供 root 使用：暂停 `change-guard.service`，`trap EXIT`
   恢复；`runuser -u change-guard` 后读取 `proxy.env`，再执行底层 merge。
-- 直接运行 `python -m change_guard.merge` 仍可，但必须先停 daemon/串行化，否则
+- 直接运行 Go `change-guard merge` 仍可，但必须先停 daemon/串行化，否则
   非阻塞 state lock 可能返回 `DaemonBusy`。
 - PR closed/merged 后 daemon 会撤销旧 head 的历史 guard 状态；main/旧 head 出现
   guard error/pending 可能只是撤销，不是 postdeploy 失败。门禁证明看 merge 记录

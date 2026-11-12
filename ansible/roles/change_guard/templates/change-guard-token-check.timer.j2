@@ -1,0 +1,10 @@
+[Unit]
+Description=Check change-guard token expiry every hour
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=1h
+Unit=change-guard-token-check.service
+
+[Install]
+WantedBy=timers.target

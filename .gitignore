@@ -22,3 +22,13 @@ master-password*
 ansible/secrets.yml
 ansible/*.retry
 test-output.txt
+
+# Go local build/test artifacts
+/change-guard
+/change-guard.exe
+/k8s-change-guard
+/k8s-change-guard.exe
+/bin/
+*.test
+*.test.exe
+coverage.out

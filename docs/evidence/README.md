@@ -1,5 +1,8 @@
 # 证据索引
 
+> 本目录的部署、merge、postdeploy 和 runtime proof 全部属于历史 **Python 0.2.x**。
+> Go `0.3.0` 尚未部署，live 验收 pending；不要把这里的任意记录当作 Go 上线或当前状态。
+
 以 [最终验收报告](../acceptance.md) 的分项链接为入口。`ev-*.json` 是不同时刻的不可变评估快照，包括开发中已修复错误和过期报告；不要把目录中任意历史记录当作当前状态。`approval-*.json` 是操作员动作记录，实际认可结果以对应 merge 记录为准；最早一次带说明文字的评论未满足精确命令格式而被拒绝。
 
 - `deployment-0.2.3.json`、Ansible 0.2.3 原始输出、`final-runtime-proof.json`：最终部署与运行。

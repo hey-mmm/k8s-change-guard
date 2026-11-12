@@ -1,53 +1,62 @@
-# Deploying k8s-change-guard
+# Deploying k8s-change-guard (Go single binary)
 
-The role installs an immutable trusted release, runs the daemon as an independent
-unprivileged user, grants read-only Kubernetes access, and gives the service a
-short-lived TokenRequest kubeconfig. It does **not** copy the controller's
-bootstrap/admin kubeconfig to the service identity.
+The role installs one immutable static Linux binary, runs the daemon as an
+independent unprivileged user, grants read-only Kubernetes access, and gives the
+service a short-lived TokenRequest kubeconfig. It does **not** copy the
+controller's bootstrap/admin kubeconfig to the service identity.
 
-Current release, deployment, merge/revert and post-deploy results are recorded in
-`docs/acceptance.md`. This README intentionally does not copy time-sensitive
-version/test/CI numbers; historical deployment notes are not current status.
+The current Go `0.3.0` migration, Windows/Linux tests, and single-binary release
+build are complete and ready to deploy. It is **not deployed yet**; the root
+deployment round will execute this playbook and the live acceptance steps.
+Historical Python `0.2.3` deployment and live evidence remain in
+`docs/acceptance.md` as history only; do not treat it as Go live acceptance.
 
 ## 1. Supported target
 
 - Debian/Ubuntu only (package names and systemd paths are Debian-specific).
 - `amd64` or `arm64`.
 - The lab target is the control-plane host `11.0.1.10` (`master`), because the
-  root-only token renewal helper uses the local
-  `/etc/kubernetes/admin.conf`. If the role is deployed to a separate host,
-  replace that renewal path with controller-side rotation; do not copy the
-  admin kubeconfig into the service config directory.
-- Production Helm rendering requires Linux bubblewrap. The lab host has
-  bubblewrap `0.6.1`; the role must keep namespace creation available to the
-  service user.
+  root-only `change-guard renew-token` helper uses the local
+  `/etc/kubernetes/admin.conf`. For a separate host, use controller-side
+  rotation; do not copy the admin kubeconfig into the service config directory.
+- Production Helm rendering requires Linux bubblewrap. Keep namespace creation
+  available to the service user.
 
-The role installs `bubblewrap`, `ca-certificates`, `curl`, `gzip`, `python3`,
-`python3-pip`, `python3-requests`, `python3-setuptools`, `python3-venv`,
-`python3-yaml`, and `tar`. Preinstalled executable Helm/kubectl are reused; a
-missing binary is downloaded only with a pinned SHA-256. The role does not
-install `git`, `ssh`, or `nc`, which the merge helper needs on the host.
+The role installs `bubblewrap`, `ca-certificates`, `curl`, `git`, `gzip`,
+`netcat-openbsd`, `openssh-client`, `python3`, and `tar`. `python3` is only
+Ansible's remote interpreter; the guard runtime is the Go binary. Preinstalled
+executable Helm/kubectl are reused; a missing binary is downloaded only with a
+pinned SHA-256.
 
 ## 2. Build the trusted artifact
 
 ```sh
-# First make pyproject.toml project.version and __version__ equal to <new-version>.
-VERSION='<new-version>'
+VERSION='0.3.0'
 scripts/build-release.sh --version "$VERSION"
-# -> dist/k8s-change-guard-<new-version>.tar.gz and a SHA-256 in the JSON output
+# -> dist/k8s-change-guard-0.3.0.tar.gz and SHA-256 in the JSON output
 ```
 
-`--version` only changes the tarball name/JSON field; it does not modify
-`pyproject.toml` or `change_guard/__init__.py`. A release whose artifact name and
-package metadata disagree is not acceptable.
+On Windows:
 
-The tarball contains only `change_guard/`, `knowledge/`, `pyproject.toml`,
-`requirements.txt`, and `config.example.yaml`. It never contains tests,
-Ansible, scripts, VCS metadata, or credentials. Keep `dist/` out of Git.
+```powershell
+pwsh -NoProfile -File scripts/build-release.ps1 -Go E:/Go/bin/go.exe -Version 0.3.0
+```
+
+The release version is the `Version` constant in `internal/guard/common.go`;
+`--version` only changes the artifact name/JSON field. The tarball contains only:
+
+```text
+k8s-change-guard      # the only executable
+knowledge/
+config.example.yaml
+README.md
+```
+
+It never contains tests, Ansible, Python, scripts, VCS metadata, or credentials.
 
 Do not let Git normalize `knowledge/sources/`: `.gitattributes` sets
 `knowledge/sources/* -text` because the knowledge hashes attest exact source
-bytes. A CRLF checkout once caused a project CI mismatch; keep the bytes intact.
+bytes.
 
 ## 3. Inputs and credentials
 
@@ -74,9 +83,7 @@ Credential source files live on the controller, are copied with mode `0600`,
 and are owned by `change-guard`. They are never placed in inventory. The role
 never copies the controller's bootstrap kubeconfig to the target or to the
 service identity; TokenRequest and RBAC are applied on the controller
-(`delegate_to: localhost`). The lab target is itself the control plane, so its
-root-only `/etc/kubernetes/admin.conf` already exists for the fixed renewal
-helper; that is a host-admin trust boundary, not a service credential.
+(`delegate_to: localhost`).
 
 The GitHub PAT is separate from the merge deploy key:
 
@@ -84,8 +91,7 @@ The GitHub PAT is separate from the merge deploy key:
   Issues read, Commit statuses **read/write**. No Administration, Checks,
   Contents write, or Issues write (leave `report_comment: false`).
 - Deploy key: one dedicated write key for the repository. It is used only by
-  `python -m change_guard.merge`; it is not given to the daemon for arbitrary
-  pushes.
+  the Go `merge` command; it is not given to the daemon for arbitrary pushes.
 
 ## 4. Critical policy inputs
 
@@ -95,9 +101,8 @@ Set the aggregate check name as a single string:
 change_guard_merge_required_ci: "Test, lint, render"
 ```
 
-Keep it a string (not a three-element list). The role defaults and example now
-use this single string; `merge.py` matches one aggregate GitHub Actions check
-name bound to the PR head.
+Keep it a string (not a three-element list). The Go merge command matches one
+aggregate GitHub Actions check name bound to the PR head.
 
 Set the operator-approved chart pin to the exact `charts/demo` Git blob digest:
 
@@ -106,16 +111,14 @@ change_guard_approved_chart_digest: "194baf90afd746299e256dc0bf144a12bc6f6325bac
 ```
 
 This is the real digest computed from the current `charts/demo` Git blobs; the
-old parent `work/approved-chart.json` value `0b2b...` is stale and must not be used.
-The digest is `sha256(canonical_json({path under charts/demo: sha256(exact git
-blob bytes)}))`; CRLF/LF differences change it, and `gitops/demo/values.yaml`
-is deliberately not part of the pin. A missing pin is ERROR/BLOCK; a mismatch
-is BLOCK and cannot be approved. Updating a chart template requires a separate,
-trusted operator update to this pin. `merge.py` recomputes it from the head tree
-and refuses forged reports.
+old `0b2b...` value is stale. The digest is
+`sha256(canonical_json({path under charts/demo: sha256(exact git blob bytes)}))`;
+CRLF/LF differences change it, and `gitops/demo/values.yaml` is deliberately not
+part of the pin. A missing pin is ERROR/BLOCK; a mismatch is BLOCK and cannot
+be approved.
 
-`.github/workflows/` changes are a hard BLOCK; `merge.py` independently compares
-base/head workflow trees. This closes the PR-editable-workflow/CI spoof path.
+`.github/workflows/` changes are a hard BLOCK; Go merge independently compares
+base/head workflow trees.
 
 ## 5. Deploy
 
@@ -132,43 +135,44 @@ Order of operations:
 3. user/directories: `change-guard` system user with `nologin`, private state
    dir, config dir, release root.
 4. release: SHA-256 check on both sides, immutable
-   `/opt/change-guard/releases/<version>`, venv with a `.pth` path entry,
-   `.artifact.sha256`, `.complete`, `current` symlink.
+   `/opt/change-guard/releases/<version>`, single binary + knowledge,
+   `.artifact.sha256`, `.complete`, `current` symlink. The installed binary must
+   report the pinned version and be the only executable release file.
 5. RBAC: namespace, ServiceAccount, node/pod cluster readers, demo workload
    reader, separate Argo CD reader.
-6. token: reuse a sufficiently fresh kubeconfig or mint a `12h` TokenRequest
-   on the controller, atomically install it as `0600`.
+6. token: use Go `check-token`; reuse a fresh kubeconfig or mint a `12h`
+   TokenRequest on the controller and atomically install it as `0600`.
 7. configure: non-secret config, PAT/DeepSeek token, proxy env, optional merge
    deploy key and known-hosts.
-8. service: hardened systemd unit, enabled and started.
-9. renewal: root-only helper plus 6-hour timer.
-10. verify: service state, user, credential modes, token freshness, required
+8. service: hardened systemd unit running `current/k8s-change-guard daemon`.
+9. renewal: Go `renew-token` 6-hour timer and `check-token` hourly monitor timer.
+10. verify: service state, binary version, token freshness, timers, required
     reads, forbidden reads/writes.
 
 Ansible `copy.checksum` is SHA-1 only, so the role explicitly verifies SHA-256
 on the controller and again after copying. A completed version directory with
-a different artifact digest is refused instead of reused. Python/knowledge
-files stay `0644`; the role never recursively marks the tree `0755`.
+a different artifact digest is refused instead of reused.
 
-## 6. TokenRequest renewal
+## 6. TokenRequest renewal and expiry check
 
 - TTL: `12h` by default.
-- Timer: `change-guard-token-renew.timer`, every 6 hours.
-- Helper: `/usr/local/lib/change-guard/renew-service-token.py`, `0700 root`.
-- Fixed command:
-  `/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf -n change-guard create token change-guard --duration=12h`.
+- Renew timer: `change-guard-token-renew.timer`, every 6 hours.
+- Check timer: `change-guard-token-check.timer`, every hour; it fails the unit
+  when the remaining lifetime drops to the refresh window
+  (`change_guard_token_refresh_before_seconds`, default `7200`).
+- Helper: `/opt/change-guard/current/k8s-change-guard`.
+- Fixed renew command:
+  `change-guard renew-token` → `/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf -n change-guard create token change-guard --duration=12h`.
 - The helper atomically replaces `/etc/change-guard/kubeconfig` with mode
   `0600`, preserving server/CA; it never prints the token.
+- `change-guard check-token /etc/change-guard/kubeconfig --min-remaining N`
+  decodes the JWT `exp` locally and exits 0 valid / 1 rotate / 2 error.
 - The daemon reads the kubeconfig per kubectl invocation, so renewal does not
   require a restart.
-- The service user cannot execute the helper, read `/etc/kubernetes/admin.conf`,
-  or modify the timer/unit.
+- The service user cannot execute the root helper, read
+  `/etc/kubernetes/admin.conf`, or modify the timer/unit.
 
-This is token replacement, not a Kubernetes lease extension. The merge command
-uses a separate Git `--force-with-lease` compare-and-swap on the old `main` SHA.
-
-If the host is not a control-plane node, the local helper will fail. Use
-controller-side rotation instead:
+If the host is not a control-plane node, use controller-side rotation:
 
 ```sh
 ansible-playbook -i ansible/inventory.example.ini ansible/rotate-token.yml
@@ -196,18 +200,12 @@ Denied:
 - workload writes;
 - Argo CD writes.
 
-The systemd unit uses an independent user, empty capability set,
+The service unit uses an independent user, empty capability set,
 `NoNewPrivileges`, `ProtectSystem=strict`, `ProtectHome`, `PrivateTmp`,
 read-only config/release paths, and a writable state directory. It deliberately
 keeps `RestrictNamespaces=false` so bubblewrap can create the namespaces needed
 by `--unshare-all`. The unit does not set `RLIMIT_AS`; `MemoryHigh=1536M` and
-`MemoryMax=2G` bound the cgroup, and `LimitNPROC`/`TasksMax=8192` leave room for
-Go helpers. Over-hardening namespaces or setting an aggressive `RLIMIT_AS`
-breaks real Helm rendering; do not trade working isolation for a score.
-
-`sandbox_tmpfs_bytes` is currently only validated by the renderer; bubblewrap
-0.6.1 has no `--size` option. Actual bounds come from output/FSIZE limits, the
-child `RLIMIT_*` settings, and the service cgroup.
+`MemoryMax=2G` bound the cgroup.
 
 ## 8. Idempotency and verification
 
@@ -220,24 +218,24 @@ The second recap should report `changed=0` (unless the token enters its refresh
 window or a credential/input changed). The verify phase checks:
 
 - service active and running as `change-guard` with `nologin`;
+- binary reports the pinned Go version;
 - credential files `0600`, service-owned;
-- short-lived kubeconfig unexpired and readable;
+- short-lived kubeconfig unexpired and readable by the Go `check-token` helper;
+- both token timers active;
 - required reads work: nodes, all-namespace pods, Argo CD Applications;
-- forbidden actions fail: Secrets, pod logs/exec, workload writes, Argo writes
-  (subresources checked with `--subresource=log|exec`);
+- forbidden actions fail: Secrets, pod logs/exec, workload writes, Argo writes;
 - installed config has string `merge_required_ci` and a non-empty
-  `approved_chart_digest`; report policy binding/schema 2 is in use;
-- bwrap namespace creation and a real Helm render under the same hardening.
+  `approved_chart_digest`.
 
-Standalone RBAC check:
+Standalone checks:
 
 ```sh
 sh scripts/verify-rbac.sh /etc/change-guard/kubeconfig
+sh scripts/health-check.sh --config /etc/change-guard/config.yaml --rbac
 ```
 
-Current deployment/merge/revert/post-deploy evidence and final acceptance are in
-`docs/acceptance.md`. Historical 0.2.1 notes are kept only as history; do not
-reuse their test counts or recap as current status.
+Historical Python `0.2.3` evidence and the Go live acceptance checklist are in
+`docs/acceptance.md`.
 
 ## 9. Merge deploy key and post-deploy
 
@@ -247,20 +245,20 @@ The optional merge integration installs:
 - `/etc/change-guard/github_known_hosts` (`0600`, service-owned);
 - `config.yaml` keys `merge_deploy_key`, `merge_known_hosts`,
   `merge_ssh_proxy`, `merge_required_ci`, `approved_chart_digest`, and optional
-  `merge_fetch_depth` (default 128).
+  `merge_fetch_depth`.
 
-Prefer the root wrapper from the trusted deployment directory, which pauses polling
-and restores it on exit:
+Prefer the root wrapper from the trusted deployment directory, which pauses
+polling and restores it on exit:
 
 ```sh
 sudo scripts/merge-release.sh <number>
 ```
 
-The wrapper stops `change-guard.service` to avoid the non-blocking state lock,
-uses a `trap ... EXIT` to restore the previous polling state, and reads
-`/etc/change-guard/proxy.env` after dropping to `change-guard` via `runuser`.
-Direct Python is still possible, but stop the daemon/serialize first; otherwise it
-may fail with `DaemonBusy`:
+The wrapper stops `change-guard.service`, uses `trap ... EXIT` to restore the
+previous polling state, reads `/etc/change-guard/proxy.env` after dropping to
+`change-guard` via `runuser`, and executes the fixed Go merge command. To run
+the binary directly, stop the daemon/serialize first; otherwise it may fail
+with a daemon lock error:
 
 ```sh
 sudo systemctl stop change-guard.service
@@ -268,7 +266,7 @@ sudo -u change-guard \
   env HTTP_PROXY=http://11.0.1.1:7890 \
       HTTPS_PROXY=http://11.0.1.1:7890 \
       NO_PROXY='127.0.0.1,localhost,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local' \
-  /opt/change-guard/current/venv/bin/python -m change_guard.merge \
+  /opt/change-guard/current/k8s-change-guard merge \
   --config /etc/change-guard/config.yaml --pr <number>
 sudo systemctl start change-guard.service
 ```
@@ -276,25 +274,14 @@ sudo systemctl start change-guard.service
 It validates the current report schema/policy binding, exact head/base, approval,
 workflow tree equality, independently recomputed chart pin, head-bound GitHub
 Actions CI, synthetic parents/tree, report digest, and exact lease before pushing.
-GitHub Actions `pull_request` checks are bound to the PR **head**, not the
-synthetic merge commit; the command therefore queries head checks and proves the
-synthetic tree equals the head tree, then fast-forwards `main` to the evaluated
-head with `--force-with-lease=refs/heads/main:<old-main>`. It does not push the
-synthetic commit, call the GitHub Merge API, or check out/execute candidate code.
-`main` becomes a normal single-parent head; rollback is `git revert <head>` with
-no `-m 1`.
-
-After the PR is closed/merged, the daemon revokes the historical
-`change-guard/release` status on the old head; a guard **error/pending** on main
-or the old head may therefore be revocation, not a post-deploy failure. The merge
-record plus the report/approval/CI at merge time are the gate proof; do not force
-a permanent green status for appearance.
+It does not push the synthetic commit, call the GitHub Merge API, or check out
+candidate code.
 
 Post-deploy verifier:
 
 ```sh
 sudo -u change-guard \
-  /opt/change-guard/current/venv/bin/python -m change_guard.postdeploy verify \
+  /opt/change-guard/current/k8s-change-guard postdeploy verify \
   --config /etc/change-guard/config.yaml \
   --expected-sha <main-head-gitops-revision> \
   --expected-app-sha <image-source-commit> \
@@ -303,36 +290,22 @@ sudo -u change-guard \
 
 `--expected-sha` is the Argo/GitOps revision; `--expected-app-sha` is the image
 source commit exposed by `/version`. They are normally different and both must
-be supplied. The pod check matches the Pod **spec** container name/image and
-verifies the runtime digest from `status.containerStatuses[].imageID`; do not use
-`status.containerStatuses[].image` as the manifest reference (containerd may
-report a config ID there). The verifier is read-only. On failure it returns an
-`open_revert_pr` recommendation; it never rolls back or mutates the cluster.
+be supplied. The verifier is read-only; on failure it returns an
+`open_revert_pr` recommendation and never rolls back or mutates the cluster.
 
 ## 10. Known deployment caveats
 
-- The GitHub ruleset DeployKey bypass is repository-wide, not per-key. Keep
-  exactly one write deploy key and audit it regularly; IR-02 cannot be fixed by
-  the platform or by a per-key ruleset setting.
-- GitHub success statuses have no project-defined TTL. The daemon revokes stale
-  statuses while running, and the merge command re-validates; manual revocation
-  is still needed if the daemon is down.
-- `.github/workflows/` changes are now a hard BLOCK, and merge independently
-  compares base/head workflow trees. Do not treat a green check name alone as
-  proof unless the workflow tree is unchanged.
-- GitHub Actions checks are bound to the PR head; synthetic merge check-runs can
-  be empty. Never switch merge back to synthetic-check lookup.
+- The GitHub ruleset DeployKey bypass is repository-wide, not per-key.
+- GitHub success statuses have no project-defined TTL; the daemon revokes stale
+  statuses while running, and merge re-validates before pushing.
+- `.github/workflows/` changes are a hard BLOCK.
 - Updating `charts/demo` requires a separate trusted `approved_chart_digest`
-  update. The current real digest is `194baf90...c3e05d`, not the stale
-  `0b2b...` reference.
-- `pyproject.toml`/`__version__` must agree with the release; `--version` only
-  changes the tarball name.
-- `knowledge/sources/` is pinned with `-text`; CRLF conversion changes hashes
-  and has caused CI failure.
-- fast-forward may leave the GitHub PR unmarked as merged; root should verify
-  manually rather than granting the guard PR write/merge API permissions.
-- Post-deploy needs both `--expected-sha` (GitOps revision) and
-  `--expected-app-sha` (image source commit); they are usually different.
+  update; the Go merge recomputes it from the head tree.
+- fast-forward may leave the GitHub PR unmarked as merged; verify manually
+  rather than granting the guard PR write/merge API permissions.
+- Post-deploy needs both `--expected-sha` and `--expected-app-sha`.
 - The root-only token helper depends on the local
   `/etc/kubernetes/admin.conf`; a separate guard host needs controller-side
   rotation.
+- Go `0.3.0` is built and ready to deploy, but live deployment acceptance has not
+  run yet; the historical Python `0.2.3` evidence is not current Go proof.

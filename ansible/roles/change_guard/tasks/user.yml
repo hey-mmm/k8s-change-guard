@@ -39,19 +39,3 @@
     owner: root
     group: root
     mode: "0755"
-
-- name: Create the controller-side token-expiry checker directory
-  ansible.builtin.file:
-    path: /usr/local/lib/change-guard
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Install the token-expiry checker used by rotate-token playbook
-  ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../scripts/check-token-expiry.py"
-    dest: /usr/local/lib/change-guard/check-token-expiry.py
-    owner: root
-    group: root
-    mode: "0755"

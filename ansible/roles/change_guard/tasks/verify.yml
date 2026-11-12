@@ -9,6 +9,20 @@
   changed_when: false
   failed_when: change_guard_service_state.rc != 0 or (change_guard_service_state.stdout | trim) != 'active'
 
+- name: Verify the Go token renewal timer is active
+  ansible.builtin.command:
+    argv: [systemctl, is-active, change-guard-token-renew.timer]
+  register: change_guard_renew_timer_state
+  changed_when: false
+  failed_when: change_guard_renew_timer_state.rc != 0 or (change_guard_renew_timer_state.stdout | trim) != 'active'
+
+- name: Verify the Go token expiry monitor timer is active
+  ansible.builtin.command:
+    argv: [systemctl, is-active, change-guard-token-check.timer]
+  register: change_guard_check_timer_state
+  changed_when: false
+  failed_when: change_guard_check_timer_state.rc != 0 or (change_guard_check_timer_state.stdout | trim) != 'active'
+
 - name: Verify the service account is a system user without a login shell
   ansible.builtin.command:
     argv: [getent, passwd, "{{ change_guard_user }}"]
@@ -38,20 +52,22 @@
     fail_msg: "A credential file is missing or has unsafe ownership/permissions."
   loop: "{{ change_guard_sensitive_stats.results }}"
 
-- name: Verify the installed daemon imports and exposes its CLI
+- name: Verify the installed single Go binary exposes the expected version
   ansible.builtin.command:
     argv:
-      - "{{ change_guard_current_link }}/venv/bin/python"
-      - -m
-      - change_guard.daemon
-      - --help
+      - "{{ change_guard_binary }}"
+      - --version
+  register: change_guard_binary_version
   changed_when: false
+  failed_when: >-
+    change_guard_binary_version.rc != 0
+    or ('change-guard ' ~ change_guard_version) not in change_guard_binary_version.stdout
 
 - name: Verify the short-lived kubeconfig has not expired
   ansible.builtin.command:
     argv:
-      - "{{ change_guard_python }}"
-      - /usr/local/lib/change-guard/check-token-expiry.py
+      - "{{ change_guard_binary }}"
+      - check-token
       - "{{ change_guard_config_dir }}/kubeconfig"
       - --min-remaining
       - "60"

@@ -1,13 +1,5 @@
 ---
-- name: Install fixed root-only ServiceAccount token renewal helper
-  ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../scripts/renew-service-token.py"
-    dest: /usr/local/lib/change-guard/renew-service-token.py
-    owner: root
-    group: root
-    mode: '0700'
-
-- name: Install token renewal units
+- name: Install Go token renewal and expiry-check units
   ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "/etc/systemd/system/{{ item }}"
@@ -17,6 +9,8 @@
   loop:
     - change-guard-token-renew.service
     - change-guard-token-renew.timer
+    - change-guard-token-check.service
+    - change-guard-token-check.timer
   register: change_guard_renew_units
 
 - name: Reload renewal units when changed
@@ -27,5 +21,11 @@
 - name: Enable fixed token renewal timer
   ansible.builtin.systemd_service:
     name: change-guard-token-renew.timer
+    enabled: true
+    state: started
+
+- name: Enable token expiry monitoring timer
+  ansible.builtin.systemd_service:
+    name: change-guard-token-check.timer
     enabled: true
     state: started

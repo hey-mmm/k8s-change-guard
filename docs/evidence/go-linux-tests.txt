@@ -1,0 +1,1529 @@
+=== RUN   TestVerifyKnowledgeProvenance
+--- PASS: TestVerifyKnowledgeProvenance (0.01s)
+=== RUN   TestVerifyKnowledgeUsesConfiguredDefaultDirectory
+--- PASS: TestVerifyKnowledgeUsesConfiguredDefaultDirectory (0.00s)
+=== RUN   TestVerifyKnowledgeRejectsTampering
+=== RUN   TestVerifyKnowledgeRejectsTampering/snapshot
+=== RUN   TestVerifyKnowledgeRejectsTampering/case_excerpt
+--- PASS: TestVerifyKnowledgeRejectsTampering (0.01s)
+    --- PASS: TestVerifyKnowledgeRejectsTampering/snapshot (0.00s)
+    --- PASS: TestVerifyKnowledgeRejectsTampering/case_excerpt (0.00s)
+=== RUN   TestRetrievalFindsRelevantTrustedCases
+--- PASS: TestRetrievalFindsRelevantTrustedCases (0.00s)
+=== RUN   TestRetrievalDeterministicAndBounded
+--- PASS: TestRetrievalDeterministicAndBounded (0.01s)
+=== RUN   TestAnalyzeSuccessEnrichesCitations
+--- PASS: TestAnalyzeSuccessEnrichesCitations (0.01s)
+=== RUN   TestAnalyzeNoRisksNoCitations
+--- PASS: TestAnalyzeNoRisksNoCitations (0.00s)
+=== RUN   TestAnalyzeTokenFile
+--- PASS: TestAnalyzeTokenFile (0.00s)
+=== RUN   TestAnalyzeFailClosedOnBadCitationsAndSchemas
+=== RUN   TestAnalyzeFailClosedOnBadCitationsAndSchemas/fabricated_citation
+=== RUN   TestAnalyzeFailClosedOnBadCitationsAndSchemas/unknown_case
+=== RUN   TestAnalyzeFailClosedOnBadCitationsAndSchemas/markdown
+=== RUN   TestAnalyzeFailClosedOnBadCitationsAndSchemas/extra_key
+=== RUN   TestAnalyzeFailClosedOnBadCitationsAndSchemas/risk_without_citation
+=== RUN   TestAnalyzeFailClosedOnBadCitationsAndSchemas/wrong_citation_shape
+=== RUN   TestAnalyzeFailClosedOnBadCitationsAndSchemas/duplicate_json_key
+=== RUN   TestAnalyzeFailClosedOnBadCitationsAndSchemas/empty_summary
+=== RUN   TestAnalyzeFailClosedOnBadCitationsAndSchemas/risk_wrong_type
+--- PASS: TestAnalyzeFailClosedOnBadCitationsAndSchemas (0.03s)
+    --- PASS: TestAnalyzeFailClosedOnBadCitationsAndSchemas/fabricated_citation (0.00s)
+    --- PASS: TestAnalyzeFailClosedOnBadCitationsAndSchemas/unknown_case (0.00s)
+    --- PASS: TestAnalyzeFailClosedOnBadCitationsAndSchemas/markdown (0.00s)
+    --- PASS: TestAnalyzeFailClosedOnBadCitationsAndSchemas/extra_key (0.00s)
+    --- PASS: TestAnalyzeFailClosedOnBadCitationsAndSchemas/risk_without_citation (0.00s)
+    --- PASS: TestAnalyzeFailClosedOnBadCitationsAndSchemas/wrong_citation_shape (0.00s)
+    --- PASS: TestAnalyzeFailClosedOnBadCitationsAndSchemas/duplicate_json_key (0.00s)
+    --- PASS: TestAnalyzeFailClosedOnBadCitationsAndSchemas/empty_summary (0.00s)
+    --- PASS: TestAnalyzeFailClosedOnBadCitationsAndSchemas/risk_wrong_type (0.00s)
+=== RUN   TestAnalyzeCitationMustBeInRetrievedCases
+--- PASS: TestAnalyzeCitationMustBeInRetrievedCases (0.01s)
+=== RUN   TestAnalyzeConfigAndKnowledgeFailClosed
+--- PASS: TestAnalyzeConfigAndKnowledgeFailClosed (0.00s)
+=== RUN   TestSanitizationRemovesSecretsBeforePrompt
+--- PASS: TestSanitizationRemovesSecretsBeforePrompt (0.00s)
+=== RUN   TestPromptSizeIsBounded
+--- PASS: TestPromptSizeIsBounded (0.09s)
+=== RUN   TestReportSuppliedRunbookCannotBeCited
+--- PASS: TestReportSuppliedRunbookCannotBeCited (0.00s)
+=== RUN   TestRepairExactlyOneAttempt
+--- PASS: TestRepairExactlyOneAttempt (0.00s)
+=== RUN   TestRepairNeverDropsBadCitation
+--- PASS: TestRepairNeverDropsBadCitation (0.00s)
+=== RUN   TestStrictJSONRejectsDuplicateKeysAndTrailingData
+--- PASS: TestStrictJSONRejectsDuplicateKeysAndTrailingData (0.00s)
+=== RUN   TestRequestCompletionBuildsBoundedStrictRequest
+--- PASS: TestRequestCompletionBuildsBoundedStrictRequest (0.00s)
+=== RUN   TestRequestCompletionRejectsExpiredDeadlineAndOversize
+--- PASS: TestRequestCompletionRejectsExpiredDeadlineAndOversize (0.00s)
+=== RUN   TestCompletionContentStrictSchemas
+--- PASS: TestCompletionContentStrictSchemas (0.00s)
+=== RUN   TestQuoteCandidatesAreExactExcerptSubstrings
+--- PASS: TestQuoteCandidatesAreExactExcerptSubstrings (0.00s)
+=== RUN   TestCommonCredentialFailureDoesNotExposeSecret
+--- PASS: TestCommonCredentialFailureDoesNotExposeSecret (0.00s)
+=== RUN   TestCommonReportWriteRejectsNonObjectRead
+--- PASS: TestCommonReportWriteRejectsNonObjectRead (0.00s)
+=== RUN   TestCommonPolicyDigestIsIndependentOfMapInsertionOrder
+--- PASS: TestCommonPolicyDigestIsIndependentOfMapInsertionOrder (0.00s)
+=== RUN   TestCommonConfigRejectsDuplicateKeys
+--- PASS: TestCommonConfigRejectsDuplicateKeys (0.00s)
+=== RUN   TestExplicitEmptyModelResultFailsClosed
+--- PASS: TestExplicitEmptyModelResultFailsClosed (0.00s)
+=== RUN   TestDaemonLockInteroperatesWithPythonFlock
+--- PASS: TestDaemonLockInteroperatesWithPythonFlock (0.00s)
+=== RUN   TestDaemonStateLockIsKernelLifetimeAndLeavesLockFile
+--- PASS: TestDaemonStateLockIsKernelLifetimeAndLeavesLockFile (0.00s)
+=== RUN   TestDaemonPassPendingThenSuccessAndReusesCache
+--- PASS: TestDaemonPassPendingThenSuccessAndReusesCache (0.01s)
+=== RUN   TestDaemonHeadOrBaseChangeInvalidatesCache
+=== RUN   TestDaemonHeadOrBaseChangeInvalidatesCache/head
+=== RUN   TestDaemonHeadOrBaseChangeInvalidatesCache/base
+--- PASS: TestDaemonHeadOrBaseChangeInvalidatesCache (0.02s)
+    --- PASS: TestDaemonHeadOrBaseChangeInvalidatesCache/head (0.01s)
+    --- PASS: TestDaemonHeadOrBaseChangeInvalidatesCache/base (0.01s)
+=== RUN   TestDaemonExpiredReportIsReevaluated
+--- PASS: TestDaemonExpiredReportIsReevaluated (0.01s)
+=== RUN   TestDaemonWorkflowChangeAndChartPinControlStatus
+=== RUN   TestDaemonWorkflowChangeAndChartPinControlStatus/workflow_path_is_a_hard_block
+=== RUN   TestDaemonWorkflowChangeAndChartPinControlStatus/workflow_tree_signature_blocks_without_path_list
+=== RUN   TestDaemonWorkflowChangeAndChartPinControlStatus/chart_pin_mismatch_blocks_and_missing_pin_errors
+--- PASS: TestDaemonWorkflowChangeAndChartPinControlStatus (0.03s)
+    --- PASS: TestDaemonWorkflowChangeAndChartPinControlStatus/workflow_path_is_a_hard_block (0.00s)
+    --- PASS: TestDaemonWorkflowChangeAndChartPinControlStatus/workflow_tree_signature_blocks_without_path_list (0.01s)
+    --- PASS: TestDaemonWorkflowChangeAndChartPinControlStatus/chart_pin_mismatch_blocks_and_missing_pin_errors (0.02s)
+=== RUN   TestDaemonReviewRequiresExactAllowlistedCurrentOwnerApproval
+--- PASS: TestDaemonReviewRequiresExactAllowlistedCurrentOwnerApproval (0.01s)
+=== RUN   TestDaemonApprovalAllowlistTimestampAndPermissionFailClosed
+=== RUN   TestDaemonApprovalAllowlistTimestampAndPermissionFailClosed/wrong_login_prefix_and_old_comment_are_ignored
+=== RUN   TestDaemonApprovalAllowlistTimestampAndPermissionFailClosed/non_owner_permission_error_fails_closed
+=== RUN   TestDaemonApprovalAllowlistTimestampAndPermissionFailClosed/owner_identity_error_fails_closed
+--- PASS: TestDaemonApprovalAllowlistTimestampAndPermissionFailClosed (0.02s)
+    --- PASS: TestDaemonApprovalAllowlistTimestampAndPermissionFailClosed/wrong_login_prefix_and_old_comment_are_ignored (0.01s)
+    --- PASS: TestDaemonApprovalAllowlistTimestampAndPermissionFailClosed/non_owner_permission_error_fails_closed (0.00s)
+    --- PASS: TestDaemonApprovalAllowlistTimestampAndPermissionFailClosed/owner_identity_error_fails_closed (0.00s)
+=== RUN   TestDaemonCachedReportReuseRejectsForgedWorkflowPass
+--- PASS: TestDaemonCachedReportReuseRejectsForgedWorkflowPass (0.01s)
+=== RUN   TestDaemonCachedReportInvalidatedByPolicyChange
+--- PASS: TestDaemonCachedReportInvalidatedByPolicyChange (0.01s)
+=== RUN   TestDaemonPolicyDigestTracksPolicyNotRuntimePaths
+--- PASS: TestDaemonPolicyDigestTracksPolicyNotRuntimePaths (0.00s)
+=== RUN   TestDaemonCredentialFailureAndClosedRevocation
+=== RUN   TestDaemonCredentialFailureAndClosedRevocation/credential_failure_publishes_no_status
+=== RUN   TestDaemonCredentialFailureAndClosedRevocation/closed_PR_revokes_the_previous_status
+--- PASS: TestDaemonCredentialFailureAndClosedRevocation (0.01s)
+    --- PASS: TestDaemonCredentialFailureAndClosedRevocation/credential_failure_publishes_no_status (0.00s)
+    --- PASS: TestDaemonCredentialFailureAndClosedRevocation/closed_PR_revokes_the_previous_status (0.00s)
+=== RUN   TestDaemonBlockAndErrorStatusMapping
+=== RUN   TestDaemonBlockAndErrorStatusMapping/BLOCK
+=== RUN   TestDaemonBlockAndErrorStatusMapping/ERROR
+--- PASS: TestDaemonBlockAndErrorStatusMapping (0.01s)
+    --- PASS: TestDaemonBlockAndErrorStatusMapping/BLOCK (0.00s)
+    --- PASS: TestDaemonBlockAndErrorStatusMapping/ERROR (0.00s)
+=== RUN   TestEngineComputedCapacityFromNodesAndPods
+--- PASS: TestEngineComputedCapacityFromNodesAndPods (0.00s)
+=== RUN   TestEngineDiffOperationsAndPodTemplateFlag
+--- PASS: TestEngineDiffOperationsAndPodTemplateFlag (0.00s)
+=== RUN   TestEngineDiffRedactsSecretData
+--- PASS: TestEngineDiffRedactsSecretData (0.00s)
+=== RUN   TestEngineDiffRedactsRemovedEnvEntry
+--- PASS: TestEngineDiffRedactsRemovedEnvEntry (0.00s)
+=== RUN   TestEngineChangesTruncatedIsReview
+--- PASS: TestEngineChangesTruncatedIsReview (0.02s)
+=== RUN   TestPythonOracleRulesAndAuditSchema
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-001
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-002
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-003
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-004
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-005
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-006
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-007
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-008
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-009
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-010
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-011
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-012
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-013
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-014
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-015
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-016
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-017
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-018
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-019
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-020
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-021
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-022
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-023
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-024
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-025
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-026
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-027
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-028
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-029
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-030
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-031
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-032
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-033
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-034
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-035
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-036
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-037
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-038
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-039
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-040
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-041
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-042
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-043
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-044
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-045
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-046
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-047
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-048
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-049
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-050
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-051
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-052
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-053
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-054
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-055
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-056
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-057
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-058
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-059
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-060
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-061
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-062
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-063
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-064
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-065
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-066
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-067
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-068
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-069
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-070
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-071
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-072
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-073
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-074
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-075
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-076
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-077
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-078
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-079
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-080
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-081
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-082
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-083
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-084
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-085
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-086
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-087
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-088
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-089
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-090
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-091
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-092
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-093
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-094
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-095
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-096
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-097
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-098
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-099
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-100
+=== RUN   TestPythonOracleRulesAndAuditSchema/python-oracle-101
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-normal-digest-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-normal-digest-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-zero-replicas-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-zero-replicas-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-readiness-deleted-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-readiness-deleted-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-startup-failure-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-startup-failure-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-error-injection-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-error-injection-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-latency-injection-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-latency-injection-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-unapproved-image-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-unapproved-image-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-mutable-tag-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-mutable-tag-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-memory-below-measured-use-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-memory-below-measured-use-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-large-cpu-reduction-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-large-cpu-reduction-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-current-error-rate-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-current-error-rate-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-current-slow-service-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-current-slow-service-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-rolling-capacity-shortage-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-rolling-capacity-shortage-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-replica-capacity-growth-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-replica-capacity-growth-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-metrics-unavailable-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-metrics-unavailable-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-stale-raw-sample-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-stale-raw-sample-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-missing-counter-series-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-missing-counter-series-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-nonfinite-memory-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-nonfinite-memory-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-model-timeout-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-model-timeout-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-model-error-cannot-lower-block-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-model-error-cannot-lower-block-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-model-new-risk-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-model-new-risk-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-unexpected-sidecar-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-unexpected-sidecar-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-envfrom-fault-reference-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-envfrom-fault-reference-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-deployment-deleted-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-deployment-deleted-ai
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-privileged-container-rules
+=== RUN   TestPythonOracleRulesAndAuditSchema/matrix-privileged-container-ai
+--- PASS: TestPythonOracleRulesAndAuditSchema (0.37s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-001 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-002 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-003 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-004 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-005 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-006 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-007 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-008 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-009 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-010 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-011 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-012 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-013 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-014 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-015 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-016 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-017 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-018 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-019 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-020 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-021 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-022 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-023 (0.01s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-024 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-025 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-026 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-027 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-028 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-029 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-030 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-031 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-032 (0.01s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-033 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-034 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-035 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-036 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-037 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-038 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-039 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-040 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-041 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-042 (0.01s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-043 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-044 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-045 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-046 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-047 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-048 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-049 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-050 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-051 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-052 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-053 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-054 (0.01s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-055 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-056 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-057 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-058 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-059 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-060 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-061 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-062 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-063 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-064 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-065 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-066 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-067 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-068 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-069 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-070 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-071 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-072 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-073 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-074 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-075 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-076 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-077 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-078 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-079 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-080 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-081 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-082 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-083 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-084 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-085 (0.01s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-086 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-087 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-088 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-089 (0.01s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-090 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-091 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-092 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-093 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-094 (0.01s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-095 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-096 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-097 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-098 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-099 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-100 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/python-oracle-101 (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-normal-digest-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-normal-digest-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-zero-replicas-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-zero-replicas-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-readiness-deleted-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-readiness-deleted-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-startup-failure-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-startup-failure-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-error-injection-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-error-injection-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-latency-injection-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-latency-injection-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-unapproved-image-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-unapproved-image-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-mutable-tag-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-mutable-tag-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-memory-below-measured-use-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-memory-below-measured-use-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-large-cpu-reduction-rules (0.01s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-large-cpu-reduction-ai (0.01s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-current-error-rate-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-current-error-rate-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-current-slow-service-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-current-slow-service-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-rolling-capacity-shortage-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-rolling-capacity-shortage-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-replica-capacity-growth-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-replica-capacity-growth-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-metrics-unavailable-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-metrics-unavailable-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-stale-raw-sample-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-stale-raw-sample-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-missing-counter-series-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-missing-counter-series-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-nonfinite-memory-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-nonfinite-memory-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-model-timeout-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-model-timeout-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-model-error-cannot-lower-block-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-model-error-cannot-lower-block-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-model-new-risk-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-model-new-risk-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-unexpected-sidecar-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-unexpected-sidecar-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-envfrom-fault-reference-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-envfrom-fault-reference-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-deployment-deleted-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-deployment-deleted-ai (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-privileged-container-rules (0.00s)
+    --- PASS: TestPythonOracleRulesAndAuditSchema/matrix-privileged-container-ai (0.00s)
+=== RUN   TestEngineRuleEdges
+=== RUN   TestEngineRuleEdges/capacity-overcommitted
+=== RUN   TestEngineRuleEdges/capacity-affinity-unverified
+=== RUN   TestEngineRuleEdges/metrics-collected-at-future
+=== RUN   TestEngineRuleEdges/metrics-up-down
+=== RUN   TestEngineRuleEdges/tree-argo-source
+=== RUN   TestEngineRuleEdges/ai-risks-not-list
+=== RUN   TestEngineRuleEdges/forbidden-workload
+=== RUN   TestEngineRuleEdges/capacity-selector-unverified
+=== RUN   TestEngineRuleEdges/metrics-target-degraded
+=== RUN   TestEngineRuleEdges/tree-template
+=== RUN   TestEngineRuleEdges/service-extra
+=== RUN   TestEngineRuleEdges/fault-error-rate
+=== RUN   TestEngineRuleEdges/fault-startup
+=== RUN   TestEngineRuleEdges/deployment-containers-missing
+=== RUN   TestEngineRuleEdges/deployment-two-containers
+=== RUN   TestEngineRuleEdges/capacity-requests-unreserved
+=== RUN   TestEngineRuleEdges/duplicate-env
+=== RUN   TestEngineRuleEdges/probe-port
+=== RUN   TestEngineRuleEdges/deployment-selector-invalid
+=== RUN   TestEngineRuleEdges/deployment-resources-missing
+=== RUN   TestEngineRuleEdges/deployment-limit-below-request
+=== RUN   TestEngineRuleEdges/metrics-missing
+=== RUN   TestEngineRuleEdges/metrics-evidence-error
+=== RUN   TestEngineRuleEdges/metrics-target-missing
+=== RUN   TestEngineRuleEdges/service-no-spec
+=== RUN   TestEngineRuleEdges/service-external-ips
+=== RUN   TestEngineRuleEdges/image-no-tag
+=== RUN   TestEngineRuleEdges/security-secret-volume
+=== RUN   TestEngineRuleEdges/deployment-invalid
+=== RUN   TestEngineRuleEdges/deployment-selector-mismatch
+=== RUN   TestEngineRuleEdges/metrics-series-missing
+=== RUN   TestEngineRuleEdges/resource-reduction
+=== RUN   TestEngineRuleEdges/fault-value-from
+=== RUN   TestEngineRuleEdges/probe-exec-disallowed
+=== RUN   TestEngineRuleEdges/deployment-invalid-quantity
+=== RUN   TestEngineRuleEdges/metrics-stale
+=== RUN   TestEngineRuleEdges/image-repository
+=== RUN   TestEngineRuleEdges/deployment-replicas-invalid
+=== RUN   TestEngineRuleEdges/capacity-insufficient
+=== RUN   TestEngineRuleEdges/capacity-pod-requests-invalid
+=== RUN   TestEngineRuleEdges/ai-unavailable
+=== RUN   TestEngineRuleEdges/ai-bad-citation
+=== RUN   TestEngineRuleEdges/security-seccomp-unconfined
+=== RUN   TestEngineRuleEdges/security-host-network
+=== RUN   TestEngineRuleEdges/deployment-container-name-missing
+=== RUN   TestEngineRuleEdges/metrics-memory-nan
+=== RUN   TestEngineRuleEdges/metrics-memory-limit-missing
+=== RUN   TestEngineRuleEdges/tree-null-falls-back-to-changed-paths
+=== RUN   TestEngineRuleEdges/ai-additional-risk
+=== RUN   TestEngineRuleEdges/probe-scheme
+=== RUN   TestEngineRuleEdges/security-readonly-root
+=== RUN   TestEngineRuleEdges/deployment-template-missing
+=== RUN   TestEngineRuleEdges/deployment-selector-changed
+=== RUN   TestEngineRuleEdges/capacity-missing
+=== RUN   TestEngineRuleEdges/capacity-requests-invalid
+=== RUN   TestEngineRuleEdges/metrics-collected-at-missing
+=== RUN   TestEngineRuleEdges/metrics-up-missing
+=== RUN   TestEngineRuleEdges/image-digest-invalid
+=== RUN   TestEngineRuleEdges/security-automount-token
+=== RUN   TestEngineRuleEdges/deployment-init-container
+=== RUN   TestEngineRuleEdges/capacity-pod-requests-unreserved
+=== RUN   TestEngineRuleEdges/metrics-memory-limit-low
+=== RUN   TestEngineRuleEdges/duplicate-resource
+=== RUN   TestEngineRuleEdges/security-hostpath
+=== RUN   TestEngineRuleEdges/deployment-name-invalid
+=== RUN   TestEngineRuleEdges/deployment-command
+=== RUN   TestEngineRuleEdges/capacity-node-incomplete
+=== RUN   TestEngineRuleEdges/capacity-control-plane-toleration
+=== RUN   TestEngineRuleEdges/metrics-target-health-missing
+=== RUN   TestEngineRuleEdges/metrics-high-p95
+=== RUN   TestEngineRuleEdges/service-removed
+=== RUN   TestEngineRuleEdges/image-tag-only
+=== RUN   TestEngineRuleEdges/env-from-invalid
+=== RUN   TestEngineRuleEdges/fault-env-invalid
+=== RUN   TestEngineRuleEdges/probe-exec-allowed
+=== RUN   TestEngineRuleEdges/security-hostport
+=== RUN   TestEngineRuleEdges/capacity-strategy-invalid
+=== RUN   TestEngineRuleEdges/capacity-control-plane-selector
+=== RUN   TestEngineRuleEdges/image-mutable-latest
+=== RUN   TestEngineRuleEdges/security-run-as-root
+=== RUN   TestEngineRuleEdges/security-nonroot
+=== RUN   TestEngineRuleEdges/security-cap-drop-missing
+=== RUN   TestEngineRuleEdges/security-shared-process
+=== RUN   TestEngineRuleEdges/capacity-no-worker
+=== RUN   TestEngineRuleEdges/metrics-low-traffic
+=== RUN   TestEngineRuleEdges/service-node-port
+=== RUN   TestEngineRuleEdges/fault-latency
+=== RUN   TestEngineRuleEdges/security-allow-escalation
+=== RUN   TestEngineRuleEdges/security-cap-add
+=== RUN   TestEngineRuleEdges/deployment-lifecycle
+=== RUN   TestEngineRuleEdges/metrics-alerts-missing
+=== RUN   TestEngineRuleEdges/metrics-firing-alert
+=== RUN   TestEngineRuleEdges/tree-argo-manifest
+=== RUN   TestEngineRuleEdges/probe-period-zero
+=== RUN   TestEngineRuleEdges/metrics-timestamp-future
+=== RUN   TestEngineRuleEdges/metrics-high-error-ratio
+=== RUN   TestEngineRuleEdges/ai-invalid-status
+=== RUN   TestEngineRuleEdges/argocd-kind
+=== RUN   TestEngineRuleEdges/image-empty
+=== RUN   TestEngineRuleEdges/env-invalid
+=== RUN   TestEngineRuleEdges/env-name-invalid
+=== RUN   TestEngineRuleEdges/probe-path
+=== RUN   TestEngineRuleEdges/deployment-container-name-duplicate
+=== RUN   TestEngineRuleEdges/metrics-timestamp-missing
+=== RUN   TestEngineRuleEdges/ai-empty-summary
+=== RUN   TestEngineRuleEdges/service-missing
+=== RUN   TestEngineRuleEdges/unexpected-deployment
+--- PASS: TestEngineRuleEdges (0.22s)
+    --- PASS: TestEngineRuleEdges/capacity-overcommitted (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-affinity-unverified (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-collected-at-future (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-up-down (0.00s)
+    --- PASS: TestEngineRuleEdges/tree-argo-source (0.00s)
+    --- PASS: TestEngineRuleEdges/ai-risks-not-list (0.00s)
+    --- PASS: TestEngineRuleEdges/forbidden-workload (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-selector-unverified (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-target-degraded (0.00s)
+    --- PASS: TestEngineRuleEdges/tree-template (0.00s)
+    --- PASS: TestEngineRuleEdges/service-extra (0.00s)
+    --- PASS: TestEngineRuleEdges/fault-error-rate (0.00s)
+    --- PASS: TestEngineRuleEdges/fault-startup (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-containers-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-two-containers (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-requests-unreserved (0.00s)
+    --- PASS: TestEngineRuleEdges/duplicate-env (0.00s)
+    --- PASS: TestEngineRuleEdges/probe-port (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-selector-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-resources-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-limit-below-request (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-evidence-error (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-target-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/service-no-spec (0.00s)
+    --- PASS: TestEngineRuleEdges/service-external-ips (0.00s)
+    --- PASS: TestEngineRuleEdges/image-no-tag (0.00s)
+    --- PASS: TestEngineRuleEdges/security-secret-volume (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-selector-mismatch (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-series-missing (0.01s)
+    --- PASS: TestEngineRuleEdges/resource-reduction (0.00s)
+    --- PASS: TestEngineRuleEdges/fault-value-from (0.00s)
+    --- PASS: TestEngineRuleEdges/probe-exec-disallowed (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-invalid-quantity (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-stale (0.00s)
+    --- PASS: TestEngineRuleEdges/image-repository (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-replicas-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-insufficient (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-pod-requests-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/ai-unavailable (0.01s)
+    --- PASS: TestEngineRuleEdges/ai-bad-citation (0.00s)
+    --- PASS: TestEngineRuleEdges/security-seccomp-unconfined (0.01s)
+    --- PASS: TestEngineRuleEdges/security-host-network (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-container-name-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-memory-nan (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-memory-limit-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/tree-null-falls-back-to-changed-paths (0.00s)
+    --- PASS: TestEngineRuleEdges/ai-additional-risk (0.00s)
+    --- PASS: TestEngineRuleEdges/probe-scheme (0.00s)
+    --- PASS: TestEngineRuleEdges/security-readonly-root (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-template-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-selector-changed (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-requests-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-collected-at-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-up-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/image-digest-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/security-automount-token (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-init-container (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-pod-requests-unreserved (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-memory-limit-low (0.00s)
+    --- PASS: TestEngineRuleEdges/duplicate-resource (0.01s)
+    --- PASS: TestEngineRuleEdges/security-hostpath (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-name-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-command (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-node-incomplete (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-control-plane-toleration (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-target-health-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-high-p95 (0.01s)
+    --- PASS: TestEngineRuleEdges/service-removed (0.00s)
+    --- PASS: TestEngineRuleEdges/image-tag-only (0.00s)
+    --- PASS: TestEngineRuleEdges/env-from-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/fault-env-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/probe-exec-allowed (0.00s)
+    --- PASS: TestEngineRuleEdges/security-hostport (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-strategy-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-control-plane-selector (0.00s)
+    --- PASS: TestEngineRuleEdges/image-mutable-latest (0.00s)
+    --- PASS: TestEngineRuleEdges/security-run-as-root (0.00s)
+    --- PASS: TestEngineRuleEdges/security-nonroot (0.00s)
+    --- PASS: TestEngineRuleEdges/security-cap-drop-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/security-shared-process (0.00s)
+    --- PASS: TestEngineRuleEdges/capacity-no-worker (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-low-traffic (0.00s)
+    --- PASS: TestEngineRuleEdges/service-node-port (0.00s)
+    --- PASS: TestEngineRuleEdges/fault-latency (0.00s)
+    --- PASS: TestEngineRuleEdges/security-allow-escalation (0.00s)
+    --- PASS: TestEngineRuleEdges/security-cap-add (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-lifecycle (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-alerts-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-firing-alert (0.00s)
+    --- PASS: TestEngineRuleEdges/tree-argo-manifest (0.00s)
+    --- PASS: TestEngineRuleEdges/probe-period-zero (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-timestamp-future (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-high-error-ratio (0.00s)
+    --- PASS: TestEngineRuleEdges/ai-invalid-status (0.00s)
+    --- PASS: TestEngineRuleEdges/argocd-kind (0.00s)
+    --- PASS: TestEngineRuleEdges/image-empty (0.00s)
+    --- PASS: TestEngineRuleEdges/env-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/env-name-invalid (0.00s)
+    --- PASS: TestEngineRuleEdges/probe-path (0.00s)
+    --- PASS: TestEngineRuleEdges/deployment-container-name-duplicate (0.00s)
+    --- PASS: TestEngineRuleEdges/metrics-timestamp-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/ai-empty-summary (0.01s)
+    --- PASS: TestEngineRuleEdges/service-missing (0.00s)
+    --- PASS: TestEngineRuleEdges/unexpected-deployment (0.00s)
+=== RUN   TestEngineHealthyReleasePinsSchema
+--- PASS: TestEngineHealthyReleasePinsSchema (0.00s)
+=== RUN   TestEngineRenderDigestIsOrderIndependent
+--- PASS: TestEngineRenderDigestIsOrderIndependent (0.00s)
+=== RUN   TestEngineInvalidInputFailsClosed
+=== RUN   TestEngineInvalidInputFailsClosed/missing-kind
+=== RUN   TestEngineInvalidInputFailsClosed/missing-name
+=== RUN   TestEngineInvalidInputFailsClosed/list-without-items
+=== RUN   TestEngineInvalidInputFailsClosed/invalid-namespace
+=== RUN   TestEngineInvalidInputFailsClosed/invalid-deployment
+=== RUN   TestEngineInvalidInputFailsClosed/invalid-ttl
+=== RUN   TestEngineInvalidInputFailsClosed/nonpositive-ttl
+=== RUN   TestEngineInvalidInputFailsClosed/invalid-evaluated-at
+=== RUN   TestEngineInvalidInputFailsClosed/invalid-allowed-repo
+--- PASS: TestEngineInvalidInputFailsClosed (0.02s)
+    --- PASS: TestEngineInvalidInputFailsClosed/missing-kind (0.00s)
+    --- PASS: TestEngineInvalidInputFailsClosed/missing-name (0.00s)
+    --- PASS: TestEngineInvalidInputFailsClosed/list-without-items (0.01s)
+    --- PASS: TestEngineInvalidInputFailsClosed/invalid-namespace (0.00s)
+    --- PASS: TestEngineInvalidInputFailsClosed/invalid-deployment (0.00s)
+    --- PASS: TestEngineInvalidInputFailsClosed/invalid-ttl (0.00s)
+    --- PASS: TestEngineInvalidInputFailsClosed/nonpositive-ttl (0.00s)
+    --- PASS: TestEngineInvalidInputFailsClosed/invalid-evaluated-at (0.00s)
+    --- PASS: TestEngineInvalidInputFailsClosed/invalid-allowed-repo (0.00s)
+=== RUN   TestEngineMalformedTypesNeverPanic
+=== RUN   TestEngineMalformedTypesNeverPanic/alert-severity-map
+=== RUN   TestEngineMalformedTypesNeverPanic/service-type-list
+=== RUN   TestEngineMalformedTypesNeverPanic/probe-scheme-map
+=== RUN   TestEngineMalformedTypesNeverPanic/seccomp-type-list
+=== RUN   TestEngineMalformedTypesNeverPanic/phase-map
+=== RUN   TestEngineMalformedTypesNeverPanic/condition-type-map
+=== RUN   TestEngineMalformedTypesNeverPanic/taint-effect-map
+=== RUN   TestEngineMalformedTypesNeverPanic/service-type-map
+=== RUN   TestEngineMalformedTypesNeverPanic/strategy-type-list
+=== RUN   TestEngineMalformedTypesNeverPanic/strategy-type-null
+=== RUN   TestEngineMalformedTypesNeverPanic/ai-status-map
+=== RUN   TestEngineMalformedTypesNeverPanic/ai-status-list
+--- PASS: TestEngineMalformedTypesNeverPanic (0.03s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/alert-severity-map (0.00s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/service-type-list (0.00s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/probe-scheme-map (0.00s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/seccomp-type-list (0.00s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/phase-map (0.00s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/condition-type-map (0.00s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/taint-effect-map (0.01s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/service-type-map (0.00s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/strategy-type-list (0.00s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/strategy-type-null (0.00s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/ai-status-map (0.00s)
+    --- PASS: TestEngineMalformedTypesNeverPanic/ai-status-list (0.00s)
+=== RUN   TestEngineQuantityAndTimestampParsing
+--- PASS: TestEngineQuantityAndTimestampParsing (0.00s)
+=== RUN   TestEngineStrategySurge
+=== RUN   TestEngineStrategySurge/missing
+=== RUN   TestEngineStrategySurge/recreate
+=== RUN   TestEngineStrategySurge/rolling-default
+=== RUN   TestEngineStrategySurge/explicit-percent
+=== RUN   TestEngineStrategySurge/explicit-zero
+=== RUN   TestEngineStrategySurge/explicit-int
+=== RUN   TestEngineStrategySurge/absolute-negative
+=== RUN   TestEngineStrategySurge/bad-percent
+=== RUN   TestEngineStrategySurge/bool
+=== RUN   TestEngineStrategySurge/null-type
+=== RUN   TestEngineStrategySurge/empty-type
+=== RUN   TestEngineStrategySurge/unknown-type
+--- PASS: TestEngineStrategySurge (0.01s)
+    --- PASS: TestEngineStrategySurge/missing (0.00s)
+    --- PASS: TestEngineStrategySurge/recreate (0.00s)
+    --- PASS: TestEngineStrategySurge/rolling-default (0.00s)
+    --- PASS: TestEngineStrategySurge/explicit-percent (0.00s)
+    --- PASS: TestEngineStrategySurge/explicit-zero (0.00s)
+    --- PASS: TestEngineStrategySurge/explicit-int (0.00s)
+    --- PASS: TestEngineStrategySurge/absolute-negative (0.00s)
+    --- PASS: TestEngineStrategySurge/bad-percent (0.00s)
+    --- PASS: TestEngineStrategySurge/bool (0.00s)
+    --- PASS: TestEngineStrategySurge/null-type (0.00s)
+    --- PASS: TestEngineStrategySurge/empty-type (0.00s)
+    --- PASS: TestEngineStrategySurge/unknown-type (0.00s)
+=== RUN   TestEngineSensitiveDiffRedaction
+--- PASS: TestEngineSensitiveDiffRedaction (0.01s)
+=== RUN   TestEngineDecisionPriorityAndAICap
+--- PASS: TestEngineDecisionPriorityAndAICap (0.02s)
+=== RUN   TestEvidenceTimestampFromUsesLatestPositiveRawTimestamp
+--- PASS: TestEvidenceTimestampFromUsesLatestPositiveRawTimestamp (0.00s)
+=== RUN   TestEvidenceMaxPointByTimestampUsesFreshnessNotMagnitude
+--- PASS: TestEvidenceMaxPointByTimestampUsesFreshnessNotMagnitude (0.00s)
+=== RUN   TestEvidencePromResultValuesUsesLatestMatrixSample
+--- PASS: TestEvidencePromResultValuesUsesLatestMatrixSample (0.00s)
+=== RUN   TestEvidenceQuantityParsing
+--- PASS: TestEvidenceQuantityParsing (0.00s)
+=== RUN   TestEvidenceBoundedRawTruncatesSeries
+--- PASS: TestEvidenceBoundedRawTruncatesSeries (0.00s)
+=== RUN   TestCollectFailsClosedWithoutValidConfig
+--- PASS: TestCollectFailsClosedWithoutValidConfig (0.00s)
+=== RUN   TestGitHubPathNormalization
+--- PASS: TestGitHubPathNormalization (0.00s)
+=== RUN   TestGitHubTokenNeverAppearsInErrors
+--- PASS: TestGitHubTokenNeverAppearsInErrors (0.00s)
+=== RUN   TestGitHubPaginationAndExactBaseFilter
+--- PASS: TestGitHubPaginationAndExactBaseFilter (0.00s)
+=== RUN   TestGitHubSnapshotMaterializesOnlyRendererPaths
+--- PASS: TestGitHubSnapshotMaterializesOnlyRendererPaths (0.01s)
+=== RUN   TestGitHubTreeSecurityRejections
+=== RUN   TestGitHubTreeSecurityRejections/traversal
+=== RUN   TestGitHubTreeSecurityRejections/symlink
+=== RUN   TestGitHubTreeSecurityRejections/submodule
+=== RUN   TestGitHubTreeSecurityRejections/duplicate
+=== RUN   TestGitHubTreeSecurityRejections/unsafe_mode
+--- PASS: TestGitHubTreeSecurityRejections (0.01s)
+    --- PASS: TestGitHubTreeSecurityRejections/traversal (0.00s)
+    --- PASS: TestGitHubTreeSecurityRejections/symlink (0.00s)
+    --- PASS: TestGitHubTreeSecurityRejections/submodule (0.00s)
+    --- PASS: TestGitHubTreeSecurityRejections/duplicate (0.00s)
+    --- PASS: TestGitHubTreeSecurityRejections/unsafe_mode (0.00s)
+=== RUN   TestGitHubTreeTruncatedAndOversizedAreRejected
+--- PASS: TestGitHubTreeTruncatedAndOversizedAreRejected (0.00s)
+=== RUN   TestGitHubBlobExactGitSHAAfterWrappedBase64
+--- PASS: TestGitHubBlobExactGitSHAAfterWrappedBase64 (0.00s)
+=== RUN   TestGitHubClassicAndFineGrainedCredentials
+--- PASS: TestGitHubClassicAndFineGrainedCredentials (0.01s)
+=== RUN   TestGitHubRetryRedirectRateLimitAndBounds
+--- PASS: TestGitHubRetryRedirectRateLimitAndBounds (0.00s)
+=== RUN   TestGitHubStatusPayloadAndExactApproval
+--- PASS: TestGitHubStatusPayloadAndExactApproval (0.00s)
+=== RUN   TestGitHubPermissionAndIdentity
+--- PASS: TestGitHubPermissionAndIdentity (0.02s)
+=== RUN   TestArgoAnalysisSignals
+--- PASS: TestArgoAnalysisSignals (0.00s)
+=== RUN   TestChartDigestUsesRawBlobBytesOnly
+--- PASS: TestChartDigestUsesRawBlobBytesOnly (0.00s)
+=== RUN   TestMergeReportValidationHeadBaseDecisionTTLAndTamper
+=== RUN   TestMergeReportValidationHeadBaseDecisionTTLAndTamper/current_report_is_valid
+=== RUN   TestMergeReportValidationHeadBaseDecisionTTLAndTamper/head_update_invalidates
+=== RUN   TestMergeReportValidationHeadBaseDecisionTTLAndTamper/base_update_invalidates
+=== RUN   TestMergeReportValidationHeadBaseDecisionTTLAndTamper/closed_draft_and_wrong_PR_are_refused
+=== RUN   TestMergeReportValidationHeadBaseDecisionTTLAndTamper/block_and_error_are_refused
+=== RUN   TestMergeReportValidationHeadBaseDecisionTTLAndTamper/expiry_requires_remaining_validity_for_the_push
+=== RUN   TestMergeReportValidationHeadBaseDecisionTTLAndTamper/future_evaluation_time_is_refused
+=== RUN   TestMergeReportValidationHeadBaseDecisionTTLAndTamper/tampering_with_a_signed_report_is_refused
+=== RUN   TestMergeReportValidationHeadBaseDecisionTTLAndTamper/missing_report_and_timestamps_fail_closed
+--- PASS: TestMergeReportValidationHeadBaseDecisionTTLAndTamper (0.01s)
+    --- PASS: TestMergeReportValidationHeadBaseDecisionTTLAndTamper/current_report_is_valid (0.00s)
+    --- PASS: TestMergeReportValidationHeadBaseDecisionTTLAndTamper/head_update_invalidates (0.00s)
+    --- PASS: TestMergeReportValidationHeadBaseDecisionTTLAndTamper/base_update_invalidates (0.00s)
+    --- PASS: TestMergeReportValidationHeadBaseDecisionTTLAndTamper/closed_draft_and_wrong_PR_are_refused (0.00s)
+    --- PASS: TestMergeReportValidationHeadBaseDecisionTTLAndTamper/block_and_error_are_refused (0.00s)
+    --- PASS: TestMergeReportValidationHeadBaseDecisionTTLAndTamper/expiry_requires_remaining_validity_for_the_push (0.00s)
+    --- PASS: TestMergeReportValidationHeadBaseDecisionTTLAndTamper/future_evaluation_time_is_refused (0.00s)
+    --- PASS: TestMergeReportValidationHeadBaseDecisionTTLAndTamper/tampering_with_a_signed_report_is_refused (0.00s)
+    --- PASS: TestMergeReportValidationHeadBaseDecisionTTLAndTamper/missing_report_and_timestamps_fail_closed (0.00s)
+=== RUN   TestMergePolicyBindingRejectsVersionRuleAndPolicyGeneration
+--- PASS: TestMergePolicyBindingRejectsVersionRuleAndPolicyGeneration (0.00s)
+=== RUN   TestMergeCIUsesLatestGitHubActionsRunBoundToHead
+=== RUN   TestMergeCIUsesLatestGitHubActionsRunBoundToHead/successful_latest_run_is_accepted
+=== RUN   TestMergeCIUsesLatestGitHubActionsRunBoundToHead/newer_failure_cannot_be_hidden_by_an_older_success
+=== RUN   TestMergeCIUsesLatestGitHubActionsRunBoundToHead/newer_success_wins_regardless_of_payload_order
+=== RUN   TestMergeCIUsesLatestGitHubActionsRunBoundToHead/missing_forged_pending_or_wrong_head_runs_are_refused
+--- PASS: TestMergeCIUsesLatestGitHubActionsRunBoundToHead (0.00s)
+    --- PASS: TestMergeCIUsesLatestGitHubActionsRunBoundToHead/successful_latest_run_is_accepted (0.00s)
+    --- PASS: TestMergeCIUsesLatestGitHubActionsRunBoundToHead/newer_failure_cannot_be_hidden_by_an_older_success (0.00s)
+    --- PASS: TestMergeCIUsesLatestGitHubActionsRunBoundToHead/newer_success_wins_regardless_of_payload_order (0.00s)
+    --- PASS: TestMergeCIUsesLatestGitHubActionsRunBoundToHead/missing_forged_pending_or_wrong_head_runs_are_refused (0.00s)
+=== RUN   TestMergeHeadCILookupIsBoundToHeadSHAAndRejectsIncomplete
+--- PASS: TestMergeHeadCILookupIsBoundToHeadSHAAndRejectsIncomplete (0.01s)
+=== RUN   TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch
+=== RUN   TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/identical_workflow_content_is_accepted
+=== RUN   TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/changed_workflow_blob_is_refused
+=== RUN   TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/added_workflow_file_is_refused
+=== RUN   TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/non_workflow_differences_do_not_matter
+=== RUN   TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/independent_refetch_refuses_a_forged_workflow_pass
+=== RUN   TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/tree_fetch_errors_fail_closed
+--- PASS: TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch (0.00s)
+    --- PASS: TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/identical_workflow_content_is_accepted (0.00s)
+    --- PASS: TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/changed_workflow_blob_is_refused (0.00s)
+    --- PASS: TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/added_workflow_file_is_refused (0.00s)
+    --- PASS: TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/non_workflow_differences_do_not_matter (0.00s)
+    --- PASS: TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/independent_refetch_refuses_a_forged_workflow_pass (0.00s)
+    --- PASS: TestMergeWorkflowSnapshotsAreRefetchedAndMustMatch/tree_fetch_errors_fail_closed (0.00s)
+=== RUN   TestMergeChartPinIsReverifiedFromHeadBlobs
+--- PASS: TestMergeChartPinIsReverifiedFromHeadBlobs (0.00s)
+=== RUN   TestMergeSyntheticTreeMustEqualEvaluatedHead
+--- PASS: TestMergeSyntheticTreeMustEqualEvaluatedHead (0.00s)
+=== RUN   TestMergeFastForwardPushUsesEvaluatedHeadAndExactLease
+--- PASS: TestMergeFastForwardPushUsesEvaluatedHeadAndExactLease (0.00s)
+=== RUN   TestMergeRecordPointsAtHeadAndUsesPlainRevert
+--- PASS: TestMergeRecordPointsAtHeadAndUsesPlainRevert (0.00s)
+=== RUN   TestMergeLocalFastForwardVerifiesTreeAndAncestry
+=== RUN   TestMergeLocalFastForwardVerifiesTreeAndAncestry/matching_tree_and_ancestor_accepted
+=== RUN   TestMergeLocalFastForwardVerifiesTreeAndAncestry/local_tree_mismatch_is_refused
+=== RUN   TestMergeLocalFastForwardVerifiesTreeAndAncestry/non_ancestor_non_shallow_head_is_refused
+=== RUN   TestMergeLocalFastForwardVerifiesTreeAndAncestry/shallow_graph_cannot_disprove_ancestor_but_is_marked_unknown
+=== RUN   TestMergeLocalFastForwardVerifiesTreeAndAncestry/invalid_fetch_depth_fails_before_git_mutation
+--- PASS: TestMergeLocalFastForwardVerifiesTreeAndAncestry (0.00s)
+    --- PASS: TestMergeLocalFastForwardVerifiesTreeAndAncestry/matching_tree_and_ancestor_accepted (0.00s)
+    --- PASS: TestMergeLocalFastForwardVerifiesTreeAndAncestry/local_tree_mismatch_is_refused (0.00s)
+    --- PASS: TestMergeLocalFastForwardVerifiesTreeAndAncestry/non_ancestor_non_shallow_head_is_refused (0.00s)
+    --- PASS: TestMergeLocalFastForwardVerifiesTreeAndAncestry/shallow_graph_cannot_disprove_ancestor_but_is_marked_unknown (0.00s)
+    --- PASS: TestMergeLocalFastForwardVerifiesTreeAndAncestry/invalid_fetch_depth_fails_before_git_mutation (0.00s)
+=== RUN   TestMergeReleaseRequiresTrustedMergeConfiguration
+--- PASS: TestMergeReleaseRequiresTrustedMergeConfiguration (0.00s)
+=== RUN   TestPythonMigrationDecisionOracle
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-001
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-002
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-003
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-004
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-005
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-006
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-007
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-008
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-009
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-010
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-011
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-012
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-013
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-014
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-015
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-016
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-017
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-018
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-019
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-020
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-021
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-022
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-023
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-024
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-025
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-026
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-027
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-028
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-029
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-030
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-031
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-032
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-033
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-034
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-035
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-036
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-037
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-038
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-039
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-040
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-041
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-042
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-043
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-044
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-045
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-046
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-047
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-048
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-049
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-050
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-051
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-052
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-053
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-054
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-055
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-056
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-057
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-058
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-059
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-060
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-061
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-062
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-063
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-064
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-065
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-066
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-067
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-068
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-069
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-070
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-071
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-072
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-073
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-074
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-075
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-076
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-077
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-078
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-079
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-080
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-081
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-082
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-083
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-084
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-085
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-086
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-087
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-088
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-089
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-090
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-091
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-092
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-093
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-094
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-095
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-096
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-097
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-098
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-099
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-100
+=== RUN   TestPythonMigrationDecisionOracle/python-oracle-101
+=== RUN   TestPythonMigrationDecisionOracle/matrix-normal-digest-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-normal-digest-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-zero-replicas-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-zero-replicas-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-readiness-deleted-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-readiness-deleted-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-startup-failure-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-startup-failure-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-error-injection-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-error-injection-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-latency-injection-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-latency-injection-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-unapproved-image-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-unapproved-image-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-mutable-tag-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-mutable-tag-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-memory-below-measured-use-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-memory-below-measured-use-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-large-cpu-reduction-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-large-cpu-reduction-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-current-error-rate-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-current-error-rate-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-current-slow-service-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-current-slow-service-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-rolling-capacity-shortage-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-rolling-capacity-shortage-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-replica-capacity-growth-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-replica-capacity-growth-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-metrics-unavailable-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-metrics-unavailable-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-stale-raw-sample-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-stale-raw-sample-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-missing-counter-series-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-missing-counter-series-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-nonfinite-memory-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-nonfinite-memory-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-model-timeout-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-model-timeout-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-model-error-cannot-lower-block-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-model-error-cannot-lower-block-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-model-new-risk-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-model-new-risk-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-unexpected-sidecar-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-unexpected-sidecar-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-envfrom-fault-reference-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-envfrom-fault-reference-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-deployment-deleted-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-deployment-deleted-ai
+=== RUN   TestPythonMigrationDecisionOracle/matrix-privileged-container-rules
+=== RUN   TestPythonMigrationDecisionOracle/matrix-privileged-container-ai
+--- PASS: TestPythonMigrationDecisionOracle (0.32s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-001 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-002 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-003 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-004 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-005 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-006 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-007 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-008 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-009 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-010 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-011 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-012 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-013 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-014 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-015 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-016 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-017 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-018 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-019 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-020 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-021 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-022 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-023 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-024 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-025 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-026 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-027 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-028 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-029 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-030 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-031 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-032 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-033 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-034 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-035 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-036 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-037 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-038 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-039 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-040 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-041 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-042 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-043 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-044 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-045 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-046 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-047 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-048 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-049 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-050 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-051 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-052 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-053 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-054 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-055 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-056 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-057 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-058 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-059 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-060 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-061 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-062 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-063 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-064 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-065 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-066 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-067 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-068 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-069 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-070 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-071 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-072 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-073 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-074 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-075 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-076 (0.01s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-077 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-078 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-079 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-080 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-081 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-082 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-083 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-084 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-085 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-086 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-087 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-088 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-089 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-090 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-091 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-092 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-093 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-094 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-095 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-096 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-097 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-098 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-099 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-100 (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/python-oracle-101 (0.01s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-normal-digest-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-normal-digest-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-zero-replicas-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-zero-replicas-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-readiness-deleted-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-readiness-deleted-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-startup-failure-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-startup-failure-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-error-injection-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-error-injection-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-latency-injection-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-latency-injection-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-unapproved-image-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-unapproved-image-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-mutable-tag-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-mutable-tag-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-memory-below-measured-use-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-memory-below-measured-use-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-large-cpu-reduction-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-large-cpu-reduction-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-current-error-rate-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-current-error-rate-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-current-slow-service-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-current-slow-service-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-rolling-capacity-shortage-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-rolling-capacity-shortage-ai (0.01s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-replica-capacity-growth-rules (0.01s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-replica-capacity-growth-ai (0.01s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-metrics-unavailable-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-metrics-unavailable-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-stale-raw-sample-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-stale-raw-sample-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-missing-counter-series-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-missing-counter-series-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-nonfinite-memory-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-nonfinite-memory-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-model-timeout-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-model-timeout-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-model-error-cannot-lower-block-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-model-error-cannot-lower-block-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-model-new-risk-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-model-new-risk-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-unexpected-sidecar-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-unexpected-sidecar-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-envfrom-fault-reference-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-envfrom-fault-reference-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-deployment-deleted-rules (0.01s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-deployment-deleted-ai (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-privileged-container-rules (0.00s)
+    --- PASS: TestPythonMigrationDecisionOracle/matrix-privileged-container-ai (0.00s)
+=== RUN   TestPDValidateConfigAndURLImageRules
+--- PASS: TestPDValidateConfigAndURLImageRules (0.00s)
+=== RUN   TestPDRedactsSecretLikeKeys
+--- PASS: TestPDRedactsSecretLikeKeys (0.00s)
+=== RUN   TestPDOnlyReadOnlyKubectlGetsWithJSON
+--- PASS: TestPDOnlyReadOnlyKubectlGetsWithJSON (0.00s)
+=== RUN   TestPDArgoChecksSyncHealthRevision
+--- PASS: TestPDArgoChecksSyncHealthRevision (0.00s)
+=== RUN   TestPDDeploymentChecksImageAndReplicas
+--- PASS: TestPDDeploymentChecksImageAndReplicas (0.00s)
+=== RUN   TestPDPodsReadinessImageIDAndMultiarchCaveat
+--- PASS: TestPDPodsReadinessImageIDAndMultiarchCaveat (0.00s)
+=== RUN   TestPDContainerdConfigIDIsNotManifestReference
+--- PASS: TestPDContainerdConfigIDIsNotManifestReference (0.00s)
+=== RUN   TestPDEndpointsRequireReadyAddress
+--- PASS: TestPDEndpointsRequireReadyAddress (0.00s)
+=== RUN   TestPDHTTPChecksProvenanceAndReadiness
+--- PASS: TestPDHTTPChecksProvenanceAndReadiness (0.00s)
+=== RUN   TestPDMetricsRequireTrafficAndBoundedSLO
+--- PASS: TestPDMetricsRequireTrafficAndBoundedSLO (0.00s)
+=== RUN   TestPDGitOpsRevisionAndImageSourceRevisionAreDistinct
+--- PASS: TestPDGitOpsRevisionAndImageSourceRevisionAreDistinct (0.00s)
+=== RUN   TestPDOKReportContainsAllSixChecks
+--- PASS: TestPDOKReportContainsAllSixChecks (0.00s)
+=== RUN   TestPDFailureReturnsRevertRecommendationWithoutMutation
+--- PASS: TestPDFailureReturnsRevertRecommendationWithoutMutation (0.00s)
+=== RUN   TestPDMetricsFailureIsReported
+--- PASS: TestPDMetricsFailureIsReported (0.00s)
+=== RUN   TestPDSetupErrorsAreFailClosed
+--- PASS: TestPDSetupErrorsAreFailClosed (0.00s)
+=== RUN   TestPDExpectedImageFromReport
+--- PASS: TestPDExpectedImageFromReport (0.00s)
+=== RUN   TestPDJSONBodyRejectsNonObjects
+--- PASS: TestPDJSONBodyRejectsNonObjects (0.00s)
+=== RUN   TestPDParseImageID
+--- PASS: TestPDParseImageID (0.00s)
+=== RUN   TestPDRedactsCredentialLikeDetail
+--- PASS: TestPDRedactsCredentialLikeDetail (0.00s)
+=== RUN   TestPDResultIsJSONSafe
+--- PASS: TestPDResultIsJSONSafe (0.00s)
+=== RUN   TestSandboxLimitsFailClosedWithoutTrustedPrlimit
+--- PASS: TestSandboxLimitsFailClosedWithoutTrustedPrlimit (0.00s)
+=== RUN   TestSandboxLimitsWrapTrustedPrlimit
+--- PASS: TestSandboxLimitsWrapTrustedPrlimit (0.00s)
+=== RUN   TestSandboxLimitsNonLinuxPassThrough
+--- PASS: TestSandboxLimitsNonLinuxPassThrough (0.00s)
+=== RUN   TestExecuteRefusesToRunWithoutTrustedPrlimit
+--- PASS: TestExecuteRefusesToRunWithoutTrustedPrlimit (0.00s)
+=== RUN   TestProductionRenderNeverFallsBackUnsandboxed
+--- PASS: TestProductionRenderNeverFallsBackUnsandboxed (0.00s)
+=== RUN   TestRNCheckTokenExpiry
+--- PASS: TestRNCheckTokenExpiry (0.00s)
+=== RUN   TestRNCheckTokenExpiryFailures
+--- PASS: TestRNCheckTokenExpiryFailures (0.00s)
+=== RUN   TestRNRenewUpdatesOnlyTokenAndPreservesCluster
+--- PASS: TestRNRenewUpdatesOnlyTokenAndPreservesCluster (0.00s)
+=== RUN   TestRNRenewRefusesMalformedInputs
+--- PASS: TestRNRenewRefusesMalformedInputs (0.00s)
+=== RUN   TestRNTokenFromKubeconfigUsesFirstUsableUser
+--- PASS: TestRNTokenFromKubeconfigUsesFirstUsableUser (0.00s)
+=== RUN   TestRNReadYAMLRejectsOversizedAndInvalid
+--- PASS: TestRNReadYAMLRejectsOversizedAndInvalid (0.00s)
+=== RUN   TestRNWriteAtomicMode
+--- PASS: TestRNWriteAtomicMode (0.00s)
+=== RUN   TestRNExpiryUsesWallClockWhenNotOverridden
+--- PASS: TestRNExpiryUsesWallClockWhenNotOverridden (0.00s)
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/privileged_container
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/privilege_escalation_allowed
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/hostPath_volume
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/secret_volume
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/candidate_exec_probe
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/candidate_container_command
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/init_container_command
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/image_repository_not_allowed
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/service_NodePort_exposure
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/fault_injection_env
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/run_as_root
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/capability_added
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/host_network
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/control_plane_scheduling
+=== RUN   TestSecurityHardBlockCannotBeDowngradedByAI/required_probe_removed
+--- PASS: TestSecurityHardBlockCannotBeDowngradedByAI (0.10s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/privileged_container (0.05s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/privilege_escalation_allowed (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/hostPath_volume (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/secret_volume (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/candidate_exec_probe (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/candidate_container_command (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/init_container_command (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/image_repository_not_allowed (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/service_NodePort_exposure (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/fault_injection_env (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/run_as_root (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/capability_added (0.01s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/host_network (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/control_plane_scheduling (0.00s)
+    --- PASS: TestSecurityHardBlockCannotBeDowngradedByAI/required_probe_removed (0.00s)
+=== RUN   TestSecurityAIPriorityAndCap
+=== RUN   TestSecurityAIPriorityAndCap/baseline_is_genuinely_PASS_with_ok_AI
+=== RUN   TestSecurityAIPriorityAndCap/additional_risk_caps_at_REVIEW_not_BLOCK
+=== RUN   TestSecurityAIPriorityAndCap/unavailable_AI_is_ERROR
+=== RUN   TestSecurityAIPriorityAndCap/required_AI_missing_is_ERROR
+=== RUN   TestSecurityAIPriorityAndCap/invalid_AI_status_is_ERROR
+=== RUN   TestSecurityAIPriorityAndCap/AI_risk_cannot_hide_deterministic_REVIEW
+--- PASS: TestSecurityAIPriorityAndCap (0.01s)
+    --- PASS: TestSecurityAIPriorityAndCap/baseline_is_genuinely_PASS_with_ok_AI (0.00s)
+    --- PASS: TestSecurityAIPriorityAndCap/additional_risk_caps_at_REVIEW_not_BLOCK (0.00s)
+    --- PASS: TestSecurityAIPriorityAndCap/unavailable_AI_is_ERROR (0.00s)
+    --- PASS: TestSecurityAIPriorityAndCap/required_AI_missing_is_ERROR (0.00s)
+    --- PASS: TestSecurityAIPriorityAndCap/invalid_AI_status_is_ERROR (0.00s)
+    --- PASS: TestSecurityAIPriorityAndCap/AI_risk_cannot_hide_deterministic_REVIEW (0.00s)
+=== RUN   TestSecurityMonitoringEvidenceFailClosed
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/memory_missing
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/memory_NaN
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/memory_positive_infinity
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/memory_negative
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/request_rate_missing
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/request_rate_NaN
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/request_rate_negative
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/error_ratio_NaN
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/error_ratio_out_of_range
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/p95_infinity
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/p95_negative
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/up_missing
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/up_NaN
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/metrics_missing
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/raw_source_presence_missing
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/low_traffic_raw_source_missing
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/alerts_missing
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/collection_timestamp_missing
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/evidence_stale
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/evidence_timestamp_in_the_future
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/metric_source_timestamp_missing
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/metric_source_stale
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/metric_source_in_the_future
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/collector_reported_error
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/target_deployment_evidence_missing
+=== RUN   TestSecurityMonitoringEvidenceFailClosed/target_replica_health_missing
+--- PASS: TestSecurityMonitoringEvidenceFailClosed (0.04s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/memory_missing (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/memory_NaN (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/memory_positive_infinity (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/memory_negative (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/request_rate_missing (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/request_rate_NaN (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/request_rate_negative (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/error_ratio_NaN (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/error_ratio_out_of_range (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/p95_infinity (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/p95_negative (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/up_missing (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/up_NaN (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/metrics_missing (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/raw_source_presence_missing (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/low_traffic_raw_source_missing (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/alerts_missing (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/collection_timestamp_missing (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/evidence_stale (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/evidence_timestamp_in_the_future (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/metric_source_timestamp_missing (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/metric_source_stale (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/metric_source_in_the_future (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/collector_reported_error (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/target_deployment_evidence_missing (0.00s)
+    --- PASS: TestSecurityMonitoringEvidenceFailClosed/target_replica_health_missing (0.00s)
+=== RUN   TestSecurityReportFreshnessBinding
+--- PASS: TestSecurityReportFreshnessBinding (0.00s)
+=== RUN   TestSecurityCandidateWorkloadBoundaries
+=== RUN   TestSecurityCandidateWorkloadBoundaries/privileged
+=== RUN   TestSecurityCandidateWorkloadBoundaries/allowPrivilegeEscalation_true
+=== RUN   TestSecurityCandidateWorkloadBoundaries/runAsNonRoot_false
+=== RUN   TestSecurityCandidateWorkloadBoundaries/container_runAsUser_zero
+=== RUN   TestSecurityCandidateWorkloadBoundaries/seccomp_unconfined
+=== RUN   TestSecurityCandidateWorkloadBoundaries/capability_added
+=== RUN   TestSecurityCandidateWorkloadBoundaries/capabilities_not_dropped
+=== RUN   TestSecurityCandidateWorkloadBoundaries/writable_root_filesystem
+=== RUN   TestSecurityCandidateWorkloadBoundaries/host_port
+=== RUN   TestSecurityCandidateWorkloadBoundaries/host_PID
+=== RUN   TestSecurityCandidateWorkloadBoundaries/shared_process_namespace
+=== RUN   TestSecurityCandidateWorkloadBoundaries/service_account_token_automount
+=== RUN   TestSecurityCandidateWorkloadBoundaries/hostPath_volume
+=== RUN   TestSecurityCandidateWorkloadBoundaries/projected_volume
+=== RUN   TestSecurityCandidateWorkloadBoundaries/configMap_volume
+=== RUN   TestSecurityCandidateWorkloadBoundaries/command_override
+=== RUN   TestSecurityCandidateWorkloadBoundaries/args_override
+=== RUN   TestSecurityCandidateWorkloadBoundaries/lifecycle_hook
+=== RUN   TestSecurityCandidateWorkloadBoundaries/second_container
+=== RUN   TestSecurityCandidateWorkloadBoundaries/unexpected_container_name
+=== RUN   TestSecurityCandidateWorkloadBoundaries/image_latest_tag
+=== RUN   TestSecurityCandidateWorkloadBoundaries/image_digest_malformed
+=== RUN   TestSecurityCandidateWorkloadBoundaries/envFrom_not_allowed
+=== RUN   TestSecurityCandidateWorkloadBoundaries/duplicate_env
+=== RUN   TestSecurityCandidateWorkloadBoundaries/fault_knob_via_valueFrom
+=== RUN   TestSecurityCandidateWorkloadBoundaries/fault_injection
+=== RUN   TestSecurityCandidateWorkloadBoundaries/invalid_fault_value
+=== RUN   TestSecurityCandidateWorkloadBoundaries/invalid_resource_quantity
+=== RUN   TestSecurityCandidateWorkloadBoundaries/limit_below_request
+=== RUN   TestSecurityCandidateWorkloadBoundaries/resources_missing
+=== RUN   TestSecurityCandidateWorkloadBoundaries/selector_mismatch
+=== RUN   TestSecurityCandidateWorkloadBoundaries/zero_replicas
+=== RUN   TestSecurityCandidateWorkloadBoundaries/readiness_probe_non-mapping
+=== RUN   TestSecurityCandidateWorkloadBoundaries/probe_two_handlers
+=== RUN   TestSecurityCandidateWorkloadBoundaries/probe_invalid_port
+=== RUN   TestSecurityCandidateWorkloadBoundaries/probe_invalid_period
+=== RUN   TestSecurityCandidateWorkloadBoundaries/exec_probe_command_not_allowlisted
+=== RUN   TestSecurityCandidateWorkloadBoundaries/startup_probe_missing
+--- PASS: TestSecurityCandidateWorkloadBoundaries (0.05s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/privileged (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/allowPrivilegeEscalation_true (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/runAsNonRoot_false (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/container_runAsUser_zero (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/seccomp_unconfined (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/capability_added (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/capabilities_not_dropped (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/writable_root_filesystem (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/host_port (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/host_PID (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/shared_process_namespace (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/service_account_token_automount (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/hostPath_volume (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/projected_volume (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/configMap_volume (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/command_override (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/args_override (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/lifecycle_hook (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/second_container (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/unexpected_container_name (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/image_latest_tag (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/image_digest_malformed (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/envFrom_not_allowed (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/duplicate_env (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/fault_knob_via_valueFrom (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/fault_injection (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/invalid_fault_value (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/invalid_resource_quantity (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/limit_below_request (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/resources_missing (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/selector_mismatch (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/zero_replicas (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/readiness_probe_non-mapping (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/probe_two_handlers (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/probe_invalid_port (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/probe_invalid_period (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/exec_probe_command_not_allowlisted (0.00s)
+    --- PASS: TestSecurityCandidateWorkloadBoundaries/startup_probe_missing (0.00s)
+=== RUN   TestSecurityAllowedExecProbeStillPasses
+--- PASS: TestSecurityAllowedExecProbeStillPasses (0.00s)
+=== RUN   TestSecurityReleaseScopeBoundaries
+=== RUN   TestSecurityReleaseScopeBoundaries/RBAC_resource
+=== RUN   TestSecurityReleaseScopeBoundaries/Ingress_exposure
+=== RUN   TestSecurityReleaseScopeBoundaries/unknown_kind
+=== RUN   TestSecurityReleaseScopeBoundaries/duplicate_resource_identity
+=== RUN   TestSecurityReleaseScopeBoundaries/unexpected_Deployment
+=== RUN   TestSecurityReleaseScopeBoundaries/additional_Service
+=== RUN   TestSecurityReleaseScopeBoundaries/Service_external_IPs
+=== RUN   TestSecurityReleaseScopeBoundaries/Service_nodePort
+=== RUN   TestSecurityReleaseScopeBoundaries/Service_removed
+--- PASS: TestSecurityReleaseScopeBoundaries (0.02s)
+    --- PASS: TestSecurityReleaseScopeBoundaries/RBAC_resource (0.00s)
+    --- PASS: TestSecurityReleaseScopeBoundaries/Ingress_exposure (0.00s)
+    --- PASS: TestSecurityReleaseScopeBoundaries/unknown_kind (0.00s)
+    --- PASS: TestSecurityReleaseScopeBoundaries/duplicate_resource_identity (0.00s)
+    --- PASS: TestSecurityReleaseScopeBoundaries/unexpected_Deployment (0.00s)
+    --- PASS: TestSecurityReleaseScopeBoundaries/additional_Service (0.00s)
+    --- PASS: TestSecurityReleaseScopeBoundaries/Service_external_IPs (0.00s)
+    --- PASS: TestSecurityReleaseScopeBoundaries/Service_nodePort (0.00s)
+    --- PASS: TestSecurityReleaseScopeBoundaries/Service_removed (0.00s)
+=== RUN   TestSecurityDiffRedactsSecretValues
+--- PASS: TestSecurityDiffRedactsSecretValues (0.00s)
+=== RUN   TestSecurityRenderedYAMLFailsClosed
+=== RUN   TestSecurityRenderedYAMLFailsClosed/duplicate_mapping_key
+=== RUN   TestSecurityRenderedYAMLFailsClosed/recursive_alias
+=== RUN   TestSecurityRenderedYAMLFailsClosed/non-finite_number
+=== RUN   TestSecurityRenderedYAMLFailsClosed/binary_payload
+=== RUN   TestSecurityRenderedYAMLFailsClosed/custom_tag
+=== RUN   TestSecurityRenderedYAMLFailsClosed/timestamp_scalar
+=== RUN   TestSecurityRenderedYAMLFailsClosed/non-scalar_mapping_key
+=== RUN   TestSecurityRenderedYAMLFailsClosed/excessive_nesting
+=== RUN   TestSecurityRenderedYAMLFailsClosed/not_a_kubernetes_object
+=== RUN   TestSecurityRenderedYAMLFailsClosed/List_without_items
+=== RUN   TestSecurityRenderedYAMLFailsClosed/object_without_metadata_name
+=== RUN   TestSecurityRenderedYAMLFailsClosed/non_UTF-8_input
+--- PASS: TestSecurityRenderedYAMLFailsClosed (0.01s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/duplicate_mapping_key (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/recursive_alias (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/non-finite_number (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/binary_payload (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/custom_tag (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/timestamp_scalar (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/non-scalar_mapping_key (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/excessive_nesting (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/not_a_kubernetes_object (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/List_without_items (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/object_without_metadata_name (0.00s)
+    --- PASS: TestSecurityRenderedYAMLFailsClosed/non_UTF-8_input (0.00s)
+=== RUN   TestSecurityRenderedManifestReadBoundaries
+=== RUN   TestSecurityRenderedManifestReadBoundaries/no_input
+=== RUN   TestSecurityRenderedManifestReadBoundaries/too_many_inputs
+=== RUN   TestSecurityRenderedManifestReadBoundaries/directory_is_not_a_manifest
+=== RUN   TestSecurityRenderedManifestReadBoundaries/oversized_input
+=== RUN   TestSecurityRenderedManifestReadBoundaries/symlink_input_is_rejected
+--- PASS: TestSecurityRenderedManifestReadBoundaries (0.00s)
+    --- PASS: TestSecurityRenderedManifestReadBoundaries/no_input (0.00s)
+    --- PASS: TestSecurityRenderedManifestReadBoundaries/too_many_inputs (0.00s)
+    --- PASS: TestSecurityRenderedManifestReadBoundaries/directory_is_not_a_manifest (0.00s)
+    --- PASS: TestSecurityRenderedManifestReadBoundaries/oversized_input (0.00s)
+    --- PASS: TestSecurityRenderedManifestReadBoundaries/symlink_input_is_rejected (0.00s)
+=== RUN   TestSecurityRenderedManifestHappyStructuralPaths
+--- PASS: TestSecurityRenderedManifestHappyStructuralPaths (0.00s)
+=== RUN   TestSecurityRenderTreeNeverFallsBackUnsandboxed
+    security_migration_test.go:1281: Linux sandbox execution is covered by the later live acceptance; desktop test does not execute helm
+--- SKIP: TestSecurityRenderTreeNeverFallsBackUnsandboxed (0.00s)
+=== RUN   TestSecurityRenderTreeConfigPathBoundaries
+=== RUN   TestSecurityRenderTreeConfigPathBoundaries/chart_path_escape
+=== RUN   TestSecurityRenderTreeConfigPathBoundaries/values_path_escape
+=== RUN   TestSecurityRenderTreeConfigPathBoundaries/invalid_namespace
+=== RUN   TestSecurityRenderTreeConfigPathBoundaries/invalid_kube_version
+--- PASS: TestSecurityRenderTreeConfigPathBoundaries (0.00s)
+    --- PASS: TestSecurityRenderTreeConfigPathBoundaries/chart_path_escape (0.00s)
+    --- PASS: TestSecurityRenderTreeConfigPathBoundaries/values_path_escape (0.00s)
+    --- PASS: TestSecurityRenderTreeConfigPathBoundaries/invalid_namespace (0.00s)
+    --- PASS: TestSecurityRenderTreeConfigPathBoundaries/invalid_kube_version (0.00s)
+=== RUN   TestSecurityCollectConfigFailsClosed
+=== RUN   TestSecurityCollectConfigFailsClosed/nil_config
+=== RUN   TestSecurityCollectConfigFailsClosed/invalid_namespace
+=== RUN   TestSecurityCollectConfigFailsClosed/invalid_deployment
+=== RUN   TestSecurityCollectConfigFailsClosed/zero_kubectl_timeout
+=== RUN   TestSecurityCollectConfigFailsClosed/non-numeric_prometheus_timeout
+=== RUN   TestSecurityCollectConfigFailsClosed/zero_TTL
+=== RUN   TestSecurityCollectConfigFailsClosed/tiny_output_bound
+=== RUN   TestSecurityCollectConfigFailsClosed/missing_prometheus_URL
+=== RUN   TestSecurityCollectConfigFailsClosed/prometheus_URL_credentials
+=== RUN   TestSecurityCollectConfigFailsClosed/prometheus_URL_query
+=== RUN   TestSecurityCollectConfigFailsClosed/prometheus_URL_scheme
+--- PASS: TestSecurityCollectConfigFailsClosed (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/nil_config (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/invalid_namespace (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/invalid_deployment (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/zero_kubectl_timeout (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/non-numeric_prometheus_timeout (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/zero_TTL (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/tiny_output_bound (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/missing_prometheus_URL (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/prometheus_URL_credentials (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/prometheus_URL_query (0.00s)
+    --- PASS: TestSecurityCollectConfigFailsClosed/prometheus_URL_scheme (0.00s)
+=== RUN   TestSecurityCollectedEvidenceCannotBecomePASS
+--- PASS: TestSecurityCollectedEvidenceCannotBecomePASS (0.00s)
+=== RUN   TestSecurityMalformedInputFailsClosed
+=== RUN   TestSecurityMalformedInputFailsClosed/invalid_namespace
+=== RUN   TestSecurityMalformedInputFailsClosed/empty_deployment
+=== RUN   TestSecurityMalformedInputFailsClosed/invalid_TTL
+=== RUN   TestSecurityMalformedInputFailsClosed/NaN_TTL
+=== RUN   TestSecurityMalformedInputFailsClosed/invalid_allowed_repository
+=== RUN   TestSecurityMalformedInputFailsClosed/NaN_evaluation_time
+=== RUN   TestSecurityMalformedInputFailsClosed/resource_missing_kind
+=== RUN   TestSecurityMalformedInputFailsClosed/resource_missing_metadata_name
+=== RUN   TestSecurityMalformedInputFailsClosed/List_items_not_a_list
+--- PASS: TestSecurityMalformedInputFailsClosed (0.01s)
+    --- PASS: TestSecurityMalformedInputFailsClosed/invalid_namespace (0.00s)
+    --- PASS: TestSecurityMalformedInputFailsClosed/empty_deployment (0.00s)
+    --- PASS: TestSecurityMalformedInputFailsClosed/invalid_TTL (0.00s)
+    --- PASS: TestSecurityMalformedInputFailsClosed/NaN_TTL (0.00s)
+    --- PASS: TestSecurityMalformedInputFailsClosed/invalid_allowed_repository (0.00s)
+    --- PASS: TestSecurityMalformedInputFailsClosed/NaN_evaluation_time (0.00s)
+    --- PASS: TestSecurityMalformedInputFailsClosed/resource_missing_kind (0.00s)
+    --- PASS: TestSecurityMalformedInputFailsClosed/resource_missing_metadata_name (0.00s)
+    --- PASS: TestSecurityMalformedInputFailsClosed/List_items_not_a_list (0.00s)
+PASS
+2026/11/12 19:57:30 GitHub credential verification failed: bad token

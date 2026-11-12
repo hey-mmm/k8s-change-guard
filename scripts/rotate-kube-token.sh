@@ -11,8 +11,9 @@
 #   TOKEN_TTL             default 12h (explicit short TTL)
 #   SERVICE_NAMESPACE_DEFAULT default demo (kubeconfig context namespace)
 #
-# The target host never needs the bootstrap credential.  Run this from the
-# operator/CI host and deliver TARGET_KUBECONFIG out of band if it is remote.
+# The target host never needs the bootstrap credential.  This script is pure
+# shell and never prints the minted token.  Run it from the operator/CI host and
+# deliver TARGET_KUBECONFIG out of band if it is remote.
 set -eu
 
 : "${BOOTSTRAP_KUBECONFIG:?set BOOTSTRAP_KUBECONFIG}"
@@ -26,52 +27,61 @@ CONTEXT_NAMESPACE="${SERVICE_NAMESPACE_DEFAULT:-demo}"
 case "$TOKEN_TTL" in
   *[!0-9smh]*|'') echo "TOKEN_TTL must look like 30m, 6h or 24h" >&2; exit 2 ;;
 esac
-for binary in "$KUBECTL"; do
-  command -v "$binary" >/dev/null 2>&1 || { echo "missing $binary" >&2; exit 2; }
-done
+command -v "$KUBECTL" >/dev/null 2>&1 || { echo "missing $KUBECTL" >&2; exit 2; }
 
 umask 077
 tmpdir="$(mktemp -d)"
 trap 'rm -rf "$tmpdir"' EXIT INT TERM
 
-"$KUBECTL" --kubeconfig "$BOOTSTRAP_KUBECONFIG" config view --raw --minify -o json > "$tmpdir/cluster.json"
-server="$(python3 - "$tmpdir/cluster.json" <<'PY'
-import json, sys
-with open(sys.argv[1], encoding="utf-8") as handle:
-    value = json.load(handle)
-print(value["clusters"][0]["cluster"]["server"])
-PY
-)"
-ca_data="$(python3 - "$tmpdir/cluster.json" <<'PY'
-import json, sys
-with open(sys.argv[1], encoding="utf-8") as handle:
-    value = json.load(handle)
-print(value["clusters"][0]["cluster"]["certificate-authority-data"])
-PY
-)"
-token="$("$KUBECTL" --kubeconfig "$BOOTSTRAP_KUBECONFIG" -n "$SERVICE_NAMESPACE" create token "$SERVICE_ACCOUNT" --duration="$TOKEN_TTL")"
-[ -n "$token" ] || { echo "TokenRequest returned an empty token" >&2; exit 1; }
+server=$("$KUBECTL" --kubeconfig "$BOOTSTRAP_KUBECONFIG" config view --raw --minify -o jsonpath='{.clusters[0].cluster.server}')
+ca_data=$("$KUBECTL" --kubeconfig "$BOOTSTRAP_KUBECONFIG" config view --raw --minify -o jsonpath='{.clusters[0].cluster.certificate-authority-data}')
 
-python3 - "$TARGET_KUBECONFIG" "$server" "$ca_data" "$token" "$CONTEXT_NAMESPACE" <<'PY'
-import json, os, sys
-path, server, ca_data, token, namespace = sys.argv[1:6]
-config = {
-    "apiVersion": "v1",
-    "kind": "Config",
-    "clusters": [{"name": "change-guard", "cluster": {"server": server, "certificate-authority-data": ca_data}}],
-    "users": [{"name": "change-guard", "user": {"token": token}}],
-    "contexts": [{"name": "change-guard", "context": {"cluster": "change-guard", "user": "change-guard", "namespace": namespace}}],
-    "current-context": "change-guard",
-}
-directory = os.path.dirname(os.path.abspath(path)) or "."
-temp = os.path.join(directory, f".{os.path.basename(path)}.tmp")
-with open(temp, "w", encoding="utf-8") as handle:
-    json.dump(config, handle, indent=2)
-    handle.write("\n")
-    handle.flush()
-    os.fsync(handle.fileno())
-os.chmod(temp, 0o600)
-os.replace(temp, path)
-PY
+case "$server" in
+  https://*) ;;
+  *) echo "bootstrap kubeconfig must contain an https server URL" >&2; exit 1 ;;
+esac
+case "$server" in
+  *[!A-Za-z0-9:/._-]*) echo "bootstrap server URL contains unexpected characters" >&2; exit 1 ;;
+esac
+case "$ca_data" in
+  ''|*[!A-Za-z0-9+/=]*) echo "bootstrap kubeconfig is missing a valid certificate-authority-data value" >&2; exit 1 ;;
+esac
+
+token=$("$KUBECTL" --kubeconfig "$BOOTSTRAP_KUBECONFIG" -n "$SERVICE_NAMESPACE" create token "$SERVICE_ACCOUNT" --duration="$TOKEN_TTL")
+[ -n "$token" ] || { echo "TokenRequest returned an empty token" >&2; exit 1; }
+case "$token" in
+  *[!A-Za-z0-9._-]*) echo "TokenRequest returned a malformed token" >&2; exit 1 ;;
+esac
+
+target_dir=$(dirname -- "$TARGET_KUBECONFIG")
+[ -d "$target_dir" ] || { echo "target directory does not exist: $target_dir" >&2; exit 1; }
+temporary=$(mktemp "$target_dir/.change-guard-kubeconfig.XXXXXX")
+trap 'rm -rf "$tmpdir" "$temporary"' EXIT INT TERM
+
+# The token is base64url/JWT and CA data is base64, so both are safe as plain
+# YAML scalars after the character checks above.  No credential is printed.
+{
+  printf 'apiVersion: v1\n'
+  printf 'kind: Config\n'
+  printf 'clusters:\n'
+  printf '  - name: change-guard\n'
+  printf '    cluster:\n'
+  printf '      server: %s\n' "$server"
+  printf '      certificate-authority-data: %s\n' "$ca_data"
+  printf 'users:\n'
+  printf '  - name: change-guard\n'
+  printf '    user:\n'
+  printf '      token: %s\n' "$token"
+  printf 'contexts:\n'
+  printf '  - name: change-guard\n'
+  printf '    context:\n'
+  printf '      cluster: change-guard\n'
+  printf '      user: change-guard\n'
+  printf '      namespace: %s\n' "$CONTEXT_NAMESPACE"
+  printf 'current-context: change-guard\n'
+} > "$temporary"
+chmod 0600 "$temporary"
+mv -f "$temporary" "$TARGET_KUBECONFIG"
+trap 'rm -rf "$tmpdir"' EXIT INT TERM
 
 echo "rotated $TARGET_KUBECONFIG with TTL $TOKEN_TTL" >&2

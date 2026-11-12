@@ -2,8 +2,10 @@
 
 适用主机：`11.0.1.10`（master，guard 与项目一控制面同机）。
 服务用户：`change-guard`。状态目录：`/var/lib/change-guard`。
-当前运行版本、真实合并/回退/发布后结果与最终验收以 `docs/acceptance.md` 为准。
-本文只描述操作，不复制时效数据；验收结论不在本文重复。
+当前 Go `0.3.0` 已完成 Windows/Linux 测试和单二进制构建，产物可部署，但尚未部署，
+live 验收 pending；历史 Python `0.2.3` 的真实合并/回退/发布后结果见
+`docs/acceptance.md`。本文只描述 Go 操作，不复制时效数据，也不把历史 Python 结果
+当成本文所述 Go 版本的上线证明。
 
 ## 1. 五分钟日常检查
 
@@ -15,24 +17,22 @@ systemctl is-enabled change-guard.service
 systemctl show change-guard.service -p NRestarts -p ActiveState -p SubState
 journalctl -u change-guard.service --since '-30 min' --no-pager | tail -80
 
-systemctl list-timers change-guard-token-renew.timer --no-pager
+systemctl list-timers change-guard-token-renew.timer change-guard-token-check.timer --no-pager
 systemctl status change-guard-token-renew.timer --no-pager
+systemctl status change-guard-token-check.timer --no-pager
 
-python /usr/local/lib/change-guard/check-token-expiry.py \
+/opt/change-guard/current/k8s-change-guard check-token \
   /etc/change-guard/kubeconfig --min-remaining 3600
 
 curl -fsS http://10.98.137.77:9090/-/ready
 curl -fsS http://10.104.233.119:8080/readyz
 
 # 策略绑定与 chart pin（值不应是旧 0b2b... 参考）
-sudo -u change-guard /opt/change-guard/current/venv/bin/python - <<'PY'
-import yaml
-c = yaml.safe_load(open('/etc/change-guard/config.yaml', encoding='utf-8'))
-assert isinstance(c.get('merge_required_ci'), str)
-assert c.get('approved_chart_digest'), 'chart pin missing'
-print('merge_required_ci =', c['merge_required_ci'])
-print('approved_chart_digest =', c['approved_chart_digest'])
-PY
+grep -E '^(merge_required_ci|approved_chart_digest):' \
+  /etc/change-guard/config.yaml
+
+# 或一次完成 service/binary/token/timer/HTTP/RBAC 检查
+sh scripts/health-check.sh --config /etc/change-guard/config.yaml --rbac
 ```
 
 期望：
@@ -83,17 +83,19 @@ gh api "repos/$REPO/commits/<head-sha>/statuses" |
 ### 3.1 正常状态
 
 - TokenRequest TTL：`12h`
-- timer：每 `6h` 触发一次
+- 续期 timer：每 `6h` 触发一次
+- 到期监测 timer：每 `1h` 触发一次
 - 最近一次成功：`systemctl status change-guard-token-renew.service`
-- 剩余时间：`check-token-expiry.py ... --min-remaining 3600` 退出 0
+- 剩余时间：`change-guard check-token ... --min-remaining 3600` 退出 0
 
 ```sh
 systemctl start change-guard-token-renew.service
 systemctl status change-guard-token-renew.service --no-pager
 journalctl -u change-guard-token-renew.service -n 80 --no-pager
+systemctl status change-guard-token-check.service --no-pager
 ```
 
-helper 只执行固定的：
+helper 是同一个 Go 二进制，只执行固定的：
 
 ```text
 /usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf \
@@ -106,7 +108,7 @@ daemon 每次调用 kubectl 重新读文件，不需要重启。
 ### 3.2 续期失败/即将过期
 
 ```sh
-python /usr/local/lib/change-guard/check-token-expiry.py \
+/opt/change-guard/current/k8s-change-guard check-token \
   /etc/change-guard/kubeconfig --min-remaining 3600
 ```
 
@@ -163,7 +165,7 @@ lease 是 Git push 的 `--force-with-lease`。
 
 ## 5. 部署密钥轮换
 
-部署密钥只用于 `merge.py`，不用于日常 push。
+部署密钥只用于 Go `merge` 命令，不用于日常 push。
 
 1. 生成新 ed25519 key（无口令，供 BatchMode）：
 
@@ -175,7 +177,7 @@ lease 是 Git push 的 `--force-with-lease`。
 
 2. 在项目一 Settings -> Deploy keys 添加公钥，勾选 **Allow write access**。
 3. 更新控制器 staging 路径，重新部署，让角色安装 `0600`。
-4. 用一条低风险 PR 走完整审批/合并，确认 `merge.py` 可用。
+4. 用一条低风险 PR 走完整审批/合并，确认 Go `merge` 可用。
 5. 从 GitHub 删除旧 deploy key；确认仓库只剩一把写部署密钥。
 6. 审计：
 
@@ -189,9 +191,8 @@ bypass 是仓库级布尔，不是按 key ID。发现未知 key 立即按事故�
 
 ## 6. 升级 guard release
 
-1. 选新版本号，绝不重用已有版本目录；同时把 `pyproject.toml` 的
-   `project.version` 和 `change_guard/__init__.py` 的 `__version__` 改成同一个
-   `<新版本>`。`--version` 只决定 tarball 名，不会改包内元数据。
+1. 选新版本号，绝不重用已有版本目录；把 `internal/guard/common.go` 的
+   `Version` 改成 `<新版本>`。`--version` 只决定 tarball 名/JSON，不会改二进制内版本。
 2. 构建并记录 SHA-256：
 
    ```sh
@@ -216,8 +217,8 @@ bypass 是仓库级布尔，不是按 key ID。发现未知 key 立即按事故�
 different artifact SHA-256`）。这是不可变 release 的保护，不要删除 `.complete`
 或手改 `.artifact.sha256` 绕过。
 
-不要把 `--version` 当成版本号同步：`pyproject.toml` 和 `__version__` 不一致时，
-tarball 名和包内 `change-guard --version` 会互相矛盾，审计无法判断实际代码版本。
+不要把 `--version` 当成版本号同步：`internal/guard/common.go` 的 `Version` 与
+tarball 名不一致时，`change-guard --version` 会暴露矛盾，Ansible 的版本核验会失败。
 
 ## 7. 标准发布演示
 
@@ -280,15 +281,9 @@ success  REVIEW approved by <login> [ev-...]
 ### 8.2 合并前
 
 ```sh
-sudo -u change-guard /opt/change-guard/current/venv/bin/python - <<'PY'
-import yaml
-c = yaml.safe_load(open('/etc/change-guard/config.yaml', encoding='utf-8'))
-ci = c.get('merge_required_ci', 'Test, lint, render')
-assert isinstance(ci, str), f"merge_required_ci must be a string, got {type(ci)}"
-assert c.get('approved_chart_digest'), 'approved_chart_digest is required'
-print('merge_required_ci =', ci)
-print('approved_chart_digest =', c['approved_chart_digest'])
-PY
+grep -E '^(merge_required_ci|approved_chart_digest):' \
+  /etc/change-guard/config.yaml
+# merge_required_ci 必须是单个字符串，不是 YAML 列表
 ```
 
 确认：
@@ -318,7 +313,8 @@ sudo scripts/merge-release.sh <N>
 `trap ... EXIT` 在退出时恢复原 polling 状态，并在 `runuser -u change-guard` 后读取
 `/etc/change-guard/proxy.env` 再执行底层 merge。
 
-底层 Python 仍可直接运行，但必须先停 daemon 或串行化，否则可能得到 `DaemonBusy`：
+底层 Go 二进制仍可直接运行，但必须先停 daemon 或串行化，否则可能得到 daemon
+busy/锁错误：
 
 ```sh
 sudo systemctl stop change-guard.service
@@ -326,7 +322,7 @@ sudo -u change-guard \
   env HTTP_PROXY=http://11.0.1.1:7890 \
       HTTPS_PROXY=http://11.0.1.1:7890 \
       NO_PROXY='127.0.0.1,localhost,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local' \
-  /opt/change-guard/current/venv/bin/python -m change_guard.merge \
+  /opt/change-guard/current/k8s-change-guard merge \
   --config /etc/change-guard/config.yaml --pr <N>
 sudo systemctl start change-guard.service
 ```
@@ -349,7 +345,7 @@ postdeploy 失败。门禁有效性看 merge 记录和合并当时的报告/审�
 
 ```sh
 sudo -u change-guard \
-  /opt/change-guard/current/venv/bin/python -m change_guard.postdeploy verify \
+  /opt/change-guard/current/k8s-change-guard postdeploy verify \
   --config /etc/change-guard/config.yaml \
   --expected-sha <main_head_commit> \
   --expected-app-sha <image_source_commit> \
@@ -424,19 +420,19 @@ gh pr create --repo "$REPO" --base main \
      -f description='Stale evaluation revoked manually'
    ```
 
-5. 重新评估并走 `merge.py`；不要用管理员 push 代替。
+5. 重新评估并走 Go `merge`；不要用管理员 push 代替。
 
 ### 10.2 token 过期
 
 - 症状：daemon 日志出现 Kubernetes 401/403、证据采集 ERROR、状态 error；
-- 处理：手动触发续期或 Ansible 轮换；确认 `check-token-expiry` 退出 0；
+- 处理：手动触发续期或 Ansible 轮换；确认 `change-guard check-token` 退出 0；
 - 不要重启服务来“刷新 token”；token 是文件，重启不会变新。
 
 ### 10.3 代理/网络
 
 - GitHub 走 `HTTP_PROXY/HTTPS_PROXY`；集群内地址走 `NO_PROXY`；
 - `service_github_via_proxy`、`service_internal_prometheus_direct` 可手工 curl 验证；
-- 如果 `nc` 缺失，`merge.py` 的 SSH ProxyCommand 会失败；安装 netcat-openbsd。
+- 如果 `nc` 缺失，Go merge 的 SSH ProxyCommand 会失败；安装 netcat-openbsd。
 
 ### 10.4 ruleset 漂移
 
@@ -484,10 +480,10 @@ gh api repos/$REPO/rulesets/<id> |
 5. `charts/demo` 受操作员 `approved_chart_digest` pin 约束。当前真实 pin 是
    `194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d`；旧
    `0b2b...` 参考值不可用。更新模板必须另行审查并更新 pin。
-6. `pyproject.toml` 和 `__version__` 必须同步；`--version` 只影响 tarball 名，
-   不能替代元数据。
-7. root-only 续期 helper 依赖 master 本机 `/etc/kubernetes/admin.conf`；独立主机
-   需改用控制器轮换。
+6. `internal/guard/common.go` 的 `Version` 必须与发布版本一致；`--version` 只影响
+   tarball 名，不能替代代码内版本。
+7. root-only Go `renew-token` helper 依赖 master 本机 `/etc/kubernetes/admin.conf`；
+   独立主机需改用控制器轮换。
 8. 单 worker、本地 PVC，没有节点/磁盘容灾；增加副本不等于高可用。
 9. 发布后失败只建议 Git revert PR，不自动回滚、不直接改集群；main 是单父 head，
    回退不加 `-m 1`。
@@ -507,7 +503,7 @@ gh api repos/$REPO/rulesets/<id> |
 
 - 可以展示 pending -> success/failure 的状态变化；
 - 可以展示 BLOCK PR 被拒绝；
-- 可以展示精确 `/guard approve <evaluation_id>` 和 `merge.py` 的 lease；
+- 可以展示精确 `/guard approve <evaluation_id>` 和 Go `merge` 的 lease；
 - 可以展示发布后 Argo/Deployment/HTTP/metrics；
 - **不要**展示尚未跑过的“CI 已通过”“最终验收通过”或伪造的 commit；
 - 失败就说失败，记录日志和下一步，不用模型或人工审批把 BLOCK 变绿。

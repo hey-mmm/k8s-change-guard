@@ -4,8 +4,9 @@
 
 项目一能构建镜像、发布到 GHCR，再由 Argo CD 同步 Git 中的配置。项目二在配置进入发布分支前判断风险，并把判断落实到 GitHub 合并限制。目标是：不合规发布无法进入 main，正常发布具备可追溯证据，并在部署后验证实际结果。
 
-当前版本、真实合并/回退/发布后结果和最终验收以 `docs/acceptance.md` 为准；本文不复制
-时效数据。
+当前 Go `0.3.0` 已完成迁移实现、Windows/Linux 测试和单二进制打包，产物可部署，但
+尚未部署；live 验收 pending。历史 Python `0.2.3` 的真实合并/回退/发布后结果见
+`docs/acceptance.md`，不能当作 Go 版本已经上线。本文不复制时效数据。
 
 Agent 只读集群，不是 Kubernetes 准入控制器。集群管理员仍有直接操作 Kubernetes 的权限；仓库管理员能够修改规则或部署凭据。这些管理员属于信任边界。GitHub 的 DeployKey bypass 是仓库级能力，不能按单 key 限制；实际只保留一把写部署密钥，这是必须审计的信任边界。
 
@@ -35,9 +36,9 @@ flowchart TD
 
 | 工具 | 责任 | 判断依据 |
 | --- | --- | --- |
-| Python | 配置差异、证据采集、规则、检索、模型调用、GitHub 状态与审计 | 固定提交、字段路径、查询与时间戳 |
-| Ansible | 独立用户、可信代码、RBAC、kubeconfig、systemd、代理与凭据权限 | 可重复执行、服务状态、只读权限实测 |
-| Shell | 网络预检、服务健康检查、验收入口 | 非零退出码与原始输出 |
+| Go 单二进制 | 配置差异、证据采集、规则、检索、模型调用、GitHub 状态与审计、token helper、postdeploy | 固定提交、字段路径、查询与时间戳 |
+| Ansible | 独立用户、可信二进制、RBAC、kubeconfig、systemd、代理与凭据权限 | 可重复执行、服务状态、只读权限实测 |
+| Shell | 健康检查、本地验收、场景矩阵、RBAC、网络预检 | 非零退出码与原始输出 |
 | GitHub Actions | 项目一的测试和镜像构建；项目二自身回归测试 | 绑定 PR head 的 check run/结论，不把 synthetic merge 的空 check 当成功 |
 | GitHub 保护规则 | 限制 main 更新与必要检查 | 两组 ruleset：DeployKey 只能仓库级 bypass；required checks 无 bypass |
 | Argo CD | 部署合并后配置 | Git revision、Synced/Healthy |
@@ -76,7 +77,7 @@ Agent 在 master 运行，主动轮询 GitHub，无公网监听端口。worker �
 - DeployKey bypass 是仓库级，平台不能限制到单 key；只能靠“仓库只有一把写 key + 审计”约束。
 - `charts/demo` 模板变更必须由操作员另行更新可信 pin（当前真实 Git blob digest 为 `194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d`，旧 `0b2b...` 参考值不可用）；guard 不会自动信任新模板。发布 PR 的正常配置入口是 `gitops/demo/values.yaml`，不是 chart 自带的 `values.yaml` 默认值。
 - 发布后失败只记录结果并给出 Git revert PR 建议，不让模型直接回滚；main 是单父 head，回退用普通 `git revert`，不加 `-m 1`。
-- 当前版本、真实 merge/回退/发布后结果以 `docs/acceptance.md` 为准；历史版本（0.2.1/0.2.2）的验证只作历史证据，不代表当前状态。
+- 当前 Go `0.3.0` 已完成测试和可部署产物，但尚未部署，live 验收 pending；历史 Python 版本（0.2.1/0.2.2/0.2.3）的验证只作历史证据，不代表 Go 已上线。
 - 合并后 daemon 会撤销 closed/merged PR 的历史 guard 状态；main/旧 head 出现 guard error/pending 可能只是撤销，不是 postdeploy 失败；门禁证明看 merge 记录和当时报告/审批/CI，不要强留永久绿。
 
 实际完成项、未通过项与证据索引见 [验收报告](acceptance.md)。

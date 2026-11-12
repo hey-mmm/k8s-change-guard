@@ -1,0 +1,668 @@
+{
+  "cases": [
+    {
+      "actions": [
+        "Reject any fault-injection value in the candidate Deployment.",
+        "Require the normal value DEMO_ERROR_RATE=0."
+      ],
+      "analysis": "A release that sets DEMO_ERROR_RATE to a non-zero value injects deliberate /work 500 responses and is a hard release risk.",
+      "cautions": [
+        "Do not treat a recovered local drill as approval for shipping fault settings."
+      ],
+      "excerpt": "- 500：`DEMO_ERROR_RATE=1`，真实请求日志返回 500；触发 DemoHighErrorRate，恢复为 200 后收到同指纹 resolved。",
+      "excerpt_sha256": "d14b11fcaef1d96686e1eaffb100bdf75bb87f382b13bed478e10a041d915eb1",
+      "id": "http500-fault",
+      "line_end": 13,
+      "line_start": 13,
+      "rollback": "Restore DEMO_ERROR_RATE=0 and wait for a healthy rollout before considering the release again.",
+      "signals": [
+        "DEMO_ERROR_RATE=1",
+        "DemoHighErrorRate",
+        "resolved fingerprint"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "故障演练验收与复盘"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "http500",
+        "fault-injection",
+        "error-rate",
+        "alert"
+      ],
+      "title": "HTTP 500 故障注入"
+    },
+    {
+      "actions": [
+        "Reject non-zero DEMO_LATENCY_MS.",
+        "Review p95 latency separately from probe health."
+      ],
+      "analysis": "A release that sets DEMO_LATENCY_MS above zero injects business latency; readiness/liveness probes themselves are not delayed, so probes passing does not make the release safe.",
+      "cautions": [
+        "Do not infer low latency from healthy probes."
+      ],
+      "excerpt": "- 慢请求：`DEMO_LATENCY_MS=3000`，请求日志耗时约 3.00–3.01 秒；触发 DemoP95LatencyHigh，恢复后收到 resolved。",
+      "excerpt_sha256": "55fd07443153dc97f49277e2d9dc1fd6b96381df3c6583917bad9ab5117de5fc",
+      "id": "latency-3000-fault",
+      "line_end": 14,
+      "line_start": 14,
+      "rollback": "Restore DEMO_LATENCY_MS=0 and verify the 5m p95 returns below the review threshold.",
+      "signals": [
+        "DEMO_LATENCY_MS=3000",
+        "DemoP95LatencyHigh",
+        "3.00-3.01s"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "故障演练验收与复盘"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "latency",
+        "fault-injection",
+        "p95",
+        "alert"
+      ],
+      "title": "3000ms 慢请求故障注入"
+    },
+    {
+      "actions": [
+        "Reject DEMO_STARTUP_FAIL=true.",
+        "Separate old-Pod availability from new-Pod health and version verification."
+      ],
+      "analysis": "A startup-failure drill demonstrates maxUnavailable=0/maxSurge=1 release protection; it does not prove that the new version works, and the old Pod still serving is not new-version provenance.",
+      "cautions": [
+        "Do not claim a successful release because the old Pod stayed Ready."
+      ],
+      "excerpt": "- 启动失败：新 Pod 输出 StartupError/`startup_failed`、CrashLoopBackOff，旧 Pod 保持 Ready 并返回 200；触发 DemoPodCrashLooping。这是发布保护，不是全服务中断。",
+      "excerpt_sha256": "43ee6e4f31e30d5d932f78ba24fcfe21acab0a1a8c7f4bba05d60faa64e86209",
+      "id": "startup-failure-release-protection",
+      "line_end": 15,
+      "line_start": 15,
+      "rollback": "Restore DEMO_STARTUP_FAIL=false, roll out a healthy new Pod, and verify endpoints and version separately.",
+      "signals": [
+        "DEMO_STARTUP_FAIL=true",
+        "CrashLoopBackOff",
+        "old Pod remains Ready"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "故障演练验收与复盘"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "startup-failure",
+        "fault-injection",
+        "rolling-update",
+        "old-pod"
+      ],
+      "title": "启动失败只验证滚动发布保护"
+    },
+    {
+      "actions": [
+        "Use firing and resolved evidence as context, not as a release approval.",
+        "Do not claim recovery when the resolved fingerprint is absent."
+      ],
+      "analysis": "Alert recovery evidence must match the firing alert by fingerprint; unrelated or missing resolved events are insufficient.",
+      "cautions": [
+        "A local webhook notification is not production notification reliability."
+      ],
+      "excerpt": "- 500：`DEMO_ERROR_RATE=1`，真实请求日志返回 500；触发 DemoHighErrorRate，恢复为 200 后收到同指纹 resolved。\n- 慢请求：`DEMO_LATENCY_MS=3000`，请求日志耗时约 3.00–3.01 秒；触发 DemoP95LatencyHigh，恢复后收到 resolved。",
+      "excerpt_sha256": "46c8a66f7d003aa521314d088a3eaf6d9b102946d8520dcd450a7bee3cd456c7",
+      "id": "alert-resolved-fingerprint",
+      "line_end": 14,
+      "line_start": 13,
+      "rollback": "Recover the injected condition and verify a matching resolved event.",
+      "signals": [
+        "same fingerprint",
+        "DemoHighErrorRate",
+        "DemoP95LatencyHigh"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "故障演练验收与复盘"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "alert",
+        "firing",
+        "resolved",
+        "fingerprint"
+      ],
+      "title": "告警 firing 与同指纹 resolved"
+    },
+    {
+      "actions": [
+        "Preserve PVC identity, timestamp, and marker evidence in reports.",
+        "Do not interpret local-path persistence as HA or backup."
+      ],
+      "analysis": "Persistence evidence is tied to unchanged PVCs and exact query timestamps, not to a vague claim that storage survived.",
+      "cautions": [
+        "Single worker local-path storage is not replicated and can be lost with the node disk."
+      ],
+      "excerpt": "- 数据持久化：见 `evidence/persistence.json`。Prometheus 与 Loki Pod UID 均改变，原 PVC 相同；固定查询时间的指标值仍为 67，重建前 marker 的原时间戳和日志全文完全相同。",
+      "excerpt_sha256": "fe3b4437a2ddbb2db970bdc91e86dfccff79758ddf415bbee9820cd5a62dc927",
+      "id": "persistence-pvc",
+      "line_end": 16,
+      "line_start": 16,
+      "rollback": "Restore the workload and re-query the same fixed time and marker.",
+      "signals": [
+        "Pod UID changed",
+        "same PVC",
+        "fixed query value 67"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "故障演练验收与复盘"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "persistence",
+        "pvc",
+        "prometheus",
+        "loki"
+      ],
+      "title": "Pod 重建后 PVC 持久化"
+    },
+    {
+      "actions": [
+        "Require new-Pod-specific readiness and version evidence.",
+        "Do not collapse rollout success into Service availability."
+      ],
+      "analysis": "During a rolling update an old Ready Pod can keep the Service available while the new Pod is not yet proven; endpoints, image digest, and /version must be verified.",
+      "cautions": [
+        "Do not use Service 200 responses alone as new-version proof."
+      ],
+      "excerpt": "发现并修复：Service port-forward 随旧 Pod 退出；Windows 复制的恢复脚本缺少执行位；Shell 同一 local 声明引用未赋值变量；滚动发布时旧 Pod Ready 不能证明新版本完成。Alloy 配置先通过自身 validate，再检查实际日志流。",
+      "excerpt_sha256": "a5232a38812db2ee8c6cf3c53969cb5316289fb49666f2842fa10772b7c76f08",
+      "id": "rolling-old-pod-not-proof",
+      "line_end": 18,
+      "line_start": 18,
+      "rollback": "Roll back through Git desired state and verify the resulting image and /version.",
+      "signals": [
+        "old Pod Ready",
+        "rolling release",
+        "version verification"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "故障演练验收与复盘"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "rolling-update",
+        "readiness",
+        "provenance"
+      ],
+      "title": "旧 Pod Ready 不能证明新版本完成"
+    },
+    {
+      "actions": [
+        "Keep SLO claims out of release approval unless the full window exists.",
+        "Report only observed metrics and their timestamps."
+      ],
+      "analysis": "A short drill window cannot prove a 7-day SLO or a percentage improvement; reports must state the evidence boundary.",
+      "cautions": [
+        "Do not fabricate recovery-efficiency percentages."
+      ],
+      "excerpt": "告警只验证本地 webhook 通知链路。Prometheus 7 天 SLO 目标为 99.9%，本次未积累完整 7 天窗口，不宣称 SLO 已达标，也不编造恢复效率提升百分比。",
+      "excerpt_sha256": "5b2d440837fc9570e138953aa401d64eda3ec1b2156793edbc57c36f5c0541ba",
+      "id": "slo-window-not-proven",
+      "line_end": 22,
+      "line_start": 22,
+      "rollback": "Collect a complete window before making an SLO claim.",
+      "signals": [
+        "7 day SLO 99.9%",
+        "incomplete window",
+        "local webhook only"
+      ],
+      "source": {
+        "id": "fault-review",
+        "line_count": 22,
+        "path": "docs/fault-review.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "snapshot": "sources/fault-review.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "故障演练验收与复盘"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "fault-review",
+      "source_path": "docs/fault-review.md",
+      "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "tags": [
+        "slo",
+        "availability",
+        "evidence-boundary"
+      ],
+      "title": "SLO 声明边界"
+    },
+    {
+      "actions": [
+        "Wait for new Pod readiness before judging fault effect.",
+        "Record the exact rollout and readiness timestamps."
+      ],
+      "analysis": "A drill fault is effective only after rollout and new-Pod readiness; an old Pod still serving can hide the injected condition.",
+      "cautions": [
+        "Do not mark a drill effective solely because a patch was submitted."
+      ],
+      "excerpt": "### 3.1 错误率（100% /work 500）\n\n```bash\nscripts/drills/inject.sh --fault error --suspend-gitops\n# 观察告警/指标/日志，例如：\n#   sum(rate(demo_http_requests_total{route=\"/work\",status=~\"5..\"}[5m]))\n#   kubectl -n demo logs deploy/demo --tail=50\nscripts/drills/recover.sh\n```\n\nenv：`DEMO_ERROR_RATE=1`，并确保 latency/startup 为正常值。rollout 完成、\n新 Pod Ready 后才记录 `fault_fully_effective=true`。",
+      "excerpt_sha256": "c04aafbfb9fed288086090c9afb109597efee165ba240b4d6d579542b8492598",
+      "id": "error-drill-rollout-before-effective",
+      "line_end": 68,
+      "line_start": 57,
+      "rollback": "Run recover.sh and wait for rollout, /healthz, and /readyz.",
+      "signals": [
+        "inject error",
+        "rollout complete",
+        "new Pod Ready",
+        "fault_fully_effective=true"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo 故障演练手册（runbook）"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "http500",
+        "drill",
+        "rollout",
+        "effective"
+      ],
+      "title": "错误率演练需等待新 Pod Ready"
+    },
+    {
+      "actions": [
+        "Check the business p95 metric, not only probe status.",
+        "Reject non-zero latency injection values."
+      ],
+      "analysis": "The demo deliberately keeps health probes fast during latency injection, so passing probes are not evidence of low business latency.",
+      "cautions": [
+        "Do not infer business performance from probe success."
+      ],
+      "excerpt": "env：`DEMO_LATENCY_MS=3000`。`/healthz`、`/readyz` 不注入延迟，避免探针误杀；\n业务延迟看 histogram：\n\n```promql\nhistogram_quantile(0.95,\n  sum by (le) (rate(demo_http_request_duration_seconds_bucket{route=\"/work\"}[5m])))\n```",
+      "excerpt_sha256": "ccc41aa6c3bfff4994c797552f1693b650021fd767ec3c5aad8f00ebfad6631b",
+      "id": "latency-probes-not-delayed",
+      "line_end": 83,
+      "line_start": 77,
+      "rollback": "Restore DEMO_LATENCY_MS=0 and watch the histogram p95 recover.",
+      "signals": [
+        "DEMO_LATENCY_MS=3000",
+        "healthz/readyz not delayed",
+        "histogram p95"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo 故障演练手册（runbook）"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "latency",
+        "probes",
+        "p95",
+        "fault-injection"
+      ],
+      "title": "探针不注入延迟"
+    },
+    {
+      "actions": [
+        "Reject DEMO_STARTUP_FAIL=true.",
+        "Account for retained old Pod plus surge Pod in capacity checks."
+      ],
+      "analysis": "The chart rolling strategy retains the old Ready Pod while a failing new Pod is replaced; this is release protection, not proof the new revision works.",
+      "cautions": [
+        "Do not manufacture business outage by scaling or deleting Pods as part of this drill."
+      ],
+      "excerpt": "### 3.3 启动失败（验证发布保护，不是业务全停）\n\n```bash\nscripts/drills/inject.sh --fault startup-failure --suspend-gitops\nscripts/drills/recover.sh\n```\n\nenv：`DEMO_STARTUP_FAIL=true`。应用会打印明确的 `startup_failed` 日志并退出\n（受 liveness/readiness 影响，新 Pod 进入 CrashLoop）。**不要**把\n`kubectl rollout status` 失败直接记录成“启动故障完全生效”：\n\n- Chart 使用 `maxUnavailable: 0` / `maxSurge: 1`；\n- 新 Pod 失败时，旧 Pod 仍保持 Ready 并继续服务；\n- 因此这项演练验证的是**滚动发布保护**，不是制造业务不可用；\n- 脚本观察新 Pod/事件/日志，记录 `old_pod_still_serving`、\n  `fault_fully_effective=false`、`release_protection_observed`。\n\n如果确实需要验证“业务不可用”，必须另行设计**明确、可恢复**的演练（例如显式\nscale deployment），并单独评审恢复步骤；本目录脚本不会偷偷删 Pod/scale 或制造\n不可控中断。",
+      "excerpt_sha256": "0230408c384455b718862f6578dcb498dbb1641efacd68d2478951e9e7b7e414",
+      "id": "startup-max-unavailable-protection",
+      "line_end": 104,
+      "line_start": 85,
+      "rollback": "Restore normal startup and verify the new Pod image digest and /version.",
+      "signals": [
+        "maxUnavailable: 0",
+        "maxSurge: 1",
+        "old Pod still serving",
+        "old_pod_still_serving"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo 故障演练手册（runbook）"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "startup-failure",
+        "maxUnavailable",
+        "maxSurge",
+        "release-protection"
+      ],
+      "title": "启动失败时旧 Pod 仍服务"
+    },
+    {
+      "actions": [
+        "Treat every recovery step as required evidence.",
+        "Do not restore only selected env values when full state is available."
+      ],
+      "analysis": "Recovery restores the exact prior env, waits for rollout, verifies health, restores Argo auto-sync, and records a recovered event; any step failing returns non-zero.",
+      "cautions": [
+        "The fallback cannot restore the original Argo auto-sync value."
+      ],
+      "excerpt": "## 4. 恢复语义\n\n`recover.sh` 顺序：\n\n1. 从 state 读取注入前的完整 container `env`，用 JSON patch 精确恢复；失败则\n   回退为 `DEMO_ERROR_RATE=0 DEMO_LATENCY_MS=0 DEMO_STARTUP_FAIL=false`；\n2. 等待 Deployment rollout（带总超时）；\n3. 通过 port-forward 检查 `/healthz` 和 `/readyz`，记录成功 UTC；\n4. 恢复 `argocd/demo` 的原 auto-sync 并校验；\n5. 写 `recovered` JSONL；任何一步失败返回非 0。\n\n```bash\n# 最近一次\nscripts/drills/recover.sh\n# 指定状态\nscripts/drills/recover.sh --state scripts/drills/.state/\u003cdrill-id\u003e.json\n# 状态丢失的兜底（只把三个 DEMO_* 设正常，无法恢复 Argo 原值）\nscripts/drills/recover.sh --force-normal\n```\n\n恢复不会删除 state；需要保留证据。再次 recover 是幂等的。",
+      "excerpt_sha256": "d0d9440a6b5ac6f96b2200b04aa1fc6ba603fcc34cfe1f41b8662d65ab6caebf",
+      "id": "recover-semantics",
+      "line_end": 126,
+      "line_start": 106,
+      "rollback": "Use the stored state file; fall back to forcing the three DEMO_* values normal only when state is lost.",
+      "signals": [
+        "restore exact env",
+        "wait rollout",
+        "healthz/readyz",
+        "restore auto-sync"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo 故障演练手册（runbook）"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "recovery",
+        "gitops",
+        "rollout",
+        "health"
+      ],
+      "title": "故障恢复顺序"
+    },
+    {
+      "actions": [
+        "Recommend a revert commit and Argo resync.",
+        "Verify the resulting Application revision, image, and /version."
+      ],
+      "analysis": "A GitOps rollback is a revert commit to Git, not argocd app rollback or kubectl rollout undo. The image tag must remain immutable.",
+      "cautions": [
+        "Do not claim GitOps rollback from an imperative cluster-only operation."
+      ],
+      "excerpt": "## 6. Git 回滚流程\n\n演练 `recover.sh` 只恢复本地被 patch 的 env，不等于 GitOps 回滚。需要回滚发布时：\n\n```bash\ngit revert \u003cbad-desired-state-commit\u003e\ngit push origin main\n# 等待 Argo 同步；核对\nkubectl -n demo rollout status deployment/demo --timeout=180s\n```\n\n**禁止**只执行 `argocd app rollback` 或 `kubectl rollout undo` 后就声称完成了\nGitOps 回滚；Argo CD 的历史/自愈不能替代 Git desired state 的 revert commit。\nGitOps 的 `targetRevision: main` 是 Git 分支，不是镜像 `latest`；镜像 tag 必须\n是不可变 `sha-\u003ccommit\u003e`。",
+      "excerpt_sha256": "39ec7f97657ee01bc84740ed1b88e9065f9a54c2a42dda7b6b5fccf340ec07bd",
+      "id": "git-revert-required",
+      "line_end": 173,
+      "line_start": 159,
+      "rollback": "git revert the bad desired-state commit, push main, wait for Argo sync, then verify rollout and endpoints.",
+      "signals": [
+        "git revert",
+        "git push origin main",
+        "do not use argocd app rollback as substitute",
+        "sha-\u003ccommit\u003e"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo 故障演练手册（runbook）"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "rollback",
+        "gitops",
+        "git-revert",
+        "immutable-tag"
+      ],
+      "title": "GitOps 回退必须改变 Git desired state"
+    },
+    {
+      "actions": [
+        "Represent unknown alert state explicitly and do not treat it as healthy.",
+        "Require actual output before confirming root cause."
+      ],
+      "analysis": "If the alert receiver is unavailable or the response cannot be parsed, alert_fired stays null; the runbook does not guess that no alert fired.",
+      "cautions": [
+        "Do not write a root-cause confirmation without observed metrics, logs, or alert IDs."
+      ],
+      "excerpt": "规则：\n\n- UTC 故障开始、alert 观测、rollout 完成、health 成功都有独立时间字段。\n- `alert_fired` 仅当 receiver API 实际查询成功且能判定时是 true/false；\n  未配置、不可达、非 2xx、响应无法解析时一律 `null`，**不猜测未告警**。\n  receiver 支持 Alertmanager 风格 `{\"alerts\":[...]}`（匹配 namespace/deployment/\n  app/service=demo 且 status=firing），或 `{\"firing\":true|false}`。\n- `root_cause_confirmed` 默认始终是 `false`，脚本不会自动声称根因。\n  操作者实际核对指标、日志、告警后，用：\n\n```bash\nscripts/drills/record.sh \\\n  --drill-id '\u003cdrill-id\u003e' \\\n  --command 'sum(rate(demo_http_requests_total{route=\"/work\",status=~\"5..\"}[5m])) + logs' \\\n  --evidence '实际观测到的数值/日志/告警 ID' \\\n  --confirmed\n```\n\n不加 `--confirmed` 只追加未确认的观测证据。没有实际输出不要写确认。",
+      "excerpt_sha256": "6c1458d47caa9a8ec3f5f9e430f221e1a2fea982ea426d31a1aea98d3f632d50",
+      "id": "drill-evidence-no-guess",
+      "line_end": 157,
+      "line_start": 139,
+      "rollback": "Re-query a reachable receiver and record actual evidence before changing the claim.",
+      "signals": [
+        "alert_fired null",
+        "non-2xx/unreachable",
+        "root_cause_confirmed false"
+      ],
+      "source": {
+        "id": "drills",
+        "line_count": 186,
+        "path": "docs/drills.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "snapshot": "sources/drills.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "Demo 故障演练手册（runbook）"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "drills",
+      "source_path": "docs/drills.md",
+      "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "tags": [
+        "alert-evidence",
+        "unknown",
+        "audit"
+      ],
+      "title": "告警未知时不得猜测"
+    },
+    {
+      "actions": [
+        "Use only Ready, schedulable non-control-plane workers for capacity.",
+        "Reserve resources for retained old Pods and surge Pods."
+      ],
+      "analysis": "Capacity reasoning depends on Ready, schedulable workers and retained control-plane taints; a single worker leaves little room for surge during rolling updates.",
+      "cautions": [
+        "Do not count the control-plane node as schedulable worker capacity."
+      ],
+      "excerpt": "- API `/readyz`。\n- 恰好 2 个节点，`master`/`worker` 均 Ready，InternalIP 分别为 `11.0.1.10`/`11.0.1.11`，容器运行时为 containerd。\n- kubeadm `podSubnet` 与 Calico 默认 IPv4 IPPool 均为 `10.244.0.0/16`。\n- kube-apiserver、controller-manager、scheduler、etcd Ready。\n- kube-proxy、calico-node、calico-kube-controllers、CoreDNS Ready。\n- `kubernetes` Service 为 `10.96.0.1`，`kube-dns` 为 `10.96.0.10`。\n- master 的 control-plane taint 仍存在，Calico 有 `Exists` toleration。\n- 创建临时 master/worker 测试 Pod（固定 `busybox:1.36.1`，无 latest），验证：\n  - 两 Pod 获得不同 Pod IP；\n  - 集群 DNS 解析 `kubernetes.default.svc.cluster.local`；\n  - master→worker 和 worker→master 双向 ICMP 跨节点 Pod 网络。\n- 退出时删除临时命名空间；不删除 taint，不执行 reset。",
+      "excerpt_sha256": "88379d057403a251e9c3f76c92b7f6f9db07b8e0bc53c53e48e6a9adb48c0bbe",
+      "id": "worker-capacity-check",
+      "line_end": 145,
+      "line_start": 134,
+      "rollback": "Free capacity or reduce the rollout demand; do not remove the control-plane taint as a workaround.",
+      "signals": [
+        "exactly two nodes",
+        "master/worker Ready",
+        "control-plane taint remains"
+      ],
+      "source": {
+        "id": "stage1-runbook",
+        "line_count": 189,
+        "path": "docs/stage1-runbook.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+        "snapshot": "sources/stage1-runbook.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "阶段 1 运行与验收说明（runbook）"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "stage1-runbook",
+      "source_path": "docs/stage1-runbook.md",
+      "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+      "tags": [
+        "capacity",
+        "worker",
+        "ready",
+        "single-worker"
+      ],
+      "title": "单 worker 容量与 Ready 检查"
+    },
+    {
+      "actions": [
+        "Keep troubleshooting read-only and evidence-based.",
+        "Do not bypass readiness by removing taints."
+      ],
+      "analysis": "When networking Pods are not Ready, inspect Pods, logs, and CIDR instead of deleting the control-plane taint or changing image tags to latest.",
+      "cautions": [
+        "Do not use latest or skip checks to make an acceptance pass."
+      ],
+      "excerpt": "| 现象 | 处理 |\n| --- | --- |\n| `admin.conf` 存在但版本为 1.28 或 `/readyz` 失败 | 停止。操作者在 playbook 外清理旧集群；本仓库不会自动 reset。 |\n| 只有 `kube-apiserver.yaml`，无 `admin.conf` | 停止。检查部分初始化状态，不要直接删除证书或再次 init。 |\n| worker `kubelet.conf` 存在但 API server/Node/IP 不匹配 | 停止。该 enrollment 不属于目标集群，按操作者流程清理后再 join。 |\n| containerd 启动失败或 CRI 插件未加载 | 检查 `/etc/containerd/config.toml`（v3）和 `journalctl -u containerd`；不得回退到旧 2.2.3 配置。 |\n| Calico Pod 不 Ready | 检查 `kubectl -n kube-system get pods -o wide`、Calico 日志、Pod CIDR 是否为 `10.244.0.0/16`；不要删除 master taint 来代替排查。 |\n| 测试镜像拉取失败 | 记录网络/镜像仓库错误；不要改成 `latest` 或跳过跨节点网络检查来宣告通过。 |",
+      "excerpt_sha256": "ade42b948b4b47612af392160296e398494111acb032a967a5598a9874b3e48f",
+      "id": "calico-not-ready-troubleshoot",
+      "line_end": 174,
+      "line_start": 167,
+      "rollback": "Restore the identified networking fault before retrying the release.",
+      "signals": [
+        "kubectl get pods -o wide",
+        "Calico logs",
+        "pod CIDR",
+        "do not remove taint"
+      ],
+      "source": {
+        "id": "stage1-runbook",
+        "line_count": 189,
+        "path": "docs/stage1-runbook.md",
+        "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+        "sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+        "snapshot": "sources/stage1-runbook.md",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "title": "阶段 1 运行与验收说明（runbook）"
+      },
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "source_id": "stage1-runbook",
+      "source_path": "docs/stage1-runbook.md",
+      "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+      "tags": [
+        "calico",
+        "node-not-ready",
+        "troubleshooting"
+      ],
+      "title": "Calico 不 Ready 的只读排查"
+    }
+  ],
+  "root": "C:\\Users\\MYT\\Documents\\Codex\\2026-11-12\\https-github-com-hey-mmm-full-3\\work\\k8s-change-guard\\knowledge",
+  "sources": {
+    "drills": {
+      "id": "drills",
+      "line_count": 186,
+      "path": "docs/drills.md",
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+      "snapshot": "sources/drills.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "title": "Demo 故障演练手册（runbook）"
+    },
+    "fault-review": {
+      "id": "fault-review",
+      "line_count": 22,
+      "path": "docs/fault-review.md",
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+      "snapshot": "sources/fault-review.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "title": "故障演练验收与复盘"
+    },
+    "stage1-runbook": {
+      "id": "stage1-runbook",
+      "line_count": 189,
+      "path": "docs/stage1-runbook.md",
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+      "snapshot": "sources/stage1-runbook.md",
+      "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+      "title": "阶段 1 运行与验收说明（runbook）"
+    }
+  }
+}

@@ -88,7 +88,7 @@ deepseek_model: deepseek-chat
 deepseek_timeout_seconds: 30
 knowledge_dir: /opt/change-guard/current/knowledge
 
-# Post-deploy verifier (`python -m change_guard.postdeploy verify ...`).
+# Post-deploy verifier (`change-guard postdeploy verify ...`, read-only).
 argocd_namespace: argocd
 argo_application: demo
 # container_name: demo

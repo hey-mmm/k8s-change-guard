@@ -10,20 +10,21 @@
       - change_guard_arch in ['amd64', 'arm64']
     fail_msg: "Only amd64 and arm64 are supported by the pinned release assets."
 
-- name: Install runtime, venv, YAML/requests and bubblewrap packages
+# python3 is Ansible's remote interpreter, not a change-guard runtime.  The
+# service, token helper, CLI and packaging helper are one static Go binary.
+- name: Install runtime packages and the single-binary prerequisites
   ansible.builtin.apt:
     name:
       - bubblewrap
       - ca-certificates
       - curl
+      - git
       - gzip
+      - netcat-openbsd
+      - openssh-client
       - python3
-      - python3-pip
-      - python3-requests
-      - python3-setuptools
-      - python3-venv
-      - python3-yaml
       - tar
+      - util-linux
     state: present
     update_cache: true
     cache_valid_time: 3600

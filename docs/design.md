@@ -18,7 +18,10 @@ GitHub PAT 限定项目一仓库：Contents/Pull requests/Issues 只读，Commit
 
 ## 不执行 PR 代码
 
-程序始终来自已安装的受信发布。GitHub 候选树必须匹配精确提交，blob 校验 Git 对象 ID，拒绝 traversal、symlink、submodule、超量数据与未知路径。只将 Chart 和 values 数据物化到临时目录。
+程序始终来自已安装的受信发布：一个静态 Go 二进制加只读 knowledge bundle，不依赖
+Python/venv/pip。GitHub 候选树必须匹配精确提交，blob 校验 Git 对象 ID，拒绝
+traversal、symlink、submodule、超量数据与未知路径。只将 Chart 和 values 数据物化到
+临时目录。
 
 Helm 在 Linux bubblewrap 内运行：隔离网络、PID、用户、挂载，清空环境与 Helm 插件/registry/kubeconfig；只挂只读系统运行库、固定 Helm 二进制和候选数据；有限时、文件输出与内存约束。不使用依赖下载、post-renderer 或候选命令。hook 不能从检查集合中省略，最终全部拒绝；动态/环境相关模板默认拒绝。
 
