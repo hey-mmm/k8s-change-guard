@@ -770,11 +770,7 @@ def _check_metrics(
         return _check_result("metrics", "fail", "metrics provider returned an invalid result")
     metrics = evidence.get("metrics") if isinstance(evidence.get("metrics"), Mapping) else {}
     errors = [str(item) for item in (evidence.get("errors") or []) if isinstance(item, (str, int, float))]
-    relevant_errors = [
-        item
-        for item in errors
-        if any(term in item.lower() for term in ("prometheus", "metric", "query", "alert", "memory", "p95", "error ratio"))
-    ]
+    relevant_errors = errors
     request_rate = _finite(metrics.get("request_rate"))
     error_ratio = _finite(metrics.get("error_ratio"))
     p95 = _finite(metrics.get("p95_seconds"))
@@ -826,6 +822,7 @@ def _check_metrics(
 def _failure_result(
     *,
     expected_sha: str,
+    expected_app_sha: str,
     expected_image: str,
     checks: Sequence[Mapping[str, Any]],
     started_at: int,
@@ -839,6 +836,7 @@ def _failure_result(
         "verifier": "change-guard-postdeploy",
         "status": "failed",
         "expected_sha": expected_sha,
+        "expected_app_sha": expected_app_sha,
         "expected_image": expected_image,
         "checks": list(checks),
         "recommendation": {
@@ -861,6 +859,7 @@ def verify_deployment(
     expected_image: str | None = None,
     *,
     report: Mapping[str, Any] | None = None,
+    expected_app_sha: str | None = None,
     kubectl_runner: Callable[[Sequence[str], int], Any] | None = None,
     http_get: Callable[[str, int], tuple[int, bytes]] | None = None,
     metrics_provider: Callable[[dict], dict] | None = None,
@@ -876,6 +875,9 @@ def verify_deployment(
         cfg = validate_config(config)
         if not isinstance(expected_sha, str) or not _SHA_RE.fullmatch(expected_sha):
             raise PostDeploySetupError("expected_sha must be a hexadecimal Git commit id")
+        app_sha = expected_sha if expected_app_sha is None else expected_app_sha
+        if not isinstance(app_sha, str) or not _SHA_RE.fullmatch(app_sha):
+            raise PostDeploySetupError("expected_app_sha must be a hexadecimal image source commit id")
         if expected_image is None and report is not None:
             expected_image = expected_image_from_report(report, cfg)
         if expected_image is None:
@@ -915,7 +917,7 @@ def verify_deployment(
             ),
             run_check("pods", lambda: _check_pods(cfg, image, runner)),
             run_check("endpoints", lambda: _check_endpoints(cfg, runner)),
-            run_check("http", lambda: _check_http(cfg, expected_sha, getter)),
+            run_check("http", lambda: _check_http(cfg, app_sha, getter)),
         ]
 
     while attempts < max_attempts:
@@ -932,6 +934,7 @@ def verify_deployment(
         finished_at = _now(clock)
         return _failure_result(
             expected_sha=expected_sha,
+            expected_app_sha=app_sha,
             expected_image=image,
             checks=checks,
             started_at=started_at,
@@ -960,6 +963,7 @@ def verify_deployment(
     if metric_check.get("status") != "pass":
         return _failure_result(
             expected_sha=expected_sha,
+            expected_app_sha=app_sha,
             expected_image=image,
             checks=checks,
             started_at=started_at,
@@ -970,6 +974,7 @@ def verify_deployment(
         "verifier": "change-guard-postdeploy",
         "status": "ok",
         "expected_sha": expected_sha,
+        "expected_app_sha": app_sha,
         "expected_image": image,
         "checks": checks,
         "observation": metric_check.get("evidence"),
@@ -1059,6 +1064,7 @@ def build_parser() -> argparse.ArgumentParser:
     verify_parser = subparsers.add_parser("verify", help="verify Argo, Deployment, Pods, HTTP and metrics")
     verify_parser.add_argument("--config", required=True, help="YAML configuration")
     verify_parser.add_argument("--expected-sha", required=True, help="exact Git commit that Argo should sync")
+    verify_parser.add_argument("--expected-app-sha", help="image source commit exposed by /version; defaults to --expected-sha")
     verify_parser.add_argument("--expected-image", help="exact repository@sha256 digest")
     verify_parser.add_argument("--report", help="change-guard evaluation report JSON (for the expected image)")
     verify_parser.add_argument("--output", help="write JSON atomically instead of stdout")
@@ -1083,6 +1089,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.expected_sha,
             args.expected_image,
             report=report,
+            expected_app_sha=args.expected_app_sha,
         )
         _write_json(args.output, result)
         if result.get("status") == "ok":

@@ -1,0 +1,10 @@
+[Unit]
+Description=Renew change-guard token every six hours
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=6h
+Unit=change-guard-token-renew.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,16 @@
+[Unit]
+Description=Renew fixed read-only change-guard Kubernetes identity
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 /usr/local/lib/change-guard/renew-service-token.py
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/etc/change-guard
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+TimeoutStartSec=45

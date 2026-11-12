@@ -1,0 +1,114 @@
+---
+# The target never gets an administrator kubeconfig.  RBAC is applied and the
+# short-lived service token is minted on the controller using the operator's
+# bootstrap credential.  `ansible/rotate-token.yml` forces a fresh TokenRequest;
+# an operator/CI cron should run it before the explicit TTL is reached.
+- name: Require a sane TokenRequest duration
+  ansible.builtin.assert:
+    that:
+      - change_guard_token_ttl is match('^[1-9][0-9]*[smh]$')
+      - change_guard_token_refresh_before_seconds is integer
+      - change_guard_token_refresh_before_seconds > 0
+    fail_msg: "Set an explicit short TokenRequest TTL such as 12h."
+
+- name: Inspect the existing service kubeconfig
+  ansible.builtin.stat:
+    path: "{{ change_guard_config_dir }}/kubeconfig"
+  register: change_guard_kubeconfig_stat
+
+- name: Check remaining token lifetime when a kubeconfig already exists
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_python }}"
+      - /usr/local/lib/change-guard/check-token-expiry.py
+      - "{{ change_guard_config_dir }}/kubeconfig"
+      - "--min-remaining"
+      - "{{ change_guard_token_refresh_before_seconds }}"
+  when:
+    - change_guard_kubeconfig_stat.stat.exists
+    - not change_guard_force_token_rotation
+  register: change_guard_token_expiry
+  changed_when: false
+  failed_when: change_guard_token_expiry.rc not in [0, 1]
+
+- name: Decide whether a TokenRequest is needed
+  ansible.builtin.set_fact:
+    change_guard_need_token: >-
+      {{
+        (not change_guard_kubeconfig_stat.stat.exists)
+        or change_guard_force_token_rotation
+        or (change_guard_token_expiry.rc | default(0)) == 1
+      }}
+
+- name: Read the controller bootstrap cluster endpoint and CA
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_controller_kubectl }}"
+      - "--kubeconfig={{ change_guard_bootstrap_kubeconfig }}"
+      - config
+      - view
+      - --raw
+      - --minify
+      - -o
+      - json
+  delegate_to: localhost
+  become: false
+  register: change_guard_bootstrap_config
+  changed_when: false
+  no_log: true
+  when: change_guard_need_token | bool
+
+- name: Parse bootstrap cluster facts
+  ansible.builtin.set_fact:
+    change_guard_bootstrap_json: "{{ change_guard_bootstrap_config.stdout | from_json }}"
+  when: change_guard_need_token | bool
+
+- name: Require a CA and server for the service kubeconfig
+  ansible.builtin.assert:
+    that:
+      - change_guard_bootstrap_json.clusters | length > 0
+      - change_guard_bootstrap_json.clusters[0].cluster.server is string
+      - change_guard_bootstrap_json.clusters[0].cluster['certificate-authority-data'] is string
+    fail_msg: "The bootstrap kubeconfig must contain a server and certificate-authority-data."
+  when: change_guard_need_token | bool
+
+- name: Mint an explicitly expiring TokenRequest for the service account
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_controller_kubectl }}"
+      - "--kubeconfig={{ change_guard_bootstrap_kubeconfig }}"
+      - -n
+      - change-guard
+      - create
+      - token
+      - change-guard
+      - "--duration={{ change_guard_token_ttl }}"
+  delegate_to: localhost
+  become: false
+  register: change_guard_token_request
+  changed_when: true
+  no_log: true
+  when: change_guard_need_token | bool
+
+- name: Validate the minted token
+  ansible.builtin.assert:
+    that:
+      - change_guard_token_request.stdout | trim | length > 20
+    fail_msg: "TokenRequest returned an empty token."
+  when: change_guard_need_token | bool
+
+- name: Install the short-lived service kubeconfig atomically (0600)
+  ansible.builtin.copy:
+    content: "{{ lookup('ansible.builtin.template', 'kubeconfig.j2') }}"
+    dest: "{{ change_guard_config_dir }}/kubeconfig"
+    owner: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    mode: "0600"
+  notify: restart change-guard
+  no_log: true
+  when: change_guard_need_token | bool
+
+- name: Record reusable token decision
+  ansible.builtin.debug:
+    msg: "Reusing an unexpired TokenRequest kubeconfig; run ansible/rotate-token.yml before TTL expiry."
+  when: not change_guard_need_token | bool

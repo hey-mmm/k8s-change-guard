@@ -1,0 +1,73 @@
+[Unit]
+Description=k8s change guard (GitHub release gate)
+Documentation=https://github.com/hey-mmm/k8s-change-guard
+After=network-online.target
+Wants=network-online.target
+ConditionPathIsReadWrite={{ change_guard_state_dir }}
+
+[Service]
+Type=simple
+User={{ change_guard_user }}
+Group={{ change_guard_group }}
+WorkingDirectory={{ change_guard_current_link }}
+ExecStartPre=/usr/bin/test -x {{ change_guard_current_link }}/venv/bin/python
+ExecStart={{ change_guard_current_link }}/venv/bin/python -m change_guard.daemon --config {{ change_guard_config_dir }}/config.yaml
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-{{ change_guard_config_dir }}/proxy.env
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=60
+TimeoutStopSec=45
+KillMode=mixed
+SyslogIdentifier=change-guard
+StandardOutput=journal
+StandardError=journal
+
+StateDirectory=change-guard
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+InaccessiblePaths=/root /home
+ReadOnlyPaths={{ change_guard_config_dir }} {{ change_guard_root }}
+ReadWritePaths={{ change_guard_state_dir }}
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+# bubblewrap --unshare-all creates user, mount, network, PID, IPC, UTS and
+# (when possible) cgroup namespaces.  RestrictNamespaces=~user ... (or a
+# positive list that omits any of them) makes bwrap fail before Helm runs, so
+# namespace creation must remain available to the unprivileged service user.
+RestrictNamespaces=false
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+# bubblewrap must be able to create user/mount/net/pid namespaces and mount a
+# temporary root.  The general service filter remains in force.
+SystemCallFilter=@system-service mount umount2 pivot_root unshare setns clone clone3 chroot setuid setgid
+# Go-based helpers (helm/kubectl) reserve a large *virtual* address space and
+# start several runtime threads.  Do not cap RLIMIT_AS and keep NPROC/Tasks
+# high enough for Go; MemoryMax is a cgroup limit on resident memory, which does
+# not count Go's unused virtual reservations.
+LimitNOFILE=8192
+LimitNPROC=8192
+TasksMax=8192
+LimitCORE=0
+MemoryHigh=1536M
+MemoryMax=2G
+
+[Install]
+WantedBy=multi-user.target

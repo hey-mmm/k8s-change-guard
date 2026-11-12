@@ -1,0 +1,98 @@
+---
+- name: Require a Debian/Ubuntu host for the pinned package names
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == "Debian"
+    fail_msg: "This role currently supports Debian/Ubuntu hosts only; adapt package names explicitly."
+
+- name: Require a literal release version (no range or shell metacharacters)
+  ansible.builtin.assert:
+    that:
+      - change_guard_version is string
+      - change_guard_version is match('^[0-9]+\\.[0-9]+\\.[0-9]+([.-][A-Za-z0-9]+)?$')
+    fail_msg: "change_guard_version must be an explicit immutable version."
+
+- name: Require a trusted artifact SHA-256
+  ansible.builtin.assert:
+    that:
+      - change_guard_artifact_checksum is string
+      - change_guard_artifact_checksum is match('^[0-9a-f]{64}$')
+    fail_msg: "Set change_guard_artifact_checksum to the SHA-256 of the trusted tarball."
+
+- name: Check whether Helm and kubectl are already preinstalled
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - "{{ change_guard_helm_bin }}"
+    - "{{ change_guard_kubectl_bin }}"
+  register: change_guard_tool_stats
+
+- name: Require pinned checksums only for binaries that must be downloaded
+  ansible.builtin.assert:
+    that:
+      - (change_guard_tool_stats.results[0].stat.exists and change_guard_tool_stats.results[0].stat.executable)
+        or change_guard_helm_checksum is match('^[0-9a-f]{64}$')
+      - (change_guard_tool_stats.results[1].stat.exists and change_guard_tool_stats.results[1].stat.executable)
+        or change_guard_kubectl_checksum is match('^[0-9a-f]{64}$')
+    fail_msg: >-
+      A missing Helm/kubectl needs a pinned SHA-256 checksum.  Preinstalled,
+      executable binaries are used as-is and are never replaced by an older
+      pinned download.
+
+- name: Check the trusted artifact exists and hash it on the controller
+  ansible.builtin.stat:
+    path: "{{ change_guard_artifact }}"
+    checksum_algorithm: sha256
+    get_checksum: true
+  delegate_to: localhost
+  become: false
+  register: change_guard_artifact_stat
+
+- name: Require the controller artifact to match the trusted SHA-256
+  ansible.builtin.assert:
+    that:
+      - change_guard_artifact_stat.stat.isreg | default(false)
+      - change_guard_artifact_stat.stat.checksum | default('') == change_guard_artifact_checksum
+    fail_msg: "The trusted artifact is missing or its SHA-256 does not match."
+
+- name: Check controller-side credential sources exist
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - "{{ change_guard_github_token_src }}"
+    - "{{ change_guard_deepseek_token_src }}"
+    - "{{ change_guard_bootstrap_kubeconfig }}"
+  delegate_to: localhost
+  become: false
+  register: change_guard_credential_stats
+
+- name: Fail when trusted inputs are missing
+  ansible.builtin.assert:
+    that:
+      - change_guard_artifact_stat.stat.isreg | default(false)
+      - item.stat.isreg | default(false)
+    fail_msg: "A trusted artifact or controller credential file is missing."
+  loop: "{{ change_guard_credential_stats.results }}"
+
+- name: Check controller kubectl is available to the operator (not the service)
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_controller_kubectl }}"
+      - version
+      - --client=true
+  delegate_to: localhost
+  become: false
+  changed_when: false
+
+- name: Read unprivileged user-namespace support when the sysctl exists
+  ansible.builtin.slurp:
+    src: /proc/sys/kernel/unprivileged_userns_clone
+  register: change_guard_userns
+  failed_when: false
+  changed_when: false
+
+- name: Require unprivileged user namespaces for bubblewrap
+  ansible.builtin.assert:
+    that:
+      - change_guard_userns.content is not defined or (change_guard_userns.content | b64decode | trim) in ['1', 'Y']
+    fail_msg: "bubblewrap needs unprivileged user namespaces; enable kernel.unprivileged_userns_clone or use a kernel with them enabled."

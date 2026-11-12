@@ -1,0 +1,17 @@
+---
+# Explicit short-lived service-account token rotation.
+#
+# Run every few hours (for example from the operator's CI cron):
+#   ansible-playbook -i ansible/inventory.example.ini ansible/rotate-token.yml
+#
+# This re-runs the idempotent role with forced rotation, so the service receives
+# a new TokenRequest token with an explicit TTL.  The service itself never holds
+# bootstrap/admin credentials and cannot mint its own token.
+- name: Rotate the change-guard kubeconfig token
+  hosts: change_guard
+  become: true
+  roles:
+    - role: change_guard
+      vars:
+        change_guard_force_token_rotation: true
+  tags: [token]

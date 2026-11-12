@@ -1,0 +1,186 @@
+---
+- name: Flush pending restarts before verification
+  ansible.builtin.meta: flush_handlers
+
+- name: Verify the service is active
+  ansible.builtin.command:
+    argv: [systemctl, is-active, "{{ change_guard_service_name }}"]
+  register: change_guard_service_state
+  changed_when: false
+  failed_when: change_guard_service_state.rc != 0 or (change_guard_service_state.stdout | trim) != 'active'
+
+- name: Verify the service account is a system user without a login shell
+  ansible.builtin.command:
+    argv: [getent, passwd, "{{ change_guard_user }}"]
+  register: change_guard_service_user
+  changed_when: false
+  failed_when: >-
+    change_guard_service_user.rc != 0
+    or '/usr/sbin/nologin' not in change_guard_service_user.stdout
+
+- name: Stat sensitive configuration files
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - "{{ change_guard_config_dir }}/github-token"
+    - "{{ change_guard_config_dir }}/deepseek-token"
+    - "{{ change_guard_config_dir }}/kubeconfig"
+    - "{{ change_guard_config_dir }}/proxy.env"
+  register: change_guard_sensitive_stats
+
+- name: Enforce 0600 on every credential file
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+      - item.stat.mode == '0600'
+      - item.stat.pw_name == change_guard_user
+      - item.stat.gr_name == change_guard_group
+    fail_msg: "A credential file is missing or has unsafe ownership/permissions."
+  loop: "{{ change_guard_sensitive_stats.results }}"
+
+- name: Verify the installed daemon imports and exposes its CLI
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_current_link }}/venv/bin/python"
+      - -m
+      - change_guard.daemon
+      - --help
+  changed_when: false
+
+- name: Verify the short-lived kubeconfig has not expired
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_python }}"
+      - /usr/local/lib/change-guard/check-token-expiry.py
+      - "{{ change_guard_config_dir }}/kubeconfig"
+      - --min-remaining
+      - "60"
+  changed_when: false
+  register: change_guard_token_check
+
+- name: Fail closed when the service token is expired or unreadable
+  ansible.builtin.assert:
+    that:
+      - change_guard_token_check.rc == 0
+    fail_msg: "The change-guard TokenRequest kubeconfig is expired or unreadable."
+
+- name: Verify read-only node access
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_kubectl_bin }}"
+      - "--kubeconfig={{ change_guard_config_dir }}/kubeconfig"
+      - auth
+      - can-i
+      - get
+      - nodes
+  register: change_guard_can_nodes
+  changed_when: false
+  failed_when: change_guard_can_nodes.rc != 0 or (change_guard_can_nodes.stdout | trim) != 'yes'
+
+- name: Verify cluster-wide pod listing for capacity accounting
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_kubectl_bin }}"
+      - "--kubeconfig={{ change_guard_config_dir }}/kubeconfig"
+      - auth
+      - can-i
+      - list
+      - pods
+      - --all-namespaces
+  register: change_guard_can_pods
+  changed_when: false
+  failed_when: change_guard_can_pods.rc != 0 or (change_guard_can_pods.stdout | trim) != 'yes'
+
+- name: Verify separate Argo CD application read access
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_kubectl_bin }}"
+      - "--kubeconfig={{ change_guard_config_dir }}/kubeconfig"
+      - auth
+      - can-i
+      - get
+      - applications.argoproj.io
+      - "-n"
+      - "{{ change_guard_argocd_namespace }}"
+  register: change_guard_can_argo
+  changed_when: false
+  failed_when: change_guard_can_argo.rc != 0 or (change_guard_can_argo.stdout | trim) != 'yes'
+
+- name: Verify the service cannot read Secrets
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_kubectl_bin }}"
+      - "--kubeconfig={{ change_guard_config_dir }}/kubeconfig"
+      - auth
+      - can-i
+      - get
+      - secrets
+      - "-n"
+      - "{{ change_guard_namespace }}"
+  register: change_guard_can_secrets
+  changed_when: false
+  failed_when: change_guard_can_secrets.rc == 0 or (change_guard_can_secrets.stdout | trim) != 'no'
+
+- name: Verify the service cannot read Pod logs
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_kubectl_bin }}"
+      - "--kubeconfig={{ change_guard_config_dir }}/kubeconfig"
+      - auth
+      - can-i
+      - get
+      - pods
+      - "--subresource=log"
+      - "-n"
+      - "{{ change_guard_namespace }}"
+  register: change_guard_can_logs
+  changed_when: false
+  failed_when: change_guard_can_logs.rc == 0 or (change_guard_can_logs.stdout | trim) != 'no'
+
+- name: Verify the service cannot exec into Pods
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_kubectl_bin }}"
+      - "--kubeconfig={{ change_guard_config_dir }}/kubeconfig"
+      - auth
+      - can-i
+      - create
+      - pods
+      - "--subresource=exec"
+      - "-n"
+      - "{{ change_guard_namespace }}"
+  register: change_guard_can_exec
+  changed_when: false
+  failed_when: change_guard_can_exec.rc == 0 or (change_guard_can_exec.stdout | trim) != 'no'
+
+- name: Verify the service cannot write workloads
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_kubectl_bin }}"
+      - "--kubeconfig={{ change_guard_config_dir }}/kubeconfig"
+      - auth
+      - can-i
+      - create
+      - deployments
+      - "-n"
+      - "{{ change_guard_namespace }}"
+  register: change_guard_can_write
+  changed_when: false
+  failed_when: change_guard_can_write.rc == 0 or (change_guard_can_write.stdout | trim) != 'no'
+
+- name: Verify the service cannot modify the Argo CD application
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_kubectl_bin }}"
+      - "--kubeconfig={{ change_guard_config_dir }}/kubeconfig"
+      - auth
+      - can-i
+      - patch
+      - applications.argoproj.io
+      - "-n"
+      - "{{ change_guard_argocd_namespace }}"
+  register: change_guard_can_patch_argo
+  changed_when: false
+  failed_when: >-
+    change_guard_can_patch_argo.rc == 0
+    or (change_guard_can_patch_argo.stdout | trim) != 'no'

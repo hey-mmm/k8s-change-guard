@@ -62,6 +62,17 @@ deployment: demo
 release_name: demo
 allowed_image_repository: ghcr.io/hey-mmm/observability-demo
 require_digest: true
+
+# Trusted operator pin for the exact Git blob bytes of charts/demo/.
+# Digest = sha256(canonical JSON {path below charts/demo/: sha256(bytes)}).
+# CRLF/LF differences change the digest; bytes are read from the Git blob API,
+# never from a checkout.  A candidate chart that does not match is hard BLOCK
+# and cannot be approved.  Updating a template requires a separate, trusted
+# operator change to this allowlist (or the Ansible variable rendered below).
+# gitops/demo/values.yaml is intentionally not part of this pin and remains
+# subject to all normal rules.  A missing allowlist makes evaluation ERROR.
+approved_chart_digest:
+  - "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
 render_timeout_seconds: 60
 render_output_limit_bytes: 4194304
 sandbox_memory_bytes: 2147483648

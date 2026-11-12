@@ -1,0 +1,126 @@
+---
+- name: Map host architecture to release asset architecture
+  ansible.builtin.set_fact:
+    change_guard_arch: >-
+      {{ {'x86_64': 'amd64', 'aarch64': 'arm64', 'arm64': 'arm64'}.get(ansible_architecture, '') }}
+
+- name: Refuse unsupported architectures
+  ansible.builtin.assert:
+    that:
+      - change_guard_arch in ['amd64', 'arm64']
+    fail_msg: "Only amd64 and arm64 are supported by the pinned release assets."
+
+- name: Install runtime, venv, YAML/requests and bubblewrap packages
+  ansible.builtin.apt:
+    name:
+      - bubblewrap
+      - ca-certificates
+      - curl
+      - gzip
+      - python3
+      - python3-pip
+      - python3-requests
+      - python3-setuptools
+      - python3-venv
+      - python3-yaml
+      - tar
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Inspect preinstalled Helm and kubectl binaries
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - "{{ change_guard_helm_bin }}"
+    - "{{ change_guard_kubectl_bin }}"
+  register: change_guard_installed_tools
+
+- name: Verify a preinstalled Helm is usable
+  ansible.builtin.command:
+    argv: ["{{ change_guard_helm_bin }}", version, --short]
+  changed_when: false
+  failed_when: >-
+    change_guard_installed_tools.results[0].stat.exists
+    and (change_guard_preinstalled_helm.rc != 0 or 'v3.' not in change_guard_preinstalled_helm.stdout)
+  register: change_guard_preinstalled_helm
+  when:
+    - change_guard_installed_tools.results[0].stat.exists
+    - change_guard_installed_tools.results[0].stat.executable
+
+- name: Verify a preinstalled kubectl is usable
+  ansible.builtin.command:
+    argv: ["{{ change_guard_kubectl_bin }}", version, --client=true]
+  changed_when: false
+  failed_when: >-
+    change_guard_installed_tools.results[1].stat.exists
+    and (change_guard_preinstalled_kubectl.rc != 0 or 'v1.' not in change_guard_preinstalled_kubectl.stdout)
+  register: change_guard_preinstalled_kubectl
+  when:
+    - change_guard_installed_tools.results[1].stat.exists
+    - change_guard_installed_tools.results[1].stat.executable
+
+# Only download when there is no usable preinstalled binary.  This preserves a
+# newer operator/distro kubectl or Helm and avoids replacing it with an older
+# "pinned" version.
+- name: Download pinned Helm archive as a fallback
+  ansible.builtin.get_url:
+    url: "https://get.helm.sh/helm-v{{ change_guard_helm_version }}-linux-{{ change_guard_arch }}.tar.gz"
+    dest: "/tmp/helm-v{{ change_guard_helm_version }}-linux-{{ change_guard_arch }}.tar.gz"
+    checksum: "sha256:{{ change_guard_helm_checksum }}"
+    mode: "0600"
+    force: true
+  when: >-
+    not (change_guard_installed_tools.results[0].stat.exists
+         and change_guard_installed_tools.results[0].stat.executable)
+
+- name: Extract pinned Helm archive as a fallback
+  ansible.builtin.unarchive:
+    src: "/tmp/helm-v{{ change_guard_helm_version }}-linux-{{ change_guard_arch }}.tar.gz"
+    dest: "/tmp/helm-v{{ change_guard_helm_version }}"
+    remote_src: true
+    creates: "/tmp/helm-v{{ change_guard_helm_version }}/linux-{{ change_guard_arch }}/helm"
+  when: >-
+    not (change_guard_installed_tools.results[0].stat.exists
+         and change_guard_installed_tools.results[0].stat.executable)
+
+- name: Install pinned Helm binary as a fallback
+  ansible.builtin.copy:
+    src: "/tmp/helm-v{{ change_guard_helm_version }}/linux-{{ change_guard_arch }}/helm"
+    dest: "{{ change_guard_helm_bin }}"
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true
+  notify: restart change-guard
+  when: >-
+    not (change_guard_installed_tools.results[0].stat.exists
+         and change_guard_installed_tools.results[0].stat.executable)
+
+- name: Download pinned kubectl binary as a fallback
+  ansible.builtin.get_url:
+    url: "https://dl.k8s.io/release/v{{ change_guard_kubectl_version }}/bin/linux/{{ change_guard_arch }}/kubectl"
+    dest: "{{ change_guard_kubectl_bin }}"
+    checksum: "sha256:{{ change_guard_kubectl_checksum }}"
+    owner: root
+    group: root
+    mode: "0755"
+    force: true
+  when: >-
+    not (change_guard_installed_tools.results[1].stat.exists
+         and change_guard_installed_tools.results[1].stat.executable)
+
+- name: Verify the selected Helm is executable
+  ansible.builtin.command:
+    argv: ["{{ change_guard_helm_bin }}", version, --short]
+  changed_when: false
+
+- name: Verify the selected kubectl is executable
+  ansible.builtin.command:
+    argv: ["{{ change_guard_kubectl_bin }}", version, --client=true]
+  changed_when: false
+
+- name: Verify bubblewrap is present
+  ansible.builtin.command:
+    argv: [/usr/bin/bwrap, --version]
+  changed_when: false

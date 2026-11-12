@@ -1,0 +1,14 @@
+---
+# Deploy the trusted k8s-change-guard service.
+#
+# Run from the repository root:
+#   ansible-playbook -i ansible/inventory.example.ini ansible/site.yml
+#
+# The target host never receives an administrator kubeconfig.  Bootstrap
+# credentials live on the controller and are used only to apply RBAC and to
+# mint a short-lived TokenRequest token for the service.
+- name: Deploy k8s change guard
+  hosts: change_guard
+  become: true
+  roles:
+    - role: change_guard

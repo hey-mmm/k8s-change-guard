@@ -1,0 +1,209 @@
+---
+- name: Compute the immutable release directory
+  ansible.builtin.set_fact:
+    change_guard_release_dir: "{{ change_guard_releases_dir }}/{{ change_guard_version }}"
+
+- name: Refuse unsafe release paths
+  ansible.builtin.assert:
+    that:
+      - change_guard_release_dir.startswith(change_guard_root + '/releases/')
+      - "'..' not in change_guard_release_dir"
+    fail_msg: "Refusing a release path outside the trusted release root."
+
+- name: Inspect an existing release marker and its recorded artifact digest
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - "{{ change_guard_release_dir }}/.complete"
+    - "{{ change_guard_release_dir }}/.artifact.sha256"
+    - "{{ change_guard_release_dir }}/venv/bin/change-guard"
+  register: change_guard_release_markers
+
+- name: Read the digest recorded for an existing release
+  ansible.builtin.slurp:
+    src: "{{ change_guard_release_dir }}/.artifact.sha256"
+  register: change_guard_release_digest_file
+  when: change_guard_release_markers.results[1].stat.exists
+
+- name: Decide whether the version is already installed
+  ansible.builtin.set_fact:
+    change_guard_release_complete: >-
+      {{
+        change_guard_release_markers.results[0].stat.exists
+        and change_guard_release_markers.results[2].stat.exists
+      }}
+    change_guard_release_recorded_digest: >-
+      {{
+        (change_guard_release_digest_file.content | b64decode | trim)
+        if change_guard_release_digest_file.content is defined else ''
+      }}
+
+# A version is immutable.  If the same version directory already exists with a
+# different artifact digest, fail instead of silently continuing to run the old
+# content (or overwriting a completed release).
+- name: Reject content drift for an already completed version
+  ansible.builtin.assert:
+    that:
+      - change_guard_release_recorded_digest == change_guard_artifact_checksum
+    fail_msg: >-
+      Release {{ change_guard_version }} is already installed with a different
+      artifact SHA-256.  Bump change_guard_version; a mutable same-version
+      release is refused.
+  when: change_guard_release_complete | bool
+
+- name: Install the trusted source and virtualenv once per version
+  when: not change_guard_release_complete | bool
+  block:
+    - name: Remove an incomplete prior release directory (fixed trusted path)
+      ansible.builtin.file:
+        path: "{{ change_guard_release_dir }}"
+        state: absent
+
+    - name: Create the release directory
+      ansible.builtin.file:
+        path: "{{ change_guard_release_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    # copy.checksum is SHA-1 only in supported Ansible releases, so the SHA-256
+    # is verified explicitly on both sides instead.
+    - name: Copy the trusted tarball
+      ansible.builtin.copy:
+        src: "{{ change_guard_artifact }}"
+        dest: "/tmp/change-guard-{{ change_guard_version }}.tar.gz"
+        owner: root
+        group: root
+        mode: "0600"
+
+    - name: Hash the copied tarball on the host
+      ansible.builtin.stat:
+        path: "/tmp/change-guard-{{ change_guard_version }}.tar.gz"
+        checksum_algorithm: sha256
+        get_checksum: true
+      register: change_guard_copied_artifact
+
+    - name: Require the copied artifact SHA-256 to match
+      ansible.builtin.assert:
+        that:
+          - change_guard_copied_artifact.stat.checksum == change_guard_artifact_checksum
+        fail_msg: "The copied release artifact failed SHA-256 verification."
+
+    - name: Extract only the trusted tarball contents
+      ansible.builtin.unarchive:
+        src: "/tmp/change-guard-{{ change_guard_version }}.tar.gz"
+        dest: "{{ change_guard_release_dir }}"
+        remote_src: true
+        owner: root
+        group: root
+
+    - name: Create an isolated virtualenv with distro PyYAML/requests
+      ansible.builtin.command:
+        argv:
+          - "{{ change_guard_python }}"
+          - -m
+          - venv
+          - --system-site-packages
+          - "{{ change_guard_release_dir }}/venv"
+        creates: "{{ change_guard_release_dir }}/venv/bin/python"
+
+    # The target's distro setuptools is older than PEP 621, so a pip build of
+    # this pyproject would silently produce an empty UNKNOWN distribution.  A
+    # path entry is deterministic, makes the immutable directory importable
+    # from any working directory, and needs no build backend or network.
+    - name: Locate the virtualenv site-packages directory
+      ansible.builtin.command:
+        argv:
+          - "{{ change_guard_release_dir }}/venv/bin/python"
+          - -c
+          - "import site; print(site.getsitepackages()[0])"
+      register: change_guard_site_packages
+      changed_when: false
+
+    - name: Install a path entry for the immutable trusted package
+      ansible.builtin.copy:
+        content: "{{ change_guard_release_dir }}\n"
+        dest: "{{ change_guard_site_packages.stdout | trim }}/change_guard_release.pth"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Install the change-guard command wrapper without a build backend
+      ansible.builtin.copy:
+        content: |
+          #!/bin/sh
+          exec "{{ change_guard_release_dir }}/venv/bin/python" -m change_guard.cli "$@"
+        dest: "{{ change_guard_release_dir }}/venv/bin/change-guard"
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Mark the trusted package installed
+      ansible.builtin.file:
+        path: "{{ change_guard_release_dir }}/.package-installed"
+        state: touch
+        owner: root
+        group: root
+        mode: "0644"
+        modification_time: preserve
+        access_time: preserve
+
+    - name: Record the immutable artifact digest
+      ansible.builtin.copy:
+        content: "{{ change_guard_artifact_checksum }}\n"
+        dest: "{{ change_guard_release_dir }}/.artifact.sha256"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Mark the release complete
+      ansible.builtin.file:
+        path: "{{ change_guard_release_dir }}/.complete"
+        state: touch
+        owner: root
+        group: root
+        mode: "0644"
+        modification_time: preserve
+        access_time: preserve
+
+- name: Point the service at the immutable current release
+  ansible.builtin.file:
+    src: "{{ change_guard_release_dir }}"
+    dest: "{{ change_guard_current_link }}"
+    state: link
+    force: true
+    owner: root
+    group: root
+  notify: restart change-guard
+
+# Do not recursively chmod 0755: that would turn every source file into an
+# executable and is needlessly slow.  The tarball carries 0644 files and 0755
+# directories; assert that invariant instead.
+- name: Ensure release directories are traversable but not group/world writable
+  ansible.builtin.file:
+    path: "{{ change_guard_release_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Find accidentally executable trusted source files
+  ansible.builtin.command:
+    argv:
+      - find
+      - "{{ change_guard_release_dir }}/change_guard"
+      - "{{ change_guard_release_dir }}/knowledge"
+      - -type
+      - f
+      - -perm
+      - /111
+      - -print
+  register: change_guard_executable_sources
+  changed_when: false
+
+- name: Refuse executable trusted source files
+  ansible.builtin.assert:
+    that:
+      - change_guard_executable_sources.stdout | trim == ''
+    fail_msg: "Trusted Python/knowledge files must not be executable."

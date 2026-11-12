@@ -1,0 +1,6 @@
+---
+- name: restart change-guard
+  ansible.builtin.systemd:
+    name: "{{ change_guard_service_name }}"
+    daemon_reload: true
+    state: restarted

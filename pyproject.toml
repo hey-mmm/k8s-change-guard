@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "k8s-change-guard"
-version = "0.2.0"
+version = "0.2.2"
 description = "Fail-closed release evaluation kernel for the demo Kubernetes workload"
 requires-python = ">=3.10"
 dependencies = [

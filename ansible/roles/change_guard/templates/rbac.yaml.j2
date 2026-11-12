@@ -1,0 +1,111 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: change-guard
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: change-guard
+  namespace: change-guard
+automountServiceAccountToken: false
+---
+# The guard may inspect nodes to compute capacity.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: change-guard-node-reader
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+---
+# Pods in every namespace are needed to account for scheduled requests, but
+# logs and exec are deliberately absent.  Secrets are absent.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: change-guard-pod-reader
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: change-guard-node-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: change-guard-node-reader
+subjects:
+  - kind: ServiceAccount
+    name: change-guard
+    namespace: change-guard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: change-guard-pod-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: change-guard-pod-reader
+subjects:
+  - kind: ServiceAccount
+    name: change-guard
+    namespace: change-guard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: change-guard-demo-reader
+  namespace: {{ change_guard_namespace }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: change-guard-demo-reader
+  namespace: {{ change_guard_namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: change-guard-demo-reader
+subjects:
+  - kind: ServiceAccount
+    name: change-guard
+    namespace: change-guard
+---
+# Separate read-only Argo CD access for post-deploy verification.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: change-guard-argocd-reader
+  namespace: {{ change_guard_argocd_namespace }}
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["applications", "appprojects", "applicationsets"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: change-guard-argocd-reader
+  namespace: {{ change_guard_argocd_namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: change-guard-argocd-reader
+subjects:
+  - kind: ServiceAccount
+    name: change-guard
+    namespace: change-guard

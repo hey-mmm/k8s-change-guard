@@ -1,0 +1,17 @@
+---
+- name: Apply namespace, service account and least-privilege RBAC
+  ansible.builtin.command:
+    argv:
+      - "{{ change_guard_controller_kubectl }}"
+      - "--kubeconfig={{ change_guard_bootstrap_kubeconfig }}"
+      - apply
+      - -f
+      - "-"
+    stdin: "{{ lookup('ansible.builtin.template', 'rbac.yaml.j2') }}"
+  delegate_to: localhost
+  become: false
+  register: change_guard_rbac_apply
+  changed_when: >-
+    'created' in (change_guard_rbac_apply.stdout | lower)
+    or 'configured' in (change_guard_rbac_apply.stdout | lower)
+  failed_when: change_guard_rbac_apply.rc != 0

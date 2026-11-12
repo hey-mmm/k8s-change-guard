@@ -49,12 +49,14 @@ from . import ai as ai_module
 from . import evidence as evidence_module
 from . import github as github_module
 from . import renderer as renderer_module
+from . import __version__ as GUARD_VERSION
 from .engine import evaluate as engine_evaluate
 from .engine import RULE_VERSION
 
 LOGGER = logging.getLogger("change_guard.daemon")
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+POLICY_SCHEMA_VERSION = 1
 MAX_REPORT_BYTES = 8 * 1024 * 1024
 MAX_INDEX_BYTES = 4 * 1024 * 1024
 MAX_APPROVERS = 100
@@ -62,8 +64,68 @@ MAX_POLL_SECONDS = 3600
 DEFAULT_POLL_SECONDS = 30
 DEFAULT_EVIDENCE_TTL_SECONDS = 300
 STATUS_DETAIL_LIMIT = 140
+CHART_PATH_PREFIX = "charts/demo/"
+WORKFLOW_PATH_PREFIX = ".github/workflows/"
 _APPROVAL_EFFECTIVE_SKEW_SECONDS = 0  # approvals may not predate the report
 _SEVERITY_RANK = {"BLOCK": 3, "ERROR": 2, "REVIEW": 1}
+# Only these config keys participate in the report policy binding.  Credential
+# locations/values, state paths, and polling knobs are deliberately excluded:
+# changing them must not silently keep an old report valid, but they are not
+# policy decisions either.
+_POLICY_CONFIG_KEYS = (
+    "repository",
+    "base_branch",
+    "status_context",
+    "namespace",
+    "deployment",
+    "release_name",
+    "allowed_image_repository",
+    "require_digest",
+    "approvers",
+    "allow_fork_prs",
+    "ai_required",
+    "allow_pre_rendered",
+    "renderer_mode",
+    "approved_chart_digest",
+    "merge_required_ci",
+    "evidence_ttl_seconds",
+    "render_timeout_seconds",
+    "render_output_limit_bytes",
+    "sandbox_memory_bytes",
+    "sandbox_tmpfs_bytes",
+    "kube_version",
+    "kubeconfig",
+    "kubectl",
+    "helm",
+    "bwrap",
+    "knowledge_dir",
+    "deepseek_model",
+    "deepseek_url",
+    "deepseek_timeout_seconds",
+    "deepseek_total_timeout_seconds",
+    "deepseek_max_response_bytes",
+    "prometheus_url",
+    "demo_url",
+    "kubectl_timeout_seconds",
+    "prometheus_timeout_seconds",
+    "kubectl_max_output_bytes",
+    "prometheus_max_response_bytes",
+    "max_error_ratio",
+    "max_p95_seconds",
+    "memory_headroom_factor",
+    "low_traffic_rps",
+    "min_request_rate",
+    "observation_seconds",
+    "postdeploy_timeout_seconds",
+    "postdeploy_poll_seconds",
+    "require_pod_image_id",
+    "strict_image_id_digest",
+    "version_path",
+    "ready_path",
+    "argocd_namespace",
+    "argo_application",
+    "container_name",
+)
 _REDACT_KEY_PARTS = (
     "token",
     "secret",
@@ -221,6 +283,141 @@ def _atomic_write_json(path: Path, payload: Any, *, overwrite: bool) -> bool:
 
 def _sha256_json(value: Any) -> str:
     return hashlib.sha256(_canonical_json(value).encode("utf-8")).hexdigest()
+
+
+def _sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
+def chart_digest_from_files(files: Mapping[str, Any]) -> str:
+    """Digest the exact Git blob bytes under ``charts/demo/``.
+
+    The digest is ``sha256(canonical_json({relative_path: sha256(blob_bytes)}))``.
+    Paths are relative to ``charts/demo/``.  Bytes come directly from the Git
+    blob API, never from a checkout, so CRLF/LF conversion cannot make a
+    candidate look like the approved chart.  ``gitops/demo/values.yaml`` is
+    intentionally not part of this pin.
+    """
+
+    if not isinstance(files, Mapping):
+        raise DaemonError("renderer files must be a mapping")
+    hashes: dict[str, str] = {}
+    for path, content in files.items():
+        if not isinstance(path, str) or not path.startswith(CHART_PATH_PREFIX):
+            continue
+        relative = path[len(CHART_PATH_PREFIX) :]
+        parts = relative.split("/")
+        if not relative or any(part in {"", ".", ".."} for part in parts):
+            raise DaemonError("chart path is not a clean relative path")
+        if not isinstance(content, (bytes, bytearray)):
+            raise DaemonError("chart file content is not raw bytes")
+        hashes[relative] = _sha256_bytes(bytes(content))
+    return _sha256_json(hashes)
+
+
+def is_workflow_path(path: Any) -> bool:
+    if not isinstance(path, str):
+        return False
+    lowered = path.lower()
+    return lowered == WORKFLOW_PATH_PREFIX.rstrip("/") or lowered.startswith(WORKFLOW_PATH_PREFIX)
+
+
+def workflow_tree_signature(entries: Mapping[str, Any]) -> dict[str, list[str]]:
+    """Return the path/mode/kind/blob-id signature of workflow tree entries."""
+
+    if not isinstance(entries, Mapping):
+        raise DaemonError("tree entries must be a mapping")
+    signature: dict[str, list[str]] = {}
+    for path, entry in entries.items():
+        if not is_workflow_path(path):
+            continue
+        if isinstance(entry, Mapping):
+            mode = entry.get("mode")
+            kind = entry.get("kind")
+            sha = entry.get("sha")
+        else:
+            mode = getattr(entry, "mode", None)
+            kind = getattr(entry, "kind", None)
+            sha = getattr(entry, "sha", None)
+        signature[str(path)] = [str(mode), str(kind), str(sha)]
+    return signature
+
+
+def _normalized_digest_list(value: Any, *, field: str = "approved_chart_digest") -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        items = [value]
+    elif isinstance(value, (list, tuple)):
+        items = list(value)
+    else:
+        raise DaemonError(f"{field} must be a SHA-256 hex string or a list of them")
+    cleaned: list[str] = []
+    for item in items:
+        if not isinstance(item, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", item):
+            raise DaemonError(f"{field} entries must be 64-character SHA-256 hex strings")
+        lowered = item.lower()
+        if lowered not in cleaned:
+            cleaned.append(lowered)
+    return sorted(cleaned)
+
+
+def policy_config_snapshot(config: Mapping[str, Any]) -> dict[str, Any]:
+    """Return the public policy-relevant subset of a validated config.
+
+    Credential values and credential file locations are never included.  The
+    state directory, polling interval, and similar operational knobs are
+    excluded from the binding so they cannot be used to silently extend a
+    cached report's life.
+    """
+
+    if not isinstance(config, Mapping):
+        raise DaemonError("config must be a mapping")
+    snapshot: dict[str, Any] = {}
+    for key in _POLICY_CONFIG_KEYS:
+        if key not in config:
+            continue
+        value = config[key]
+        if key in {"approvers", "approved_chart_digest"}:
+            snapshot[key] = sorted(str(item) for item in value)
+        elif key == "merge_required_ci":
+            snapshot[key] = str(value)
+        else:
+            snapshot[key] = value
+    return snapshot
+
+
+def policy_digest(config: Mapping[str, Any]) -> str:
+    return _sha256_json(
+        {
+            "policy_schema_version": POLICY_SCHEMA_VERSION,
+            "config": policy_config_snapshot(config),
+        }
+    )
+
+
+def current_policy_binding(config: Mapping[str, Any]) -> dict[str, Any]:
+    """Bind a report to the running guard, rule engine, and policy config."""
+
+    return {
+        "guard_version": str(GUARD_VERSION),
+        "rule_version": str(RULE_VERSION),
+        "policy_schema_version": POLICY_SCHEMA_VERSION,
+        "policy_digest": policy_digest(config),
+    }
+
+
+def report_digest_matches(report: Mapping[str, Any]) -> bool:
+    if not isinstance(report, Mapping):
+        return False
+    digest = report.get("report_digest")
+    if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+        return False
+    try:
+        raw = _canonical_json({key: value for key, value in report.items() if key != "report_digest"})
+    except (TypeError, ValueError):
+        return False
+    return _sha256_bytes(raw.encode("utf-8")) == digest
 
 
 def _priority(decision: str) -> int:
@@ -454,6 +651,10 @@ def validate_config(config: Mapping[str, Any]) -> dict[str, Any]:
     if not isinstance(allowed_repo, str) or not allowed_repo.strip() or any(ch.isspace() for ch in allowed_repo):
         raise DaemonError("allowed_image_repository is invalid")
     value["allowed_image_repository"] = allowed_repo.strip()
+    # Trusted operator allowlist for the exact bytes of charts/demo.  A missing
+    # value does not crash config loading; evaluation reports ERROR and refuses
+    # to treat any candidate as approved (fail closed).
+    value["approved_chart_digest"] = _normalized_digest_list(value.get("approved_chart_digest"))
     for key in (
         "ai_required",
         "allow_fork_prs",
@@ -757,6 +958,8 @@ class ChangeGuardDaemon:
             report = self.store.read_report(evaluation_id)
         except Exception:
             return None
+        if report.get("schema_version") != SCHEMA_VERSION:
+            return None
         if report.get("head_sha") != pr.head_sha or report.get("base_sha") != current_base:
             return None
         expires_at = _split_time(report.get("expires_at"))
@@ -768,6 +971,33 @@ class ChangeGuardDaemon:
             return None
         if report.get("evaluation_id") != evaluation_id:
             return None
+        # A code upgrade, rule-engine upgrade, or trusted policy change must
+        # never reuse an old green report.  The binding is checked explicitly
+        # here instead of relying only on the evaluation id.
+        binding = current_policy_binding(self.config)
+        if report.get("policy_binding") != binding:
+            return None
+        if report.get("policy_digest") != binding["policy_digest"]:
+            return None
+        if report.get("guard_version") != binding["guard_version"]:
+            return None
+        if report.get("rule_version") != binding["rule_version"]:
+            return None
+        if not report_digest_matches(report):
+            return None
+        # Only success-eligible reports need these additional checks.  A cached
+        # BLOCK is safe to reuse and should not force expensive re-evaluation on
+        # every poll.
+        if report.get("decision") in {"PASS", "REVIEW"}:
+            changed_paths = report.get("changed_paths") if isinstance(report.get("changed_paths"), list) else []
+            if any(is_workflow_path(path) for path in changed_paths):
+                return None
+            context = report.get("context") if isinstance(report.get("context"), Mapping) else {}
+            if context.get("workflow_changed") is True or report.get("workflow_changed") is True:
+                return None
+            approved_chart_digests = self.config.get("approved_chart_digest") or []
+            if not approved_chart_digests or report.get("chart_digest") not in approved_chart_digests:
+                return None
         return report
 
     # -- evaluation ---------------------------------------------------------
@@ -838,6 +1068,9 @@ class ChangeGuardDaemon:
         images = self._deployment_images(new_resources)
         evidence_summary = self._evidence_summary(evidence)
         evidence_digest = _sha256_json(evidence_summary)
+        binding = current_policy_binding(self.config)
+        chart_digest = context.get("chart_digest")
+        workflow_changed = bool(context.get("workflow_changed"))
         trust = {
             "evidence_collected_at": collected_at,
             "evidence_digest": evidence_digest,
@@ -849,7 +1082,11 @@ class ChangeGuardDaemon:
             "base_tree_sha": candidate.base_snapshot.tree_sha,
             "head_tree_digest": candidate.head_snapshot.tree_digest,
             "base_tree_digest": candidate.base_snapshot.tree_digest,
-            "rule_version": result.get("rule_version", RULE_VERSION),
+            "rule_version": str(RULE_VERSION),
+            "chart_digest": chart_digest,
+            "workflow_changed": workflow_changed,
+            "guard_version": binding["guard_version"],
+            "policy_digest": binding["policy_digest"],
             "ai_status": ai_result.get("status") if isinstance(ai_result, dict) else None,
             "ai_model": ai_result.get("model") if isinstance(ai_result, dict) else None,
             "started_at": now_value,
@@ -864,6 +1101,7 @@ class ChangeGuardDaemon:
             "base_tree_sha": candidate.base_snapshot.tree_sha,
             "render_digest": result.get("render_digest"),
             "old_render_digest": result.get("old_render_digest"),
+            "policy_binding": binding,
             **trust,
         }
         evaluation_id = "ev-" + hashlib.sha256(_canonical_json(identity).encode("utf-8")).hexdigest()[:24]
@@ -901,16 +1139,26 @@ class ChangeGuardDaemon:
             "old_render_digest": result.get("old_render_digest"),
             "deployment_images": images,
             "decision": result.get("decision"),
+            "findings": list(result.get("findings", [])),
             "evaluated_at": result.get("evaluated_at", now_value),
             "expires_at": expires_at,
             "evidence_ttl_seconds": ttl,
-            "rule_version": result.get("rule_version", RULE_VERSION),
+            "rule_version": str(RULE_VERSION),
+            "guard_version": binding["guard_version"],
+            "policy_binding": binding,
+            "policy_digest": binding["policy_digest"],
+            "chart_digest": chart_digest,
+            "approved_chart_digests": list(context.get("approved_chart_digests", [])),
+            "workflow_changed": workflow_changed,
             "evidence": evidence_summary,
             "evidence_digest": evidence_digest,
             "ai": self._ai_summary(ai_result),
             "context": {
                 "tree_changes": list(context.get("tree_changes", [])[:500]),
                 "deployment_related_changes": list(context.get("deployment_related_changes", [])[:200]),
+                "workflow_changed": workflow_changed,
+                "workflow_paths": list(context.get("workflow_paths", [])[:50]),
+                "chart_digest": chart_digest,
                 "argo": candidate.argo.as_context(),
                 "changed_count": candidate.changed_count,
                 "tree_diff_truncated": candidate.tree_diff_truncated,
@@ -979,6 +1227,25 @@ class ChangeGuardDaemon:
         changed = list(candidate.changed_paths)
         deployment_related = [path for path in changed if github_module.is_deployment_path(path)]
         argo_context = candidate.argo.as_context()
+        workflow_paths = [path for path in changed if is_workflow_path(path)]
+        # Compare the actual base/head tree signatures as well as the changed
+        # path list; even a truncated path list cannot hide a workflow edit.
+        base_workflow = workflow_tree_signature(
+            getattr(candidate.base_snapshot, "entries", {})
+        )
+        head_workflow = workflow_tree_signature(
+            getattr(candidate.head_snapshot, "entries", {})
+        )
+        workflow_changed = base_workflow != head_workflow or bool(workflow_paths)
+        if base_workflow != head_workflow:
+            workflow_paths = sorted(
+                path
+                for path in set(base_workflow) | set(head_workflow)
+                if base_workflow.get(path) != head_workflow.get(path)
+            )
+        head_files = getattr(candidate.head_snapshot, "renderer_files", {})
+        chart_digest = chart_digest_from_files(head_files if isinstance(head_files, Mapping) else {})
+        approved_chart_digests = list(self.config.get("approved_chart_digest") or [])
         return {
             "repository": self.config["repository"],
             "pull_request": candidate.pull_request.number,
@@ -997,6 +1264,10 @@ class ChangeGuardDaemon:
             "deployment_related_changes": deployment_related[:200],
             "changed_count": candidate.changed_count,
             "tree_diff_truncated": candidate.tree_diff_truncated,
+            "workflow_changed": workflow_changed,
+            "workflow_paths": workflow_paths[:50],
+            "chart_digest": chart_digest,
+            "approved_chart_digests": approved_chart_digests,
             "argo": argo_context,
             **argo_context,
         }
@@ -1025,6 +1296,50 @@ class ChangeGuardDaemon:
             findings.append(item)
             escalations.append(item)
 
+        # IR-01: a pull_request workflow is taken from the PR's own branch, so
+        # any workflow edit can forge the required check name/conclusion.  This
+        # is a hard BLOCK and is never eligible for manual REVIEW approval.
+        declared_paths = context.get("changed_paths")
+        related_paths = context.get("deployment_related_changes")
+        workflow_paths = sorted({
+            path
+            for path in (
+                list(declared_paths if isinstance(declared_paths, (list, tuple)) else [])
+                + list(related_paths if isinstance(related_paths, (list, tuple)) else [])
+            )
+            if is_workflow_path(path)
+        })
+        if workflow_paths or context.get("workflow_changed") is True:
+            add(
+                "WORKFLOW_CHANGE_BLOCKED",
+                "BLOCK",
+                "context.workflow_changed",
+                "a .github/workflows/ file changed; CI workflow content must be identical on base and head",
+                {"paths": workflow_paths[:20], "count": len(workflow_paths)},
+            )
+        approved_chart_digests = [
+            item for item in context.get("approved_chart_digests", []) if isinstance(item, str)
+        ]
+        chart_digest = context.get("chart_digest")
+        if not approved_chart_digests:
+            add(
+                "APPROVED_CHART_DIGEST_NOT_CONFIGURED",
+                "ERROR",
+                "context.approved_chart_digest",
+                "approved_chart_digest is not configured; charts/demo cannot be trusted",
+                {},
+            )
+        elif not isinstance(chart_digest, str) or chart_digest not in approved_chart_digests:
+            add(
+                "APPROVED_CHART_DIGEST_MISMATCH",
+                "BLOCK",
+                "context.chart_digest",
+                "candidate charts/demo bytes do not match the operator-approved chart digest",
+                {
+                    "chart_digest": chart_digest,
+                    "approved_chart_digests": approved_chart_digests[:20],
+                },
+            )
         if context.get("argo_source_changed") is True:
             add(
                 "ARGOCD_SOURCE_CHANGED",
@@ -1070,6 +1385,7 @@ class ChangeGuardDaemon:
             for path in context.get("deployment_related_changes", [])
             if not path.startswith("charts/demo/")
             and path != "gitops/demo/values.yaml"
+            and not is_workflow_path(path)
             and not (
                 path.lower().startswith("gitops/argocd/")
                 or path.lower().endswith(("/application.yaml", "/application.yml", "/project.yaml", "/project.yml"))
@@ -1672,6 +1988,7 @@ class ChangeGuardDaemon:
         head_sha = getattr(pr, "head_sha", None)
         if not isinstance(head_sha, str) or not re.fullmatch(r"[0-9a-f]{40,64}", head_sha):
             raise DaemonError("cannot create an error report without a valid head SHA")
+        binding = current_policy_binding(self.config)
         identity = {
             "schema_version": SCHEMA_VERSION,
             "type": "evaluation-error",
@@ -1680,6 +1997,7 @@ class ChangeGuardDaemon:
             "head_sha": head_sha,
             "base_sha": base_sha,
             "message": message,
+            "policy_binding": binding,
             "at": now,
         }
         evaluation_id = "ev-" + hashlib.sha256(_canonical_json(identity).encode("utf-8")).hexdigest()[:24]
@@ -1700,6 +2018,11 @@ class ChangeGuardDaemon:
             "decision": "ERROR",
             "evaluated_at": now,
             "expires_at": now + ttl,
+            "rule_version": str(RULE_VERSION),
+            "guard_version": binding["guard_version"],
+            "policy_binding": binding,
+            "policy_digest": binding["policy_digest"],
+            "chart_digest": None,
             "evidence": {"collected_at": now, "errors": [message]},
             "evidence_digest": _sha256_json({"error": message}),
             "findings": [
@@ -1788,6 +2111,9 @@ class ChangeGuardDaemon:
                     "head_tree_sha": report.get("head_tree_sha"),
                     "base_tree_sha": report.get("base_tree_sha"),
                     "report_digest": report.get("report_digest"),
+                    "chart_digest": report.get("chart_digest"),
+                    "guard_version": report.get("guard_version"),
+                    "policy_digest": report.get("policy_digest"),
                 }
             )
         return entry

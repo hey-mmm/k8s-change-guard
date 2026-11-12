@@ -274,6 +274,26 @@ class CheckTests(unittest.TestCase):
 
 
 class VerifyDeploymentTests(unittest.TestCase):
+    def test_gitops_revision_and_image_source_revision_are_distinct(self):
+        release_sha = "d" * 40
+        kwargs = dict(kubectl_runner=Runner(argo_payload=argo(revision=release_sha)),
+                      http_get=http_get, metrics_provider=lambda cfg: metrics(),
+                      clock=Clock(), sleep=lambda seconds: None)
+        result = postdeploy.verify_deployment(config(), release_sha, IMAGE,
+                                             expected_app_sha=SHA, **kwargs)
+        self.assertEqual(result["status"], "ok")
+        self.assertEqual(result["expected_sha"], release_sha)
+        self.assertEqual(result["expected_app_sha"], SHA)
+        result = postdeploy.verify_deployment(config(), release_sha, IMAGE,
+                                             expected_app_sha="c" * 40, **kwargs)
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("http_version", result["recommendation"]["failing_checks"])
+
+    def test_stale_source_error_cannot_be_filtered_out(self):
+        result = postdeploy._check_metrics(config(), lambda cfg: metrics(
+            errors=["source timestamp for request_rate is stale"]), observation_seconds=60)
+        self.assertEqual(result["status"], "fail")
+
     def test_ok_report_contains_all_checks(self):
         result = postdeploy.verify_deployment(
             config(),

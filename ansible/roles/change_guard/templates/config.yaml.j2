@@ -1,0 +1,77 @@
+---
+repository: {{ change_guard_repository | to_json }}
+base_branch: {{ change_guard_base_branch | to_json }}
+status_context: {{ change_guard_status_context | to_json }}
+github_token_file: {{ (change_guard_config_dir ~ '/github-token') | to_json }}
+github_token_env: "GITHUB_TOKEN"
+github_timeout_seconds: 20
+github_retries: 2
+github_max_response_bytes: 8388608
+use_proxy_env: true
+
+state_dir: {{ change_guard_state_dir | to_json }}
+poll_seconds: {{ change_guard_poll_seconds | int }}
+evidence_ttl_seconds: {{ change_guard_evidence_ttl_seconds | int }}
+max_open_prs: 2000
+approvers:
+{% for approver in change_guard_approvers %}
+  - {{ approver | to_json }}
+{% endfor %}
+report_comment: {{ change_guard_report_comment | bool | lower }}
+allow_fork_prs: false
+{% if change_guard_credential_probe_sha is defined and change_guard_credential_probe_sha %}
+credential_probe_sha: {{ change_guard_credential_probe_sha | to_json }}
+{% endif %}
+{% if change_guard_status_target_url is defined and change_guard_status_target_url %}
+status_target_url: {{ change_guard_status_target_url | to_json }}
+{% endif %}
+
+kubeconfig: {{ (change_guard_config_dir ~ '/kubeconfig') | to_json }}
+kubectl: {{ change_guard_kubectl_bin | to_json }}
+helm: {{ change_guard_helm_bin | to_json }}
+bwrap: "/usr/bin/bwrap"
+kube_version: "1.37.2"
+namespace: {{ change_guard_namespace | to_json }}
+deployment: {{ change_guard_deployment | to_json }}
+release_name: {{ change_guard_deployment | to_json }}
+allowed_image_repository: {{ change_guard_image_repository | to_json }}
+require_digest: true
+# Operator-trusted pin for exact charts/demo Git blob bytes.  A template
+# upgrade requires a separate trusted update of this variable/config.
+approved_chart_digest: {{ change_guard_approved_chart_digest | default(['194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d']) | to_json }}
+render_timeout_seconds: 60
+render_output_limit_bytes: 4194304
+sandbox_memory_bytes: 2147483648
+sandbox_tmpfs_bytes: 67108864
+
+prometheus_url: {{ change_guard_prometheus_url | to_json }}
+demo_url: {{ change_guard_demo_url | to_json }}
+ai_required: true
+deepseek_token_file: {{ (change_guard_config_dir ~ '/deepseek-token') | to_json }}
+deepseek_token_env: "DEEPSEEK_API_KEY"
+deepseek_url: "https://api.deepseek.com/chat/completions"
+deepseek_model: "deepseek-chat"
+deepseek_timeout_seconds: 30
+knowledge_dir: {{ (change_guard_current_link ~ '/knowledge') | to_json }}
+
+argocd_namespace: {{ change_guard_argocd_namespace | to_json }}
+argo_application: {{ change_guard_argo_application | to_json }}
+version_path: {{ change_guard_version_path | to_json }}
+ready_path: {{ change_guard_ready_path | to_json }}
+observation_seconds: {{ change_guard_observation_seconds | int }}
+postdeploy_timeout_seconds: {{ change_guard_postdeploy_timeout_seconds | int }}
+postdeploy_poll_seconds: 5
+min_request_rate: 0.1
+max_error_ratio: 0.05
+max_p95_seconds: 0.5
+require_pod_image_id: true
+strict_image_id_digest: false
+
+# Root-owned merge integration.  The deploy key can only be used by merge.py
+# after the guard proof/approval/CI checks; it is never an admin credential.
+{% if change_guard_merge_deploy_key is defined %}
+merge_deploy_key: {{ change_guard_merge_deploy_key | to_json }}
+merge_known_hosts: {{ change_guard_merge_known_hosts | to_json }}
+merge_ssh_proxy: {{ change_guard_merge_ssh_proxy | to_json }}
+merge_required_ci: {{ change_guard_merge_required_ci | to_json }}
+{% endif %}

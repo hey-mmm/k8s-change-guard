@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import copy
+import hashlib
 import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from change_guard import daemon
 from change_guard import github as gh
@@ -13,6 +16,7 @@ NOW = 1_800_000_000
 HEAD = "a" * 40
 BASE = "b" * 40
 IMAGE = "ghcr.io/hey-mmm/observability-demo:sha-" + "c" * 40
+EMPTY_CHART_DIGEST = hashlib.sha256(b"{}").hexdigest()
 
 
 def pr_info(*, state="open", draft=False, number=7):
@@ -31,12 +35,12 @@ def pr_info(*, state="open", draft=False, number=7):
     )
 
 
-def tree(sha=HEAD, files=None):
+def tree(sha=HEAD, files=None, entries=None):
     files = files or {}
     return gh.TreeSnapshot(
         sha=sha,
         tree_sha="d" * 40,
-        entries={},
+        entries=entries or {},
         renderer_files=files,
         argo_files={},
         tree_digest="e" * 64,
@@ -46,15 +50,15 @@ def tree(sha=HEAD, files=None):
     )
 
 
-def candidate(pr=None):
+def candidate(pr=None, *, changed_paths=(), head_files=None, base_entries=None, head_entries=None):
     pr = pr or pr_info()
     return gh.PullRequestCandidate(
         pull_request=pr,
         base_sha=BASE,
-        base_snapshot=tree(BASE),
-        head_snapshot=tree(HEAD),
-        changed_paths=(),
-        changed_count=0,
+        base_snapshot=tree(BASE, entries=base_entries),
+        head_snapshot=tree(HEAD, head_files, entries=head_entries),
+        changed_paths=tuple(changed_paths),
+        changed_count=len(changed_paths),
         tree_diff_truncated=False,
         argo=gh.ArgoAnalysis(),
         pr_base_sha=BASE,
@@ -74,6 +78,7 @@ def config(tmp):
         "deployment": "demo",
         "report_comment": False,
         "use_proxy_env": False,
+        "approved_chart_digest": [EMPTY_CHART_DIGEST],
     }
 
 
@@ -97,6 +102,7 @@ class FakeGitHub:
         self.statuses = statuses if statuses is not None else []
         self.comments = comments if comments is not None else []
         self.prs = prs if prs is not None else [self.pr]
+        self.candidate = candidate(self.pr)
         self.permission_calls = []
         self.identity_calls = 0
 
@@ -125,7 +131,7 @@ class FakeGitHub:
         return BASE
 
     def fetch_pull_request_candidate(self, number, *, allow_fork=False):
-        return candidate(self.pr)
+        return self.candidate
 
     def list_issue_comments(self, number):
         return list(self.comments)
@@ -174,7 +180,7 @@ def evaluator_for(decision="PASS", findings=None):
             "old_render_digest": "2" * 64,
             "evaluated_at": NOW,
             "expires_at": NOW + 300,
-            "rule_version": "test",
+            "rule_version": daemon.RULE_VERSION,
         }
 
     return evaluate
@@ -200,9 +206,11 @@ def render(_path, _config):
     return [{"kind": "Deployment", "metadata": {"name": "demo", "namespace": "demo"}, "spec": {}}]
 
 
-def make_daemon(tmp, fake, decision="PASS", findings=None):
+def make_daemon(tmp, fake, decision="PASS", findings=None, config_overrides=None):
+    cfg = config(tmp)
+    cfg.update(config_overrides or {})
     return daemon.ChangeGuardDaemon(
-        config(tmp),
+        cfg,
         github_client=fake,
         collector=collector,
         analyzer=analyzer,
@@ -244,6 +252,43 @@ class ConfigTests(unittest.TestCase):
                 broken[key] = value
                 with self.assertRaises(daemon.DaemonError):
                     daemon.validate_config(broken)
+
+    def test_policy_binding_excludes_state_and_credentials_but_tracks_policy(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            baseline = daemon.policy_digest(daemon.validate_config(config(temporary)))
+            for key, value in (
+                ("state_dir", str(Path(temporary) / "other-state")),
+                ("poll_seconds", 60),
+                ("github_token_file", "/etc/change-guard/other-token"),
+                ("github_token_env", "OTHER_TOKEN"),
+                ("deepseek_token_file", "/etc/change-guard/other-deepseek"),
+                ("merge_deploy_key", "/etc/change-guard/other-key"),
+                ("report_comment", True),
+            ):
+                changed = config(temporary)
+                changed[key] = value
+                self.assertEqual(
+                    daemon.policy_digest(daemon.validate_config(changed)), baseline, key
+                )
+            for key, value in (
+                ("approved_chart_digest", ["0" * 64]),
+                ("require_digest", False),
+                ("max_error_ratio", 0.01),
+                ("max_p95_seconds", 0.2),
+                ("memory_headroom_factor", 1.5),
+                ("low_traffic_rps", 0.2),
+                ("prometheus_url", "http://prometheus.example:9090"),
+                ("deepseek_url", "https://api.deepseek.com/v1/chat/completions"),
+                ("deepseek_timeout_seconds", 31),
+                ("deepseek_total_timeout_seconds", 241),
+                ("kubectl_timeout_seconds", 21),
+                ("postdeploy_timeout_seconds", 301),
+            ):
+                changed = config(temporary)
+                changed[key] = value
+                self.assertNotEqual(
+                    daemon.policy_digest(daemon.validate_config(changed)), baseline, key
+                )
 
     def test_cli_config_file_is_yaml_only(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -416,6 +461,168 @@ class ApprovalAndStatusTests(unittest.TestCase):
             result = guard.run_once()
             self.assertEqual(result["prs"][0]["state"], "error")
             self.assertEqual(fake.statuses[-1]["state"], "error")
+
+
+class SecurityRegressionTests(unittest.TestCase):
+    def _rule_ids(self, guard, result):
+        report = guard.store.read_report(result["prs"][0]["evaluation_id"])
+        evaluation = report.get("evaluation") if isinstance(report.get("evaluation"), dict) else {}
+        findings = report.get("findings") or evaluation.get("findings") or []
+        return report, {finding["rule_id"] for finding in findings}
+
+    def test_workflow_change_is_hard_block_even_when_engine_says_pass(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            fake = FakeGitHub()
+            fake.candidate = candidate(changed_paths=(".github/workflows/ci.yml",))
+            guard = make_daemon(Path(temporary), fake, "PASS")
+            result = guard.run_once()
+            self.assertEqual(result["prs"][0]["decision"], "BLOCK")
+            self.assertEqual(fake.statuses[-1]["state"], "failure")
+            report, rules = self._rule_ids(guard, result)
+            self.assertIn("WORKFLOW_CHANGE_BLOCKED", rules)
+            self.assertEqual(report["workflow_changed"], True)
+            # A BLOCK is never eligible for the REVIEW approval path.
+            self.assertIsNone(guard._resolve_approval(report, fake.pr)[0])
+
+    def test_workflow_tree_signature_blocks_even_without_a_complete_path_list(self):
+        base_entry = gh.TreeEntry(
+            path=".github/workflows/ci.yml", mode="100644", kind="blob", sha="1" * 40, size=10
+        )
+        head_entry = gh.TreeEntry(
+            path=".github/workflows/ci.yml", mode="100644", kind="blob", sha="2" * 40, size=10
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            fake = FakeGitHub()
+            # Simulate a path list that does not surface the workflow edit; the
+            # base/head tree signature must still produce a hard BLOCK.
+            fake.candidate = candidate(
+                changed_paths=(),
+                base_entries={base_entry.path: base_entry},
+                head_entries={head_entry.path: head_entry},
+            )
+            guard = make_daemon(Path(temporary), fake, "PASS")
+            result = guard.run_once()
+            self.assertEqual(result["prs"][0]["decision"], "BLOCK")
+            report, rules = self._rule_ids(guard, result)
+            self.assertIn("WORKFLOW_CHANGE_BLOCKED", rules)
+            self.assertIn(".github/workflows/ci.yml", report["context"]["workflow_paths"])
+
+    def test_chart_digest_mismatch_is_hard_block_but_matching_pin_passes(self):
+        files = {"charts/demo/Chart.yaml": b"apiVersion: v2\nname: demo\n"}
+        with tempfile.TemporaryDirectory() as temporary:
+            fake = FakeGitHub()
+            fake.candidate = candidate(head_files=files)
+            mismatch = make_daemon(Path(temporary), fake, "PASS")
+            result = mismatch.run_once()
+            self.assertEqual(result["prs"][0]["decision"], "BLOCK")
+            self.assertEqual(fake.statuses[-1]["state"], "failure")
+            _report, rules = self._rule_ids(mismatch, result)
+            self.assertIn("APPROVED_CHART_DIGEST_MISMATCH", rules)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            fake = FakeGitHub()
+            fake.candidate = candidate(head_files=files)
+            pinned = daemon.chart_digest_from_files(files)
+            guard = make_daemon(
+                Path(temporary), fake, "PASS",
+                config_overrides={"approved_chart_digest": [pinned]},
+            )
+            result = guard.run_once()
+            self.assertEqual(result["prs"][0]["decision"], "PASS")
+            self.assertEqual(fake.statuses[-1]["state"], "success")
+
+    def test_missing_chart_pin_is_error_and_values_are_not_pinned(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            fake = FakeGitHub()
+            guard = make_daemon(
+                Path(temporary), fake, "PASS",
+                config_overrides={"approved_chart_digest": []},
+            )
+            result = guard.run_once()
+            self.assertEqual(result["prs"][0]["decision"], "ERROR")
+            self.assertEqual(fake.statuses[-1]["state"], "error")
+            _report, rules = self._rule_ids(guard, result)
+            self.assertIn("APPROVED_CHART_DIGEST_NOT_CONFIGURED", rules)
+
+        chart = {"charts/demo/Chart.yaml": b"apiVersion: v2\n"}
+        first = daemon.chart_digest_from_files({**chart, "gitops/demo/values.yaml": b"replicas: 1\n"})
+        second = daemon.chart_digest_from_files({**chart, "gitops/demo/values.yaml": b"replicas: 2\n"})
+        self.assertEqual(first, second)
+        # The pin is over raw Git blob bytes: a CRLF conversion is a different
+        # chart and must not be silently normalized to the LF digest.
+        self.assertNotEqual(
+            daemon.chart_digest_from_files({"charts/demo/Chart.yaml": b"a\n"}),
+            daemon.chart_digest_from_files({"charts/demo/Chart.yaml": b"a\r\n"}),
+        )
+
+    def test_guard_rule_or_policy_upgrade_invalidates_cached_report(self):
+        for change in ("guard", "rule", "policy"):
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as temporary:
+                fake = FakeGitHub()
+                guard = make_daemon(Path(temporary), fake, "PASS")
+                first = guard.run_once()
+                second = guard.run_once()
+                self.assertTrue(second["prs"][0]["reused"])
+                first_id = first["prs"][0]["evaluation_id"]
+                if change == "guard":
+                    context = mock.patch.object(daemon, "GUARD_VERSION", "9.9.9")
+                elif change == "rule":
+                    context = mock.patch.object(daemon, "RULE_VERSION", "2099.1")
+                else:
+                    context = mock.patch.object(daemon, "RULE_VERSION", daemon.RULE_VERSION)
+                with context:
+                    if change == "policy":
+                        # Same code/rules, different trusted policy config.
+                        upgraded = make_daemon(
+                            Path(temporary), fake, "PASS",
+                            config_overrides={"max_error_ratio": 0.01},
+                        )
+                        third = upgraded.run_once()
+                    else:
+                        third = guard.run_once()
+                self.assertFalse(third["prs"][0]["reused"])
+                self.assertNotEqual(third["prs"][0]["evaluation_id"], first_id)
+                self.assertEqual(fake.statuses[-1]["state"], "success")
+
+    def test_forged_pass_report_with_workflow_change_is_not_reused(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            fake = FakeGitHub()
+            guard = make_daemon(Path(temporary), fake, "PASS")
+            first = guard.run_once()
+            report = guard.store.read_report(first["prs"][0]["evaluation_id"])
+
+            def resign(value):
+                value = copy.deepcopy(value)
+                value["report_digest"] = daemon._sha256_json(
+                    {key: item for key, item in value.items() if key != "report_digest"}
+                )
+                return value
+
+            # Control: a re-signed PASS report with a fresh id is still usable.
+            control = resign({**report, "evaluation_id": "ev-" + "c" * 24})
+            guard.store.write_report(control)
+            control_entry = {
+                "evaluation_id": control["evaluation_id"],
+                "head_sha": HEAD,
+                "base_sha": BASE,
+            }
+            self.assertIsNotNone(guard._load_valid_cached(control_entry, fake.pr, BASE, NOW))
+
+            forged = resign(
+                {
+                    **report,
+                    "evaluation_id": "ev-" + "f" * 24,
+                    "changed_paths": [".github/workflows/ci.yml"],
+                    "context": {**report["context"], "workflow_changed": True},
+                }
+            )
+            guard.store.write_report(forged)
+            forged_entry = {
+                "evaluation_id": forged["evaluation_id"],
+                "head_sha": HEAD,
+                "base_sha": BASE,
+            }
+            self.assertIsNone(guard._load_valid_cached(forged_entry, fake.pr, BASE, NOW))
 
 
 class ConfigFileIntegrationTests(unittest.TestCase):

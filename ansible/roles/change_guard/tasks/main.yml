@@ -1,0 +1,30 @@
+---
+- name: Validate deployment inputs before changing the host
+  ansible.builtin.import_tasks: preflight.yml
+
+- name: Install trusted runtime packages and pinned binaries
+  ansible.builtin.import_tasks: packages.yml
+
+- name: Create independent service account and directories
+  ansible.builtin.import_tasks: user.yml
+
+- name: Install the immutable trusted release
+  ansible.builtin.import_tasks: release.yml
+
+- name: Apply least-privilege RBAC
+  ansible.builtin.import_tasks: rbac.yml
+
+- name: Mint/renew the short-lived service kubeconfig
+  ansible.builtin.import_tasks: token.yml
+
+- name: Install configuration and credentials (0600)
+  ansible.builtin.import_tasks: configure.yml
+
+- name: Install the hardened systemd service
+  ansible.builtin.import_tasks: service.yml
+
+- name: Install fixed provisioning token renewal timer
+  ansible.builtin.import_tasks: renewal.yml
+
+- name: Verify permissions, service health and RBAC boundaries
+  ansible.builtin.import_tasks: verify.yml

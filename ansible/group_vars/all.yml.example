@@ -1,0 +1,57 @@
+---
+# Copy to ansible/group_vars/all.yml and fill in the trusted values.
+# Credential source paths are on the Ansible controller, never in this file.
+
+change_guard_version: "0.1.0"
+change_guard_artifact: "{{ playbook_dir }}/../dist/k8s-change-guard-{{ change_guard_version }}.tar.gz"
+change_guard_artifact_checksum: "REPLACE_WITH_SHA256_OF_TRUSTED_TARBALL"
+
+change_guard_repository: "hey-mmm/Full-Stack-Observability-in-Kubernetes"
+change_guard_base_branch: "main"
+change_guard_status_context: "change-guard/release"
+change_guard_approvers:
+  - "hey-mmm"
+
+# Controller-side credential files.  They are copied with mode 0600 and owned
+# by the unprivileged service user; they are never placed in inventory.
+change_guard_github_token_src: "{{ playbook_dir }}/../secrets/github-token"
+change_guard_deepseek_token_src: "{{ playbook_dir }}/../secrets/deepseek-token"
+# Optional, added by the root merge integration; the role installs these when
+# the staging files exist and leaves the service config stable otherwise.
+change_guard_merge_deploy_key_src: "{{ playbook_dir }}/../secrets/merge-deploy-key"
+change_guard_merge_known_hosts_src: "{{ playbook_dir }}/../secrets/github_known_hosts"
+
+# Controller-side bootstrap kubeconfig.  This is NOT copied to the target.
+change_guard_bootstrap_kubeconfig: "{{ lookup('env', 'HOME') }}/.kube/config"
+change_guard_token_ttl: "12h"
+change_guard_token_refresh_before_seconds: 7200
+change_guard_force_token_rotation: false
+
+change_guard_prometheus_url: "http://10.98.137.77:9090"
+change_guard_demo_url: "http://10.104.233.119:8080"
+change_guard_version_path: "/version"
+change_guard_ready_path: "/readyz"
+change_guard_image_repository: "ghcr.io/hey-mmm/observability-demo"
+change_guard_argocd_namespace: "argocd"
+change_guard_argo_application: "demo"
+
+change_guard_http_proxy: "http://11.0.1.1:7890"
+change_guard_https_proxy: "http://11.0.1.1:7890"
+change_guard_no_proxy: "127.0.0.1,localhost,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local,11.0.1.10,11.0.1.11,10.98.137.77,10.104.233.119"
+
+# Preinstalled binaries are used as-is.  These checksums are required only for
+# a host that is missing the binary and therefore needs the pinned fallback.
+change_guard_helm_bin: /usr/local/bin/helm
+change_guard_kubectl_bin: /usr/bin/kubectl
+change_guard_helm_version: "3.22.1"
+change_guard_helm_checksum: ""
+change_guard_kubectl_version: "1.37.2"
+change_guard_kubectl_checksum: ""
+
+change_guard_report_comment: false
+change_guard_merge_ssh_proxy: "11.0.1.1:7890"
+change_guard_merge_required_ci: "Test, lint, render"
+# Trusted chart pin: exact Git blob bytes under charts/demo at project-one main
+# 823770eff4e9384ceb83aa1561f9b5f95239c221.  Do not derive this from a
+# checked-out worktree (CRLF filters change the digest).
+change_guard_approved_chart_digest: "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"

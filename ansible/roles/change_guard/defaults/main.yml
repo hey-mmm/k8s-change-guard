@@ -1,0 +1,67 @@
+---
+change_guard_user: change-guard
+change_guard_group: change-guard
+change_guard_root: /opt/change-guard
+change_guard_releases_dir: "{{ change_guard_root }}/releases"
+change_guard_current_link: "{{ change_guard_root }}/current"
+change_guard_state_dir: /var/lib/change-guard
+change_guard_config_dir: /etc/change-guard
+change_guard_service_name: change-guard
+change_guard_python: /usr/bin/python3
+
+change_guard_version: "0.1.0"
+change_guard_artifact_checksum: ""
+change_guard_artifact: "{{ playbook_dir }}/../dist/k8s-change-guard-{{ change_guard_version }}.tar.gz"
+
+change_guard_repository: "hey-mmm/Full-Stack-Observability-in-Kubernetes"
+change_guard_base_branch: "main"
+change_guard_status_context: "change-guard/release"
+change_guard_approvers:
+  - "hey-mmm"
+change_guard_github_token_src: "{{ playbook_dir }}/../secrets/github-token"
+change_guard_deepseek_token_src: "{{ playbook_dir }}/../secrets/deepseek-token"
+change_guard_merge_deploy_key_src: "{{ playbook_dir }}/../secrets/merge-deploy-key"
+change_guard_merge_known_hosts_src: "{{ playbook_dir }}/../secrets/github_known_hosts"
+change_guard_bootstrap_kubeconfig: "{{ lookup('env', 'HOME') }}/.kube/config"
+change_guard_controller_kubectl: /usr/bin/kubectl
+change_guard_token_ttl: "12h"
+change_guard_token_refresh_before_seconds: 7200
+change_guard_force_token_rotation: false
+
+change_guard_namespace: demo
+change_guard_deployment: demo
+change_guard_prometheus_url: "http://10.98.137.77:9090"
+change_guard_demo_url: "http://10.104.233.119:8080"
+change_guard_version_path: "/version"
+change_guard_ready_path: "/readyz"
+change_guard_image_repository: "ghcr.io/hey-mmm/observability-demo"
+change_guard_argocd_namespace: "argocd"
+change_guard_argo_application: "demo"
+
+change_guard_http_proxy: "http://11.0.1.1:7890"
+change_guard_https_proxy: "http://11.0.1.1:7890"
+change_guard_no_proxy: "127.0.0.1,localhost,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local,11.0.1.10,11.0.1.11,10.98.137.77,10.104.233.119"
+
+# Use the host's preinstalled binaries when present.  The pinned download is
+# only a fallback, so a newer distro/operator kubectl or Helm is never replaced
+# by an older "pinned" version (and a preinstalled pair needs no checksum).
+change_guard_helm_bin: /usr/local/bin/helm
+change_guard_kubectl_bin: /usr/bin/kubectl
+change_guard_helm_version: "3.22.1"
+change_guard_helm_checksum: ""
+change_guard_kubectl_version: "1.37.2"
+change_guard_kubectl_checksum: ""
+
+change_guard_poll_seconds: 30
+change_guard_evidence_ttl_seconds: 300
+change_guard_report_comment: false
+change_guard_observation_seconds: 60
+change_guard_postdeploy_timeout_seconds: 300
+change_guard_merge_deploy_key: "{{ change_guard_config_dir }}/merge-deploy-key"
+change_guard_merge_known_hosts: "{{ change_guard_config_dir }}/github_known_hosts"
+change_guard_merge_ssh_proxy: "11.0.1.1:7890"
+change_guard_merge_required_ci: "Test, lint, render"
+# Trusted pin for exact charts/demo Git blob bytes at project-one main
+# 823770eff4e9384ceb83aa1561f9b5f95239c221.  Updating a chart template
+# requires a separate trusted operator change to this value.
+change_guard_approved_chart_digest: "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"

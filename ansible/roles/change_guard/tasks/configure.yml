@@ -1,0 +1,100 @@
+---
+- name: Install the GitHub token (0600, service-owned, never in inventory)
+  ansible.builtin.copy:
+    src: "{{ change_guard_github_token_src }}"
+    dest: "{{ change_guard_config_dir }}/github-token"
+    owner: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    mode: "0600"
+  notify: restart change-guard
+  no_log: true
+
+- name: Install the DeepSeek token (0600, service-owned)
+  ansible.builtin.copy:
+    src: "{{ change_guard_deepseek_token_src }}"
+    dest: "{{ change_guard_config_dir }}/deepseek-token"
+    owner: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    mode: "0600"
+  notify: restart change-guard
+  no_log: true
+
+- name: Inspect optional merge deploy-key staging files
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - "{{ change_guard_merge_deploy_key_src }}"
+    - "{{ change_guard_merge_known_hosts_src }}"
+  delegate_to: localhost
+  become: false
+  register: change_guard_merge_sources
+
+- name: Install the independent merge deploy key (0600, service-owned)
+  ansible.builtin.copy:
+    src: "{{ change_guard_merge_deploy_key_src }}"
+    dest: "{{ change_guard_merge_deploy_key }}"
+    owner: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    mode: "0600"
+  notify: restart change-guard
+  no_log: true
+  when: change_guard_merge_sources.results[0].stat.isreg | default(false)
+
+- name: Install the merge SSH known-hosts file (0600, service-owned)
+  ansible.builtin.copy:
+    src: "{{ change_guard_merge_known_hosts_src }}"
+    dest: "{{ change_guard_merge_known_hosts }}"
+    owner: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    mode: "0600"
+  notify: restart change-guard
+  when: change_guard_merge_sources.results[1].stat.isreg | default(false)
+
+- name: Install the non-secret daemon configuration
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ change_guard_config_dir }}/config.yaml"
+    owner: root
+    group: "{{ change_guard_group }}"
+    mode: "0640"
+  notify: restart change-guard
+
+- name: Install explicit proxy/no_proxy environment (0600, service-owned)
+  ansible.builtin.template:
+    src: proxy.env.j2
+    dest: "{{ change_guard_config_dir }}/proxy.env"
+    owner: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    mode: "0600"
+  notify: restart change-guard
+
+- name: Ensure credential files cannot be read by other users
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: file
+    owner: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    mode: "0600"
+  loop:
+    - "{{ change_guard_config_dir }}/github-token"
+    - "{{ change_guard_config_dir }}/deepseek-token"
+    - "{{ change_guard_config_dir }}/kubeconfig"
+    - "{{ change_guard_config_dir }}/proxy.env"
+
+- name: Enforce 0600 on the optional merge deploy key
+  ansible.builtin.file:
+    path: "{{ change_guard_merge_deploy_key }}"
+    state: file
+    owner: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    mode: "0600"
+  when: change_guard_merge_sources.results[0].stat.isreg | default(false)
+
+- name: Enforce service ownership on the optional merge known-hosts file
+  ansible.builtin.file:
+    path: "{{ change_guard_merge_known_hosts }}"
+    state: file
+    owner: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    mode: "0600"
+  when: change_guard_merge_sources.results[1].stat.isreg | default(false)

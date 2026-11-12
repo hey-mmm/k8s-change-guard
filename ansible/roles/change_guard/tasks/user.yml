@@ -1,0 +1,57 @@
+---
+- name: Create the independent service group
+  ansible.builtin.group:
+    name: "{{ change_guard_group }}"
+    system: true
+    state: present
+
+- name: Create the unprivileged service user (no login shell)
+  ansible.builtin.user:
+    name: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    system: true
+    shell: /usr/sbin/nologin
+    home: "{{ change_guard_state_dir }}"
+    create_home: true
+    password_lock: true
+    state: present
+
+- name: Create the private state directory
+  ansible.builtin.file:
+    path: "{{ change_guard_state_dir }}"
+    state: directory
+    owner: "{{ change_guard_user }}"
+    group: "{{ change_guard_group }}"
+    mode: "0700"
+
+- name: Create the configuration directory
+  ansible.builtin.file:
+    path: "{{ change_guard_config_dir }}"
+    state: directory
+    owner: root
+    group: "{{ change_guard_group }}"
+    mode: "0750"
+
+- name: Create the trusted release root
+  ansible.builtin.file:
+    path: "{{ change_guard_releases_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create the controller-side token-expiry checker directory
+  ansible.builtin.file:
+    path: /usr/local/lib/change-guard
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install the token-expiry checker used by rotate-token playbook
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../scripts/check-token-expiry.py"
+    dest: /usr/local/lib/change-guard/check-token-expiry.py
+    owner: root
+    group: root
+    mode: "0755"
