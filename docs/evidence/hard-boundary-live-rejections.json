@@ -1,0 +1,96 @@
+{
+  "captured_at": 1794475670,
+  "main_before": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "main_after": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "probes": [
+    {
+      "pr": 3,
+      "head_sha": "3a7d90440e1245c6f3f976c3e9dc10e5f5ca1141",
+      "decision": "BLOCK",
+      "guard_version": "0.2.1",
+      "evaluation_id": "ev-06e93c9ab23b6bd4c6f452c8",
+      "rules": [
+        "FAULT_INJECTION",
+        "AI_ADDITIONAL_RISK",
+        "CAPACITY_POD_REQUESTS_UNRESERVED",
+        "FIRING_ALERTS"
+      ],
+      "merge_http": 405,
+      "merge_response": {
+        "message": "Repository rule violations found\n\nRequired status check \"change-guard/release\" is failing.\n\nCannot update this protected ref.\n\n",
+        "documentation_url": "https://docs.github.com/rest/pulls/pulls#merge-a-pull-request",
+        "status": "405"
+      },
+      "checks": [
+        {
+          "name": "Build and push image",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Test, lint, render",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "pr": 4,
+      "head_sha": "d02bda67401592caee38b123e66126bc618f147b",
+      "decision": "BLOCK",
+      "guard_version": "0.2.1",
+      "evaluation_id": "ev-d277b2531ae2603e9e43ac95",
+      "rules": [
+        "WORKFLOW_CHANGE_BLOCKED",
+        "AI_ADDITIONAL_RISK",
+        "CAPACITY_POD_REQUESTS_UNRESERVED",
+        "FIRING_ALERTS"
+      ],
+      "merge_http": 405,
+      "merge_response": {
+        "message": "Repository rule violations found\n\nRequired status check \"change-guard/release\" is failing.\n\nCannot update this protected ref.\n\n",
+        "documentation_url": "https://docs.github.com/rest/pulls/pulls#merge-a-pull-request",
+        "status": "405"
+      },
+      "checks": [
+        {
+          "name": "Build and push image",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Test, lint, render",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "pr": 5,
+      "head_sha": "90c113e36c07fa6cc958ce8fbd1f8a82e2679e80",
+      "decision": "BLOCK",
+      "guard_version": "0.2.1",
+      "evaluation_id": "ev-3eb47a3fa379096291c7ba2f",
+      "rules": [
+        "APPROVED_CHART_DIGEST_MISMATCH",
+        "AI_ADDITIONAL_RISK",
+        "CAPACITY_POD_REQUESTS_UNRESERVED",
+        "FIRING_ALERTS",
+        "TEMPLATE_FILE_CHANGE"
+      ],
+      "merge_http": 405,
+      "merge_response": {
+        "message": "Repository rule violations found\n\nRequired status check \"change-guard/release\" is failing.\n\nCannot update this protected ref.\n\n",
+        "documentation_url": "https://docs.github.com/rest/pulls/pulls#merge-a-pull-request",
+        "status": "405"
+      },
+      "checks": [
+        {
+          "name": "Build and push image",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Test, lint, render",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "cleanup": "unsafe PRs closed without merging"
+}

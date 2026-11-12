@@ -2,7 +2,7 @@
 
 复用 [项目一](https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes) 的 Kubernetes、Prometheus、GHCR 和 Argo CD，在发布配置进入 main 前收集证据并控制放行。运行于 master 的独立 systemd 用户，不接收公网 webhook，不执行 PR 中的程序，不向集群写入。
 
-**完成状态与真实限制以 [验收报告](docs/acceptance.md) 为准。测试通过、服务 active、状态绿色均不能单独代表发布已验收。**
+**已部署 0.2.3，并完成危险 PR 拒绝、正常发布和 Git revert PR 回退。实测证据与限制见 [验收报告](docs/acceptance.md)。**
 
 | 文档 | 内容 |
 | --- | --- |
@@ -33,21 +33,31 @@ Windows 可以运行规则/采集/模型测试以及预渲染清单评估；**�
 # 生产服务：只执行可信已安装版本
 python -m change_guard.daemon --config /etc/change-guard/config.yaml --once
 
-# 显式合并：核对当前报告/精确提交/审批/CI/有效期，再以专用密钥更新 main
+# 正常合并：root 运行包装脚本；会暂停 daemon，退出时恢复，并读取 proxy.env
+sudo scripts/merge-release.sh <PR>
+
+# 底层命令仍可运行，但必须先停 daemon/串行化，否则可能 DaemonBusy
 python -m change_guard.merge --config /etc/change-guard/config.yaml --pr <编号>
+
+# 发布后只读验证：--expected-sha 是 Argo/GitOps revision，--expected-app-sha 是镜像源提交
+python -m change_guard.postdeploy verify --config /etc/change-guard/config.yaml \
+  --expected-sha <main-commit> --expected-app-sha <image-source-commit> \
+  --report /var/lib/change-guard/reports/<evaluation_id>.json
 
 # 命令参数以实际 --help 为准
 python -m change_guard --help
 python -m change_guard.postdeploy --help
 ```
 
-`PASS / REVIEW / BLOCK / ERROR` 各自记录规则、证据、AI 分析和最终决策。BLOCK 不可由 AI 或人工覆盖；ERROR 必须修复后重评；REVIEW 审批绑定评估 ID、head SHA、main 基线与有效期。
+`PASS / REVIEW / BLOCK / ERROR` 各自记录规则、证据、AI 分析和最终决策。BLOCK 不可由 AI 或人工覆盖；ERROR 必须修复后重评；REVIEW 审批绑定评估 ID、head SHA、main 基线、策略绑定与有效期。`.github/workflows/` 变更、`charts/demo` digest 不在操作员白名单、报告策略绑定不一致均为不可审批的硬阻断。
 
 ## 真实门禁的必要条件
 
-GitHub 成功状态没有分钟级 TTL。项目一 main 设置两组独立规则：更新入口只允许专用部署密钥；CI 与 `change-guard/release` 检查无绕过者。受信合并程序在更新前再次校验当前报告、人工审批和证据时效，并使用精确旧 main 的 lease。普通账号即使能创建 PR，也无法用旧绿色状态直接合并。
+GitHub 成功状态没有分钟级 TTL。项目一 main 设置两组独立规则：更新入口只允许部署密钥（GitHub 的 DeployKey bypass 是仓库级，不能按单 key 限制，实际只保留一把写 key）；CI 与 `change-guard/release` 检查无 bypass。GitHub Actions 的 `pull_request` check 绑定 PR **head**，不是 synthetic merge；受信合并程序独立核验 synthetic 父提交与树等于 head 树、head CI 成功，并只用精确旧 main lease 快进推送 head。普通账号即使能创建 PR，也无法用旧绿色状态直接合并。`.github/workflows/` 变更和 `charts/demo` 不在操作员 pin 白名单都是不可审批的硬 BLOCK。
 
-专用部署密钥属于信任边界，持有人可绕过更新入口限制；它只放在服务主机的受限路径。仓库管理员能够改规则，集群管理员能够直改集群，本项目不声称能限制这些管理员。
+专用部署密钥属于信任边界，持有人可绕过更新入口限制；它只放在服务主机的受限路径，仓库必须只有一把写部署密钥。仓库管理员能够改规则、集群管理员能够直改集群，本项目不声称能限制这些管理员。更新 `charts/demo` 模板必须由操作员另行更新 `approved_chart_digest`（当前真实 Git blob digest 为 `194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d`，不是旧的 `0b2b...` 参考值）；guard 不会自动信任新模板。
+
+合并后 PR 会 closed/merged，daemon 会撤销旧 head 上的历史 guard 状态；main/旧 head 出现 guard error/pending 可能只是撤销，不是 postdeploy 失败。门禁证明看 merge 记录和当时的报告/审批/CI，不要为了好看维持永久绿。
 
 ## 实验环境
 

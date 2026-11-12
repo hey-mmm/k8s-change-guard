@@ -1,0 +1,31 @@
+{
+  "stopped_bounded_traffic_pids": [],
+  "logs": {
+    "acceptance-traffic.log": {
+      "lines": 6975,
+      "tail": [
+        "2026-11-12T09:23:07Z status=200 duration_seconds=0.001842 request_id=traffic-565968-6972 request=6972 url=http://10.104.233.119:8080/work",
+        "2026-11-12T09:23:08Z status=200 duration_seconds=0.002061 request_id=traffic-565968-6973 request=6973 url=http://10.104.233.119:8080/work",
+        "2026-11-12T09:23:08Z status=200 duration_seconds=0.001857 request_id=traffic-565968-6974 request=6974 url=http://10.104.233.119:8080/work",
+        "traffic summary: requests=6974 ok=6974 http_fail=0 transport_fail=0 seconds=3600 target=http://10.104.233.119:8080/work"
+      ],
+      "non_200_entries": [
+        "traffic summary: requests=6974 ok=6974 http_fail=0 transport_fail=0 seconds=3600 target=http://10.104.233.119:8080/work"
+      ]
+    },
+    "final-traffic.log": {
+      "lines": 2206,
+      "tail": [
+        "2026-11-12T09:47:07Z status=200 duration_seconds=0.004642 request_id=traffic-691904-2203 request=2203 url=http://10.104.233.119:8080/work",
+        "2026-11-12T09:47:07Z status=200 duration_seconds=0.004269 request_id=traffic-691904-2204 request=2204 url=http://10.104.233.119:8080/work",
+        "2026-11-12T09:47:08Z status=200 duration_seconds=0.005706 request_id=traffic-691904-2205 request=2205 url=http://10.104.233.119:8080/work",
+        "traffic summary: requests=2205 ok=2203 http_fail=0 transport_fail=2 seconds=1172 target=http://10.104.233.119:8080/work"
+      ],
+      "non_200_entries": [
+        "2026-11-12T09:32:44Z status=000 duration_seconds=0 request_id=traffic-691904-583 request=583 url=http://10.104.233.119:8080/work note=transport_error:curl: (7) Failed to connect to 10.104.233.119 port 8080 after 1 ms: Connection refused ",
+        "2026-11-12T09:32:45Z status=000 duration_seconds=0 request_id=traffic-691904-584 request=584 url=http://10.104.233.119:8080/work note=transport_error:curl: (7) Failed to connect to 10.104.233.119 port 8080 after 1 ms: Connection refused ",
+        "traffic summary: requests=2205 ok=2203 http_fail=0 transport_fail=2 seconds=1172 target=http://10.104.233.119:8080/work"
+      ]
+    }
+  }
+}

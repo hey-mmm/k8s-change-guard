@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "evaluation_id": "ev-5d34c1aa49cf3f45c342e57b",
+  "type": "evaluation-error",
+  "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+  "pull_request": {
+    "number": 3,
+    "title": "Acceptance: BLOCK zero replica release",
+    "author": "hey-mmm"
+  },
+  "head_sha": "66579ed899a9370f0f3536d0eab9ce349e385a3b",
+  "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "base_branch": "main",
+  "decision": "ERROR",
+  "evaluated_at": 1794473750,
+  "expires_at": 1794474050,
+  "evidence": {
+    "collected_at": 1794473750,
+    "errors": [
+      "Git blob content is not valid base64"
+    ]
+  },
+  "evidence_digest": "da3cfc3c79ea404b5475479050d757e77c0dd6f473f55c3763add678fff4af1d",
+  "findings": [
+    {
+      "rule_id": "DAEMON_EVALUATION_ERROR",
+      "severity": "ERROR",
+      "field": "evaluation",
+      "message": "Git blob content is not valid base64",
+      "evidence": {}
+    }
+  ],
+  "evaluation": {
+    "decision": "ERROR",
+    "findings": [
+      {
+        "rule_id": "DAEMON_EVALUATION_ERROR",
+        "severity": "ERROR",
+        "field": "evaluation",
+        "message": "Git blob content is not valid base64",
+        "evidence": {}
+      }
+    ],
+    "changes": [],
+    "evaluated_at": 1794473750,
+    "expires_at": 1794474050,
+    "render_digest": null
+  },
+  "ai": {
+    "status": "error",
+    "error": "Git blob content is not valid base64"
+  },
+  "created_at": 1794473750,
+  "status_context": "change-guard/release",
+  "report_digest": "270def6ef55b2e1b017d9647c5ea6773d7bf3828f5fd9d833e39fb442efed226"
+}

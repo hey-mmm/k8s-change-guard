@@ -1,0 +1,517 @@
+{
+  "schema_version": 2,
+  "evaluation_id": "ev-3197f2cadf956f6dfcc349f8",
+  "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+  "pull_request": {
+    "number": 6,
+    "title": "Acceptance: revert release #2 through the guarded GitOps flow",
+    "author": "hey-mmm",
+    "head_ref": "acceptance/revert-release-2",
+    "head_repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+    "base_ref": "main",
+    "pr_base_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d"
+  },
+  "head_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "base_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+  "base_branch": "main",
+  "head_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+  "base_tree_sha": "d84a70999466951822f4f1c0a4afa0576eb3b40c",
+  "head_tree_digest": "a1a155a804d284291a6f94084c66b040ca629885a3f151e8afd28b22b05ed103",
+  "base_tree_digest": "f3a3087b22c5262c73fc31c761864e21b623bd430e6b8c073fa331e4f42b27c2",
+  "tree_entry_count": 173,
+  "changed_paths": [
+    "gitops/demo/values.yaml"
+  ],
+  "changed_count": 1,
+  "tree_diff_truncated": false,
+  "argo": {
+    "argo_source_changed": false,
+    "argo_application_changed": false,
+    "argo_project_changed": false,
+    "argo_manifest_error": false,
+    "argo_changed_paths": [],
+    "argo_application_count": 2
+  },
+  "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+  "old_render_digest": "beddac43bb6960dfd0bf19044aa703b58cdb61aa9e3f52a2e8fbfe66cdacfa29",
+  "deployment_images": [
+    {
+      "container": "demo-service",
+      "init": false,
+      "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d"
+    }
+  ],
+  "decision": "REVIEW",
+  "findings": [
+    {
+      "rule_id": "AI_ADDITIONAL_RISK",
+      "severity": "REVIEW",
+      "field": "ai_result.additional_risks",
+      "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+      "evidence": {
+        "risks": [
+          {
+            "title": "Verify revert is Git-desired-state, not imperative rollback",
+            "detail": "The PR is titled as a revert through the guarded GitOps flow. Confirm the change is a git revert commit pushed to main and that Argo CD syncs to it; do not accept argocd app rollback or kubectl rollout undo as evidence of GitOps rollback. After sync, verify the Deployment image digest and /version endpoint."
+          },
+          {
+            "title": "Redacted env values may carry fault-injection settings",
+            "detail": "Both container env values are redacted in the diff. Confirm the candidate Deployment does not ship drill fault settings such as DEMO_STARTUP_FAIL=true or DEMO_ERROR_RATE=1; the normal value should be DEMO_ERROR_RATE=0."
+          },
+          {
+            "title": "Capacity headroom under overcommit alert",
+            "detail": "KubeCPUOvercommit is firing and 35 Pod requests are unreserved, so free CPU may be overstated. Account for surge capacity during the rollout before treating the revert as low-risk."
+          }
+        ],
+        "count": 3
+      }
+    },
+    {
+      "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+      "severity": "REVIEW",
+      "field": "evidence.pods[].spec.containers[].resources.requests",
+      "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+      "evidence": {
+        "unreserved_requests": 35
+      }
+    },
+    {
+      "rule_id": "FIRING_ALERTS",
+      "severity": "REVIEW",
+      "field": "evidence.metrics.alerts",
+      "message": "one or more relevant alerts are firing",
+      "evidence": {
+        "alerts": [
+          {
+            "name": "KubeCPUOvercommit",
+            "state": "firing",
+            "activeAt": "2026-11-12T08:02:40.464748368Z",
+            "labels": {
+              "alertname": "KubeCPUOvercommit",
+              "severity": "warning"
+            }
+          }
+        ],
+        "count": 1
+      }
+    }
+  ],
+  "evaluated_at": 1794476358,
+  "expires_at": 1794476635,
+  "evidence_ttl_seconds": 300,
+  "rule_version": "2026.11.1",
+  "guard_version": "0.2.3",
+  "policy_binding": {
+    "guard_version": "0.2.3",
+    "rule_version": "2026.11.1",
+    "policy_schema_version": 1,
+    "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d"
+  },
+  "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d",
+  "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+  "approved_chart_digests": [
+    "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+  ],
+  "workflow_changed": false,
+  "evidence": {
+    "collected_at": 1794476354,
+    "errors": [],
+    "metrics": {
+      "memory_working_set_bytes": 38932480.0,
+      "request_rate": 1.8806291686987517,
+      "error_ratio": 0.0,
+      "p95_seconds": 0.00475,
+      "alerts": [
+        {
+          "name": "KubeCPUOvercommit",
+          "state": "firing",
+          "labels": {
+            "alertname": "KubeCPUOvercommit",
+            "severity": "warning"
+          }
+        },
+        {
+          "name": "Watchdog",
+          "state": "firing",
+          "labels": {
+            "alertname": "Watchdog",
+            "severity": "none"
+          }
+        }
+      ],
+      "source_timestamps": {
+        "up": 1794476352,
+        "memory_working_set_bytes": 1794476335,
+        "request_rate": 1794476352,
+        "error_ratio": 1794476352,
+        "p95_seconds": 1794476352,
+        "alerts": 1794476354
+      }
+    },
+    "capacity": {
+      "available_cpu_millicores": 2190.0,
+      "available_memory_bytes": 9185292288.0,
+      "allocatable_cpu_millicores": 4000.0,
+      "allocatable_memory_bytes": 12406517760.0,
+      "workers_ready": 1
+    },
+    "deployment": {
+      "name": "demo",
+      "namespace": "demo",
+      "replicas": 1,
+      "ready_replicas": 1,
+      "images": [
+        "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7"
+      ]
+    },
+    "node_count": 2,
+    "pod_count": 28
+  },
+  "evidence_digest": "2e6f0c950529758f9d3741b0cd7eceba3df5b9507bec7b6e143e2c608e9970a6",
+  "ai": {
+    "status": "ok",
+    "model": "deepseek-chat",
+    "summary": "This PR reverts release #2 via the GitOps flow (values.yaml change), replacing the demo Deployment image digest and version labels on Deployment/Service/ServiceMonitor. Decision preview is REVIEW. Two review-level findings: 35 unreserved Pod requests may overstate free capacity, and KubeCPUOvercommit is firing. Capacity is tight (2190m CPU available of 4000m allocatable, 1 worker ready). The change is a Git-desired-state revert, which is the correct mechanism; however, reviewers must confirm the revert commit is pushed and Argo synced, and verify the resulting image digest and /version rather than relying on any imperative rollback. Env values are redacted, so confirm no fault-injection settings (e.g. DEMO_STARTUP_FAIL, DEMO_ERROR_RATE) are carried into the candidate Deployment.",
+    "additional_risks": [
+      {
+        "title": "Verify revert is Git-desired-state, not imperative rollback",
+        "detail": "The PR is titled as a revert through the guarded GitOps flow. Confirm the change is a git revert commit pushed to main and that Argo CD syncs to it; do not accept argocd app rollback or kubectl rollout undo as evidence of GitOps rollback. After sync, verify the Deployment image digest and /version endpoint.",
+        "severity": "REVIEW"
+      },
+      {
+        "title": "Redacted env values may carry fault-injection settings",
+        "detail": "Both container env values are redacted in the diff. Confirm the candidate Deployment does not ship drill fault settings such as DEMO_STARTUP_FAIL=true or DEMO_ERROR_RATE=1; the normal value should be DEMO_ERROR_RATE=0.",
+        "severity": "REVIEW"
+      },
+      {
+        "title": "Capacity headroom under overcommit alert",
+        "detail": "KubeCPUOvercommit is firing and 35 Pod requests are unreserved, so free CPU may be overstated. Account for surge capacity during the rollout before treating the revert as low-risk.",
+        "severity": "REVIEW"
+      }
+    ],
+    "citations": [
+      {
+        "case_id": "git-revert-required",
+        "source": "docs/drills.md",
+        "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "line_start": 159,
+        "line_end": 173
+      },
+      {
+        "case_id": "git-revert-required",
+        "source": "docs/drills.md",
+        "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "line_start": 159,
+        "line_end": 173
+      },
+      {
+        "case_id": "http500-fault",
+        "source": "docs/fault-review.md",
+        "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "line_start": 13,
+        "line_end": 13
+      },
+      {
+        "case_id": "startup-max-unavailable-protection",
+        "source": "docs/drills.md",
+        "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "line_start": 85,
+        "line_end": 104
+      }
+    ],
+    "error": null
+  },
+  "context": {
+    "tree_changes": [
+      "gitops/demo/values.yaml"
+    ],
+    "deployment_related_changes": [
+      "gitops/demo/values.yaml"
+    ],
+    "workflow_changed": false,
+    "workflow_paths": [],
+    "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+    "argo": {
+      "argo_source_changed": false,
+      "argo_application_changed": false,
+      "argo_project_changed": false,
+      "argo_manifest_error": false,
+      "argo_changed_paths": [],
+      "argo_application_count": 2
+    },
+    "changed_count": 1,
+    "tree_diff_truncated": false
+  },
+  "evaluation": {
+    "decision": "REVIEW",
+    "findings": [
+      {
+        "rule_id": "AI_ADDITIONAL_RISK",
+        "severity": "REVIEW",
+        "field": "ai_result.additional_risks",
+        "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+        "evidence": {
+          "risks": [
+            {
+              "title": "Verify revert is Git-desired-state, not imperative rollback",
+              "detail": "The PR is titled as a revert through the guarded GitOps flow. Confirm the change is a git revert commit pushed to main and that Argo CD syncs to it; do not accept argocd app rollback or kubectl rollout undo as evidence of GitOps rollback. After sync, verify the Deployment image digest and /version endpoint."
+            },
+            {
+              "title": "Redacted env values may carry fault-injection settings",
+              "detail": "Both container env values are redacted in the diff. Confirm the candidate Deployment does not ship drill fault settings such as DEMO_STARTUP_FAIL=true or DEMO_ERROR_RATE=1; the normal value should be DEMO_ERROR_RATE=0."
+            },
+            {
+              "title": "Capacity headroom under overcommit alert",
+              "detail": "KubeCPUOvercommit is firing and 35 Pod requests are unreserved, so free CPU may be overstated. Account for surge capacity during the rollout before treating the revert as low-risk."
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+        "severity": "REVIEW",
+        "field": "evidence.pods[].spec.containers[].resources.requests",
+        "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+        "evidence": {
+          "unreserved_requests": 35
+        }
+      },
+      {
+        "rule_id": "FIRING_ALERTS",
+        "severity": "REVIEW",
+        "field": "evidence.metrics.alerts",
+        "message": "one or more relevant alerts are firing",
+        "evidence": {
+          "alerts": [
+            {
+              "name": "KubeCPUOvercommit",
+              "state": "firing",
+              "activeAt": "2026-11-12T08:02:40.464748368Z",
+              "labels": {
+                "alertname": "KubeCPUOvercommit",
+                "severity": "warning"
+              }
+            }
+          ],
+          "count": 1
+        }
+      }
+    ],
+    "changes": [
+      {
+        "resource": "Deployment/demo/demo",
+        "kind": "Deployment",
+        "namespace": "demo",
+        "name": "demo",
+        "operation": "replace",
+        "path": "metadata.labels.app.kubernetes.io/version",
+        "old": "0.1.0-823770eff4e9384ceb83aa1561f9b5f95239c221",
+        "new": "0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+        "pod_template": false
+      },
+      {
+        "resource": "Deployment/demo/demo",
+        "kind": "Deployment",
+        "namespace": "demo",
+        "name": "demo",
+        "operation": "replace",
+        "path": "spec.template.spec.containers[0].env[0].value",
+        "old": "<redacted>",
+        "new": "<redacted>",
+        "pod_template": true
+      },
+      {
+        "resource": "Deployment/demo/demo",
+        "kind": "Deployment",
+        "namespace": "demo",
+        "name": "demo",
+        "operation": "replace",
+        "path": "spec.template.spec.containers[0].env[1].value",
+        "old": "<redacted>",
+        "new": "<redacted>",
+        "pod_template": true
+      },
+      {
+        "resource": "Deployment/demo/demo",
+        "kind": "Deployment",
+        "namespace": "demo",
+        "name": "demo",
+        "operation": "replace",
+        "path": "spec.template.spec.containers[0].image",
+        "old": "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+        "new": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d",
+        "pod_template": true
+      },
+      {
+        "resource": "Service/demo/demo",
+        "kind": "Service",
+        "namespace": "demo",
+        "name": "demo",
+        "operation": "replace",
+        "path": "metadata.labels.app.kubernetes.io/version",
+        "old": "0.1.0-823770eff4e9384ceb83aa1561f9b5f95239c221",
+        "new": "0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+        "pod_template": false
+      },
+      {
+        "resource": "ServiceMonitor/demo/demo",
+        "kind": "ServiceMonitor",
+        "namespace": "demo",
+        "name": "demo",
+        "operation": "replace",
+        "path": "metadata.labels.app.kubernetes.io/version",
+        "old": "0.1.0-823770eff4e9384ceb83aa1561f9b5f95239c221",
+        "new": "0.1.0-c0bff8abf5625903e5b9b19b586e9660b9fe7a8c",
+        "pod_template": false
+      }
+    ],
+    "context": {
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "pull_request": 6,
+      "head_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+      "base_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+      "pr_base_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+      "head_ref": "acceptance/revert-release-2",
+      "base_ref": "main",
+      "head_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+      "base_tree_sha": "d84a70999466951822f4f1c0a4afa0576eb3b40c",
+      "head_tree_digest": "a1a155a804d284291a6f94084c66b040ca629885a3f151e8afd28b22b05ed103",
+      "base_tree_digest": "f3a3087b22c5262c73fc31c761864e21b623bd430e6b8c073fa331e4f42b27c2",
+      "tree_entry_count": 173,
+      "changed_paths": [
+        "gitops/demo/values.yaml"
+      ],
+      "tree_changes": [
+        "gitops/demo/values.yaml"
+      ],
+      "deployment_related_changes": [
+        "gitops/demo/values.yaml"
+      ],
+      "changed_count": 1,
+      "tree_diff_truncated": false,
+      "workflow_changed": false,
+      "workflow_paths": [],
+      "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+      "approved_chart_digests": [
+        "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+      ],
+      "argo": {
+        "argo_source_changed": false,
+        "argo_application_changed": false,
+        "argo_project_changed": false,
+        "argo_manifest_error": false,
+        "argo_changed_paths": [],
+        "argo_application_count": 2
+      },
+      "argo_source_changed": false,
+      "argo_application_changed": false,
+      "argo_project_changed": false,
+      "argo_manifest_error": false,
+      "argo_changed_paths": [],
+      "argo_application_count": 2,
+      "namespace": "demo",
+      "deployment": "demo",
+      "old_resource_count": 3,
+      "new_resource_count": 3,
+      "pod_template_changed": true,
+      "ai_required": true,
+      "ai_status": "ok",
+      "evidence_collected_at": 1794476354.0,
+      "evidence_ttl_seconds": 300
+    },
+    "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+    "old_render_digest": "beddac43bb6960dfd0bf19044aa703b58cdb61aa9e3f52a2e8fbfe66cdacfa29",
+    "evaluated_at": 1794476358,
+    "expires_at": 1794476635,
+    "rule_version": "2026.11.1",
+    "audit": {
+      "schema_version": "1.0",
+      "rule_version": "2026.11.1",
+      "evaluated_at": 1794476358,
+      "checks": [
+        {
+          "rule_id": "AI_ADDITIONAL_RISK",
+          "severity": "REVIEW",
+          "field": "ai_result.additional_risks",
+          "message": "the model identified additional risk; it can only raise the decision to REVIEW"
+        },
+        {
+          "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+          "severity": "REVIEW",
+          "field": "evidence.pods[].spec.containers[].resources.requests",
+          "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated"
+        },
+        {
+          "rule_id": "FIRING_ALERTS",
+          "severity": "REVIEW",
+          "field": "evidence.metrics.alerts",
+          "message": "one or more relevant alerts are firing"
+        }
+      ],
+      "metrics": {
+        "memory_working_set_bytes": 38932480.0,
+        "request_rate": 1.8806291686987517,
+        "error_ratio": 0.0,
+        "p95_seconds": 0.00475,
+        "up": 1.0,
+        "low_traffic": false,
+        "firing_alerts": 1,
+        "source_timestamps": {
+          "memory_working_set_bytes": 1794476335.798,
+          "request_rate": 1794476352.832,
+          "error_ratio": 1794476352.832,
+          "p95_seconds": 1794476352.832,
+          "up": 1794476352.832
+        }
+      },
+      "capacity": {
+        "pod_request_cpu_millicores": 50.0,
+        "pod_request_memory_bytes": 67108864.0,
+        "old_pod_request_cpu_millicores": 50.0,
+        "old_pod_request_memory_bytes": 67108864.0,
+        "replicas": 1,
+        "surge_pods": 1,
+        "new_pods_reserved": 1,
+        "additional_pods_reserved": 1,
+        "peak_total_pods": 2,
+        "peak_demo_cpu_millicores": 100.0,
+        "peak_demo_memory_bytes": 134217728.0,
+        "retained_old_replicas": 1,
+        "required_cpu_millicores": 50.0,
+        "required_memory_bytes": 67108864.0,
+        "source": "evidence.capacity",
+        "available_cpu_millicores": 2190.0,
+        "available_memory_bytes": 9185292288.0,
+        "workers_ready": 1,
+        "allocatable_cpu_millicores": 4000.0,
+        "allocatable_memory_bytes": 12406517760.0,
+        "existing_pods_requests_cpu_millicores": 1810.0,
+        "existing_pods_requests_memory_bytes": 3221225472.0,
+        "worker_names": [
+          "worker"
+        ],
+        "overcommitted": false,
+        "projected_total_cpu_millicores": 1860.0,
+        "projected_total_memory_bytes": 3288334336.0
+      },
+      "ai": {
+        "status": "ok",
+        "model": "deepseek-chat",
+        "additional_risks": 3,
+        "citations": 4
+      },
+      "changes_count": 6,
+      "pod_template_changed": true,
+      "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+      "old_render_digest": "beddac43bb6960dfd0bf19044aa703b58cdb61aa9e3f52a2e8fbfe66cdacfa29"
+    }
+  },
+  "created_at": 1794476340,
+  "status_context": "change-guard/release",
+  "report_digest": "d52d2b81cc75fa595167a3730aed49761e96e71637db9418e1c8a183fb1be45e"
+}

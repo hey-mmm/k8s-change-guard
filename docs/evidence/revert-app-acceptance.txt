@@ -1,0 +1,7 @@
+PASS GET /healthz -> 200, JSON status=ok
+PASS GET /readyz -> 200, JSON status=ready
+PASS GET /version -> 200, app_version/git_sha 可追溯
+PASS GET /metrics -> 200, 业务 counter/histogram 已暴露
+PASS GET /work -> 200, JSON request_id 与请求/响应头一致
+PASS metrics 中 /work status=200 counter 增加（194.0 -> 195.0）
+PASS health/readiness 探针未写入业务 SLI 标签

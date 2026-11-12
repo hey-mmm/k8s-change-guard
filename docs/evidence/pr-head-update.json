@@ -1,0 +1,9 @@
+{
+  "pr": 3,
+  "old_head_sha": "66579ed899a9370f0f3536d0eab9ce349e385a3b",
+  "old_evaluation_id": "ev-9d2bd5e3f3256c297af2db68",
+  "old_decision": "BLOCK",
+  "new_head_sha": "3a7d90440e1245c6f3f976c3e9dc10e5f5ca1141",
+  "updated_at": 1794474339,
+  "expected": "new SHA evaluated independently; startup failure BLOCK"
+}

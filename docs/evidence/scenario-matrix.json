@@ -1,0 +1,432 @@
+{
+  "generated_at": 1794472581,
+  "evidence_kind": "synthetic regression; AI stubs are intentional",
+  "total": 25,
+  "passed": 25,
+  "scenarios": [
+    {
+      "scenario": "normal-digest",
+      "expected": "PASS",
+      "rule_decision": "PASS",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "PASS",
+      "passed": true,
+      "findings": []
+    },
+    {
+      "scenario": "zero-replicas",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "REPLICAS_ZERO",
+          "severity": "BLOCK",
+          "field": "Deployment/demo/demo.spec.replicas"
+        }
+      ]
+    },
+    {
+      "scenario": "readiness-deleted",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "PROBE_MISSING",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[0].readinessProbe"
+        }
+      ]
+    },
+    {
+      "scenario": "startup-failure",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "FAULT_INJECTION",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[0].env[6].value"
+        }
+      ]
+    },
+    {
+      "scenario": "error-injection",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "FAULT_INJECTION",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[0].env[4].value"
+        }
+      ]
+    },
+    {
+      "scenario": "latency-injection",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "FAULT_INJECTION",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[0].env[5].value"
+        }
+      ]
+    },
+    {
+      "scenario": "unapproved-image",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "IMAGE_REPOSITORY_NOT_ALLOWED",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[0].image"
+        }
+      ]
+    },
+    {
+      "scenario": "mutable-tag",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "IMAGE_DIGEST_REQUIRED",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[0].image"
+        },
+        {
+          "rule_id": "IMAGE_MUTABLE_TAG",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[0].image"
+        }
+      ]
+    },
+    {
+      "scenario": "memory-below-measured-use",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "MEMORY_LIMIT_TOO_LOW",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[].resources.limits.memory"
+        },
+        {
+          "rule_id": "RESOURCE_REDUCTION",
+          "severity": "REVIEW",
+          "field": "Deployment.spec.template.spec.containers[].resources.memory_limit_bytes"
+        }
+      ]
+    },
+    {
+      "scenario": "large-cpu-reduction",
+      "expected": "REVIEW",
+      "rule_decision": "REVIEW",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "REVIEW",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "RESOURCE_REDUCTION",
+          "severity": "REVIEW",
+          "field": "Deployment.spec.template.spec.containers[].resources.cpu_limit_millicores"
+        }
+      ]
+    },
+    {
+      "scenario": "current-error-rate",
+      "expected": "REVIEW",
+      "rule_decision": "REVIEW",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "REVIEW",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "HIGH_ERROR_RATIO",
+          "severity": "REVIEW",
+          "field": "evidence.metrics.error_ratio"
+        }
+      ]
+    },
+    {
+      "scenario": "current-slow-service",
+      "expected": "REVIEW",
+      "rule_decision": "REVIEW",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "REVIEW",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "HIGH_P95_LATENCY",
+          "severity": "REVIEW",
+          "field": "evidence.metrics.p95_seconds"
+        }
+      ]
+    },
+    {
+      "scenario": "rolling-capacity-shortage",
+      "expected": "REVIEW",
+      "rule_decision": "REVIEW",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "REVIEW",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "CAPACITY_INSUFFICIENT",
+          "severity": "REVIEW",
+          "field": "evidence.capacity"
+        }
+      ]
+    },
+    {
+      "scenario": "replica-capacity-growth",
+      "expected": "REVIEW",
+      "rule_decision": "REVIEW",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "REVIEW",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "CAPACITY_INSUFFICIENT",
+          "severity": "REVIEW",
+          "field": "evidence.capacity"
+        }
+      ]
+    },
+    {
+      "scenario": "metrics-unavailable",
+      "expected": "ERROR",
+      "rule_decision": "ERROR",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "ERROR",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "METRIC_MISSING_OR_INVALID",
+          "severity": "ERROR",
+          "field": "evidence.metrics.memory_working_set_bytes"
+        }
+      ]
+    },
+    {
+      "scenario": "stale-raw-sample",
+      "expected": "ERROR",
+      "rule_decision": "ERROR",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "ERROR",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "METRIC_STALE",
+          "severity": "ERROR",
+          "field": "evidence.metrics.source_timestamps.memory_working_set_bytes"
+        }
+      ]
+    },
+    {
+      "scenario": "missing-counter-series",
+      "expected": "ERROR",
+      "rule_decision": "ERROR",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "ERROR",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "METRIC_SOURCE_MISSING",
+          "severity": "ERROR",
+          "field": "evidence.metrics.series_presence.requests_total"
+        }
+      ]
+    },
+    {
+      "scenario": "nonfinite-memory",
+      "expected": "ERROR",
+      "rule_decision": "ERROR",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "ERROR",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "METRIC_MISSING_OR_INVALID",
+          "severity": "ERROR",
+          "field": "evidence.metrics.memory_working_set_bytes"
+        }
+      ]
+    },
+    {
+      "scenario": "model-timeout",
+      "expected": "ERROR",
+      "rule_decision": "PASS",
+      "ai_status": "error",
+      "ai_risks": [],
+      "actual": "ERROR",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "AI_UNAVAILABLE",
+          "severity": "ERROR",
+          "field": "ai_result.error"
+        }
+      ]
+    },
+    {
+      "scenario": "model-error-cannot-lower-block",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "error",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "REPLICAS_ZERO",
+          "severity": "BLOCK",
+          "field": "Deployment/demo/demo.spec.replicas"
+        },
+        {
+          "rule_id": "AI_UNAVAILABLE",
+          "severity": "ERROR",
+          "field": "ai_result.error"
+        }
+      ]
+    },
+    {
+      "scenario": "model-new-risk",
+      "expected": "REVIEW",
+      "rule_decision": "PASS",
+      "ai_status": "ok",
+      "ai_risks": [
+        {
+          "title": "Additional rollout concern",
+          "detail": "Synthetic model-risk test"
+        }
+      ],
+      "actual": "REVIEW",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "AI_ADDITIONAL_RISK",
+          "severity": "REVIEW",
+          "field": "ai_result.additional_risks"
+        }
+      ]
+    },
+    {
+      "scenario": "unexpected-sidecar",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "CONTAINER_COMMAND_NOT_ALLOWED",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[1].command"
+        },
+        {
+          "rule_id": "CONTAINER_NAME_NOT_ALLOWED",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[1].name"
+        },
+        {
+          "rule_id": "CONTAINER_SET_NOT_ALLOWED",
+          "severity": "BLOCK",
+          "field": "Deployment/demo/demo.spec.template.spec.containers"
+        }
+      ]
+    },
+    {
+      "scenario": "envfrom-fault-reference",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "ENV_FROM_NOT_ALLOWED",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[0].envFrom"
+        }
+      ]
+    },
+    {
+      "scenario": "deployment-deleted",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "DEPLOYMENT_MISSING",
+          "severity": "BLOCK",
+          "field": "Deployment/demo/demo"
+        }
+      ]
+    },
+    {
+      "scenario": "privileged-container",
+      "expected": "BLOCK",
+      "rule_decision": "BLOCK",
+      "ai_status": "ok",
+      "ai_risks": [],
+      "actual": "BLOCK",
+      "passed": true,
+      "findings": [
+        {
+          "rule_id": "PRIVILEGED_CONTAINER",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[0].securityContext.privileged"
+        }
+      ]
+    }
+  ]
+}

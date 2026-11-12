@@ -1,0 +1,7 @@
+{
+  "version": "0.2.3",
+  "installed_at": 1794476389,
+  "artifact_sha256": "fe9f3935f8bd725992d2b2fef70cbe2735ced7f356bf0640d00652ba331ac820",
+  "probe": "{\"version\": \"0.2.3\", \"policy_binding\": {\"guard_version\": \"0.2.3\", \"rule_version\": \"2026.11.1\", \"policy_schema_version\": 1, \"policy_digest\": \"141d3ad06c9d5f70a6bed27a4018f9808e47d4f2ff2e1d2c8c48880ad9505591\"}, \"approved_chart_digest\": \"194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d\"}\nactive\nactive\n",
+  "ansible_two_passes": "success; second changed=0"
+}

@@ -1,0 +1,10 @@
+{
+  "evaluation_id": "ev-2d5caa588956d577aa7d7666",
+  "pr": 2,
+  "head_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+  "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "reason": "受托验收操作员：候选故障开关关闭，仅digest/版本更新；明确接受单worker现有未预留requests与CPUOvercommit风险。本次无新增副本资源，surge50m/64Mi可容纳，随后核验实际新Pod、镜像和应用版本及正流量窗口。",
+  "comment_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/2#issuecomment-6819880820",
+  "actor": "hey-mmm",
+  "at": "2026-11-12T09:28:42Z"
+}

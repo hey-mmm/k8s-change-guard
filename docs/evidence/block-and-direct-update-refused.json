@@ -1,0 +1,23 @@
+{
+  "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "probe_commit": "7b31645b3ab1c9c833126fd396a9a0f56c19667f",
+  "direct_main_update": {
+    "http": 422,
+    "body": {
+      "message": "Repository rule violations found\n\n2 of 2 required status checks are expected.\n\nCannot update this protected ref.\n\nChanges must be made through a pull request.\n\n",
+      "documentation_url": "https://docs.github.com/rest/git/refs#update-a-reference",
+      "status": "422"
+    }
+  },
+  "dangerous_pr_merge": {
+    "pr": 3,
+    "head_sha": "66579ed899a9370f0f3536d0eab9ce349e385a3b",
+    "http": 405,
+    "body": {
+      "message": "Repository rule violations found\n\nRequired status check \"change-guard/release\" is failing.\n\nCannot update this protected ref.\n\n",
+      "documentation_url": "https://docs.github.com/rest/pulls/pulls#merge-a-pull-request",
+      "status": "405"
+    }
+  },
+  "final_main_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221"
+}

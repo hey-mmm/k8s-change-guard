@@ -1,0 +1,799 @@
+
+PLAY [Deploy k8s change guard] *************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [master]
+
+TASK [change_guard : Require a Debian/Ubuntu host for the pinned package names] ***
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Require a literal release version (no range or shell metacharacters)] ***
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Require a trusted artifact SHA-256] ***********************
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Check whether Helm and kubectl are already preinstalled] ***
+ok: [master] => (item=/usr/local/bin/helm)
+ok: [master] => (item=/usr/bin/kubectl)
+
+TASK [change_guard : Require pinned checksums only for binaries that must be downloaded] ***
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Check the trusted artifact exists and hash it on the controller] ***
+ok: [master -> localhost]
+
+TASK [change_guard : Require the controller artifact to match the trusted SHA-256] ***
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Check controller-side credential sources exist] ***********
+ok: [master -> localhost] => (item=/home/myt/change-guard-deploy/secrets/github-token)
+ok: [master -> localhost] => (item=/home/myt/change-guard-deploy/secrets/deepseek-token)
+ok: [master -> localhost] => (item=/home/myt/.kube/config)
+
+TASK [change_guard : Fail when trusted inputs are missing] *********************
+ok: [master] => (item={'changed': False, 'failed': False, 'ansible_loop_var': 'item', 'item': '/home/myt/change-guard-deploy/secrets/github-token', 'stat': {'exists': True, 'path': '/home/myt/change-guard-deploy/secrets/github-token', 'mode': '0600', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 1000, 'gid': 1000, 'size': 93, 'inode': 1048919, 'dev': 64768, 'nlink': 1, 'atime': 1794475513.0256257, 'mtime': 1794476252.9675047, 'ctime': 1794476252.9715047, 'wusr': True, 'rusr': True, 'xusr': False, 'wgrp': False, 'rgrp': False, 'xgrp': False, 'woth': False, 'roth': False, 'xoth': False, 'isuid': False, 'isgid': False, 'blocks': 8, 'disk_usage_bytes': 4096, 'block_size': 4096, 'device_type': 0, 'readable': True, 'writeable': True, 'executable': False, 'pw_name': 'myt', 'gr_name': 'myt', 'checksum': 'aca8aff32054ff701ca74bb6adea0463d4ce9031', 'mimetype': 'text/plain', 'charset': 'us-ascii', 'version': '1843694894', 'attributes': ['extents'], 'attr_flags': 'e'}}) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "failed": false,
+        "item": "/home/myt/change-guard-deploy/secrets/github-token",
+        "stat": {
+            "atime": 1794475513.0256257,
+            "attr_flags": "e",
+            "attributes": [
+                "extents"
+            ],
+            "block_size": 4096,
+            "blocks": 8,
+            "charset": "us-ascii",
+            "checksum": "aca8aff32054ff701ca74bb6adea0463d4ce9031",
+            "ctime": 1794476252.9715047,
+            "dev": 64768,
+            "device_type": 0,
+            "disk_usage_bytes": 4096,
+            "executable": false,
+            "exists": true,
+            "gid": 1000,
+            "gr_name": "myt",
+            "inode": 1048919,
+            "isblk": false,
+            "ischr": false,
+            "isdir": false,
+            "isfifo": false,
+            "isgid": false,
+            "islnk": false,
+            "isreg": true,
+            "issock": false,
+            "isuid": false,
+            "mimetype": "text/plain",
+            "mode": "0600",
+            "mtime": 1794476252.9675047,
+            "nlink": 1,
+            "path": "/home/myt/change-guard-deploy/secrets/github-token",
+            "pw_name": "myt",
+            "readable": true,
+            "rgrp": false,
+            "roth": false,
+            "rusr": true,
+            "size": 93,
+            "uid": 1000,
+            "version": "1843694894",
+            "wgrp": false,
+            "woth": false,
+            "writeable": true,
+            "wusr": true,
+            "xgrp": false,
+            "xoth": false,
+            "xusr": false
+        }
+    },
+    "msg": "All assertions passed"
+}
+ok: [master] => (item={'changed': False, 'failed': False, 'ansible_loop_var': 'item', 'item': '/home/myt/change-guard-deploy/secrets/deepseek-token', 'stat': {'exists': True, 'path': '/home/myt/change-guard-deploy/secrets/deepseek-token', 'mode': '0600', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 1000, 'gid': 1000, 'size': 36, 'inode': 1048918, 'dev': 64768, 'nlink': 1, 'atime': 1794472023.4400396, 'mtime': 1794472005.3164053, 'ctime': 1794472005.3164053, 'wusr': True, 'rusr': True, 'xusr': False, 'wgrp': False, 'rgrp': False, 'xgrp': False, 'woth': False, 'roth': False, 'xoth': False, 'isuid': False, 'isgid': False, 'blocks': 8, 'disk_usage_bytes': 4096, 'block_size': 4096, 'device_type': 0, 'readable': True, 'writeable': True, 'executable': False, 'pw_name': 'myt', 'gr_name': 'myt', 'checksum': 'd83b87a5f42ed2b036823fbd16cc8d55ac6367d6', 'mimetype': 'text/plain', 'charset': 'us-ascii', 'version': '3820734725', 'attributes': ['extents'], 'attr_flags': 'e'}}) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "failed": false,
+        "item": "/home/myt/change-guard-deploy/secrets/deepseek-token",
+        "stat": {
+            "atime": 1794472023.4400396,
+            "attr_flags": "e",
+            "attributes": [
+                "extents"
+            ],
+            "block_size": 4096,
+            "blocks": 8,
+            "charset": "us-ascii",
+            "checksum": "d83b87a5f42ed2b036823fbd16cc8d55ac6367d6",
+            "ctime": 1794472005.3164053,
+            "dev": 64768,
+            "device_type": 0,
+            "disk_usage_bytes": 4096,
+            "executable": false,
+            "exists": true,
+            "gid": 1000,
+            "gr_name": "myt",
+            "inode": 1048918,
+            "isblk": false,
+            "ischr": false,
+            "isdir": false,
+            "isfifo": false,
+            "isgid": false,
+            "islnk": false,
+            "isreg": true,
+            "issock": false,
+            "isuid": false,
+            "mimetype": "text/plain",
+            "mode": "0600",
+            "mtime": 1794472005.3164053,
+            "nlink": 1,
+            "path": "/home/myt/change-guard-deploy/secrets/deepseek-token",
+            "pw_name": "myt",
+            "readable": true,
+            "rgrp": false,
+            "roth": false,
+            "rusr": true,
+            "size": 36,
+            "uid": 1000,
+            "version": "3820734725",
+            "wgrp": false,
+            "woth": false,
+            "writeable": true,
+            "wusr": true,
+            "xgrp": false,
+            "xoth": false,
+            "xusr": false
+        }
+    },
+    "msg": "All assertions passed"
+}
+ok: [master] => (item={'changed': False, 'failed': False, 'ansible_loop_var': 'item', 'item': '/home/myt/.kube/config', 'stat': {'exists': True, 'path': '/home/myt/.kube/config', 'mode': '0600', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 1000, 'gid': 1000, 'size': 5637, 'inode': 415363, 'dev': 64768, 'nlink': 1, 'atime': 1794393609.6315455, 'mtime': 1794393600.8197486, 'ctime': 1794393609.011559, 'wusr': True, 'rusr': True, 'xusr': False, 'wgrp': False, 'rgrp': False, 'xgrp': False, 'woth': False, 'roth': False, 'xoth': False, 'isuid': False, 'isgid': False, 'blocks': 16, 'disk_usage_bytes': 8192, 'block_size': 4096, 'device_type': 0, 'readable': True, 'writeable': True, 'executable': False, 'pw_name': 'myt', 'gr_name': 'myt', 'checksum': '7a9c3d830607744faf9a65b17d578ac5a05be97a', 'mimetype': 'text/plain', 'charset': 'us-ascii', 'version': '1101266717', 'attributes': ['extents'], 'attr_flags': 'e'}}) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "failed": false,
+        "item": "/home/myt/.kube/config",
+        "stat": {
+            "atime": 1794393609.6315455,
+            "attr_flags": "e",
+            "attributes": [
+                "extents"
+            ],
+            "block_size": 4096,
+            "blocks": 16,
+            "charset": "us-ascii",
+            "checksum": "7a9c3d830607744faf9a65b17d578ac5a05be97a",
+            "ctime": 1794393609.011559,
+            "dev": 64768,
+            "device_type": 0,
+            "disk_usage_bytes": 8192,
+            "executable": false,
+            "exists": true,
+            "gid": 1000,
+            "gr_name": "myt",
+            "inode": 415363,
+            "isblk": false,
+            "ischr": false,
+            "isdir": false,
+            "isfifo": false,
+            "isgid": false,
+            "islnk": false,
+            "isreg": true,
+            "issock": false,
+            "isuid": false,
+            "mimetype": "text/plain",
+            "mode": "0600",
+            "mtime": 1794393600.8197486,
+            "nlink": 1,
+            "path": "/home/myt/.kube/config",
+            "pw_name": "myt",
+            "readable": true,
+            "rgrp": false,
+            "roth": false,
+            "rusr": true,
+            "size": 5637,
+            "uid": 1000,
+            "version": "1101266717",
+            "wgrp": false,
+            "woth": false,
+            "writeable": true,
+            "wusr": true,
+            "xgrp": false,
+            "xoth": false,
+            "xusr": false
+        }
+    },
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Check controller kubectl is available to the operator (not the service)] ***
+ok: [master -> localhost]
+
+TASK [change_guard : Read unprivileged user-namespace support when the sysctl exists] ***
+ok: [master]
+
+TASK [change_guard : Require unprivileged user namespaces for bubblewrap] ******
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Map host architecture to release asset architecture] ******
+ok: [master]
+
+TASK [change_guard : Refuse unsupported architectures] *************************
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Install runtime, venv, YAML/requests and bubblewrap packages] ***
+ok: [master]
+
+TASK [change_guard : Inspect preinstalled Helm and kubectl binaries] ***********
+ok: [master] => (item=/usr/local/bin/helm)
+ok: [master] => (item=/usr/bin/kubectl)
+
+TASK [change_guard : Verify a preinstalled Helm is usable] *********************
+ok: [master]
+
+TASK [change_guard : Verify a preinstalled kubectl is usable] ******************
+ok: [master]
+
+TASK [change_guard : Download pinned Helm archive as a fallback] ***************
+skipping: [master]
+
+TASK [change_guard : Extract pinned Helm archive as a fallback] ****************
+skipping: [master]
+
+TASK [change_guard : Install pinned Helm binary as a fallback] *****************
+skipping: [master]
+
+TASK [change_guard : Download pinned kubectl binary as a fallback] *************
+skipping: [master]
+
+TASK [change_guard : Verify the selected Helm is executable] *******************
+ok: [master]
+
+TASK [change_guard : Verify the selected kubectl is executable] ****************
+ok: [master]
+
+TASK [change_guard : Verify bubblewrap is present] *****************************
+ok: [master]
+
+TASK [change_guard : Create the independent service group] *********************
+ok: [master]
+
+TASK [change_guard : Create the unprivileged service user (no login shell)] ****
+ok: [master]
+
+TASK [change_guard : Create the private state directory] ***********************
+ok: [master]
+
+TASK [change_guard : Create the configuration directory] ***********************
+ok: [master]
+
+TASK [change_guard : Create the trusted release root] **************************
+ok: [master]
+
+TASK [change_guard : Create the controller-side token-expiry checker directory] ***
+ok: [master]
+
+TASK [change_guard : Install the token-expiry checker used by rotate-token playbook] ***
+ok: [master]
+
+TASK [change_guard : Compute the immutable release directory] ******************
+ok: [master]
+
+TASK [change_guard : Refuse unsafe release paths] ******************************
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Inspect an existing release marker and its recorded artifact digest] ***
+ok: [master] => (item=/opt/change-guard/releases/0.2.3/.complete)
+ok: [master] => (item=/opt/change-guard/releases/0.2.3/.artifact.sha256)
+ok: [master] => (item=/opt/change-guard/releases/0.2.3/venv/bin/change-guard)
+
+TASK [change_guard : Read the digest recorded for an existing release] *********
+skipping: [master]
+
+TASK [change_guard : Decide whether the version is already installed] **********
+ok: [master]
+
+TASK [change_guard : Reject content drift for an already completed version] ****
+skipping: [master]
+
+TASK [change_guard : Remove an incomplete prior release directory (fixed trusted path)] ***
+ok: [master]
+
+TASK [change_guard : Create the release directory] *****************************
+changed: [master]
+
+TASK [change_guard : Copy the trusted tarball] *********************************
+changed: [master]
+
+TASK [change_guard : Hash the copied tarball on the host] **********************
+ok: [master]
+
+TASK [change_guard : Require the copied artifact SHA-256 to match] *************
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Extract only the trusted tarball contents] ****************
+changed: [master]
+
+TASK [change_guard : Create an isolated virtualenv with distro PyYAML/requests] ***
+changed: [master]
+
+TASK [change_guard : Locate the virtualenv site-packages directory] ************
+ok: [master]
+
+TASK [change_guard : Install a path entry for the immutable trusted package] ***
+changed: [master]
+
+TASK [change_guard : Install the change-guard command wrapper without a build backend] ***
+changed: [master]
+
+TASK [change_guard : Mark the trusted package installed] ***********************
+changed: [master]
+
+TASK [change_guard : Record the immutable artifact digest] *********************
+changed: [master]
+
+TASK [change_guard : Mark the release complete] ********************************
+changed: [master]
+
+TASK [change_guard : Point the service at the immutable current release] *******
+changed: [master]
+
+TASK [change_guard : Ensure release directories are traversable but not group/world writable] ***
+ok: [master]
+
+TASK [change_guard : Find accidentally executable trusted source files] ********
+ok: [master]
+
+TASK [change_guard : Refuse executable trusted source files] *******************
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Apply namespace, service account and least-privilege RBAC] ***
+ok: [master -> localhost]
+
+TASK [change_guard : Require a sane TokenRequest duration] *********************
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Inspect the existing service kubeconfig] ******************
+ok: [master]
+
+TASK [change_guard : Check remaining token lifetime when a kubeconfig already exists] ***
+ok: [master]
+
+TASK [change_guard : Decide whether a TokenRequest is needed] ******************
+ok: [master]
+
+TASK [change_guard : Read the controller bootstrap cluster endpoint and CA] ****
+skipping: [master]
+
+TASK [change_guard : Parse bootstrap cluster facts] ****************************
+skipping: [master]
+
+TASK [change_guard : Require a CA and server for the service kubeconfig] *******
+skipping: [master]
+
+TASK [change_guard : Mint an explicitly expiring TokenRequest for the service account] ***
+skipping: [master]
+
+TASK [change_guard : Validate the minted token] ********************************
+skipping: [master]
+
+TASK [change_guard : Install the short-lived service kubeconfig atomically (0600)] ***
+skipping: [master]
+
+TASK [change_guard : Record reusable token decision] ***************************
+ok: [master] => {
+    "msg": "Reusing an unexpired TokenRequest kubeconfig; run ansible/rotate-token.yml before TTL expiry."
+}
+
+TASK [change_guard : Install the GitHub token (0600, service-owned, never in inventory)] ***
+ok: [master]
+
+TASK [change_guard : Install the DeepSeek token (0600, service-owned)] *********
+ok: [master]
+
+TASK [change_guard : Inspect optional merge deploy-key staging files] **********
+ok: [master -> localhost] => (item=/home/myt/change-guard-deploy/secrets/merge-deploy-key)
+ok: [master -> localhost] => (item=/home/myt/change-guard-deploy/secrets/github_known_hosts)
+
+TASK [change_guard : Install the independent merge deploy key (0600, service-owned)] ***
+ok: [master]
+
+TASK [change_guard : Install the merge SSH known-hosts file (0600, service-owned)] ***
+ok: [master]
+
+TASK [change_guard : Install the non-secret daemon configuration] **************
+ok: [master]
+
+TASK [change_guard : Install explicit proxy/no_proxy environment (0600, service-owned)] ***
+ok: [master]
+
+TASK [change_guard : Ensure credential files cannot be read by other users] ****
+ok: [master] => (item=/etc/change-guard/github-token)
+ok: [master] => (item=/etc/change-guard/deepseek-token)
+ok: [master] => (item=/etc/change-guard/kubeconfig)
+ok: [master] => (item=/etc/change-guard/proxy.env)
+
+TASK [change_guard : Enforce 0600 on the optional merge deploy key] ************
+ok: [master]
+
+TASK [change_guard : Enforce service ownership on the optional merge known-hosts file] ***
+ok: [master]
+
+TASK [change_guard : Install the hardened systemd unit] ************************
+ok: [master]
+
+TASK [change_guard : Reload systemd and ensure the service is enabled and running] ***
+ok: [master]
+
+TASK [change_guard : Install fixed root-only ServiceAccount token renewal helper] ***
+ok: [master]
+
+TASK [change_guard : Install token renewal units] ******************************
+ok: [master] => (item=change-guard-token-renew.service)
+ok: [master] => (item=change-guard-token-renew.timer)
+
+TASK [change_guard : Reload renewal units when changed] ************************
+skipping: [master]
+
+TASK [change_guard : Enable fixed token renewal timer] *************************
+ok: [master]
+
+TASK [change_guard : Flush pending restarts before verification] ***************
+
+RUNNING HANDLER [change_guard : restart change-guard] **************************
+changed: [master]
+
+TASK [change_guard : Verify the service is active] *****************************
+ok: [master]
+
+TASK [change_guard : Verify the service account is a system user without a login shell] ***
+ok: [master]
+
+TASK [change_guard : Stat sensitive configuration files] ***********************
+ok: [master] => (item=/etc/change-guard/github-token)
+ok: [master] => (item=/etc/change-guard/deepseek-token)
+ok: [master] => (item=/etc/change-guard/kubeconfig)
+ok: [master] => (item=/etc/change-guard/proxy.env)
+
+TASK [change_guard : Enforce 0600 on every credential file] ********************
+ok: [master] => (item={'changed': False, 'failed': False, 'ansible_loop_var': 'item', 'item': '/etc/change-guard/github-token', 'stat': {'exists': True, 'path': '/etc/change-guard/github-token', 'mode': '0600', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 998, 'gid': 998, 'size': 93, 'inode': 1055213, 'dev': 64768, 'nlink': 1, 'atime': 1794473799.7142236, 'mtime': 1794473793.2972872, 'ctime': 1794473793.2943459, 'wusr': True, 'rusr': True, 'xusr': False, 'wgrp': False, 'rgrp': False, 'xgrp': False, 'woth': False, 'roth': False, 'xoth': False, 'isuid': False, 'isgid': False, 'blocks': 8, 'disk_usage_bytes': 4096, 'block_size': 4096, 'device_type': 0, 'readable': True, 'writeable': True, 'executable': False, 'pw_name': 'change-guard', 'gr_name': 'change-guard', 'checksum': 'aca8aff32054ff701ca74bb6adea0463d4ce9031', 'mimetype': 'text/plain', 'charset': 'us-ascii', 'version': '1045682349', 'attributes': ['extents'], 'attr_flags': 'e'}}) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "failed": false,
+        "item": "/etc/change-guard/github-token",
+        "stat": {
+            "atime": 1794473799.7142236,
+            "attr_flags": "e",
+            "attributes": [
+                "extents"
+            ],
+            "block_size": 4096,
+            "blocks": 8,
+            "charset": "us-ascii",
+            "checksum": "aca8aff32054ff701ca74bb6adea0463d4ce9031",
+            "ctime": 1794473793.2943459,
+            "dev": 64768,
+            "device_type": 0,
+            "disk_usage_bytes": 4096,
+            "executable": false,
+            "exists": true,
+            "gid": 998,
+            "gr_name": "change-guard",
+            "inode": 1055213,
+            "isblk": false,
+            "ischr": false,
+            "isdir": false,
+            "isfifo": false,
+            "isgid": false,
+            "islnk": false,
+            "isreg": true,
+            "issock": false,
+            "isuid": false,
+            "mimetype": "text/plain",
+            "mode": "0600",
+            "mtime": 1794473793.2972872,
+            "nlink": 1,
+            "path": "/etc/change-guard/github-token",
+            "pw_name": "change-guard",
+            "readable": true,
+            "rgrp": false,
+            "roth": false,
+            "rusr": true,
+            "size": 93,
+            "uid": 998,
+            "version": "1045682349",
+            "wgrp": false,
+            "woth": false,
+            "writeable": true,
+            "wusr": true,
+            "xgrp": false,
+            "xoth": false,
+            "xusr": false
+        }
+    },
+    "msg": "All assertions passed"
+}
+ok: [master] => (item={'changed': False, 'failed': False, 'ansible_loop_var': 'item', 'item': '/etc/change-guard/deepseek-token', 'stat': {'exists': True, 'path': '/etc/change-guard/deepseek-token', 'mode': '0600', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 998, 'gid': 998, 'size': 36, 'inode': 1055171, 'dev': 64768, 'nlink': 1, 'atime': 1794472228.891941, 'mtime': 1794472218.6641436, 'ctime': 1794472218.7641416, 'wusr': True, 'rusr': True, 'xusr': False, 'wgrp': False, 'rgrp': False, 'xgrp': False, 'woth': False, 'roth': False, 'xoth': False, 'isuid': False, 'isgid': False, 'blocks': 8, 'disk_usage_bytes': 4096, 'block_size': 4096, 'device_type': 0, 'readable': True, 'writeable': True, 'executable': False, 'pw_name': 'change-guard', 'gr_name': 'change-guard', 'checksum': 'd83b87a5f42ed2b036823fbd16cc8d55ac6367d6', 'mimetype': 'text/plain', 'charset': 'us-ascii', 'version': '760444565', 'attributes': ['extents'], 'attr_flags': 'e'}}) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "failed": false,
+        "item": "/etc/change-guard/deepseek-token",
+        "stat": {
+            "atime": 1794472228.891941,
+            "attr_flags": "e",
+            "attributes": [
+                "extents"
+            ],
+            "block_size": 4096,
+            "blocks": 8,
+            "charset": "us-ascii",
+            "checksum": "d83b87a5f42ed2b036823fbd16cc8d55ac6367d6",
+            "ctime": 1794472218.7641416,
+            "dev": 64768,
+            "device_type": 0,
+            "disk_usage_bytes": 4096,
+            "executable": false,
+            "exists": true,
+            "gid": 998,
+            "gr_name": "change-guard",
+            "inode": 1055171,
+            "isblk": false,
+            "ischr": false,
+            "isdir": false,
+            "isfifo": false,
+            "isgid": false,
+            "islnk": false,
+            "isreg": true,
+            "issock": false,
+            "isuid": false,
+            "mimetype": "text/plain",
+            "mode": "0600",
+            "mtime": 1794472218.6641436,
+            "nlink": 1,
+            "path": "/etc/change-guard/deepseek-token",
+            "pw_name": "change-guard",
+            "readable": true,
+            "rgrp": false,
+            "roth": false,
+            "rusr": true,
+            "size": 36,
+            "uid": 998,
+            "version": "760444565",
+            "wgrp": false,
+            "woth": false,
+            "writeable": true,
+            "wusr": true,
+            "xgrp": false,
+            "xoth": false,
+            "xusr": false
+        }
+    },
+    "msg": "All assertions passed"
+}
+ok: [master] => (item={'changed': False, 'failed': False, 'ansible_loop_var': 'item', 'item': '/etc/change-guard/kubeconfig', 'stat': {'exists': True, 'path': '/etc/change-guard/kubeconfig', 'mode': '0600', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 998, 'gid': 998, 'size': 2760, 'inode': 1058353, 'dev': 64768, 'nlink': 1, 'atime': 1794474925.4806635, 'mtime': 1794474925.4206645, 'ctime': 1794474925.4206645, 'wusr': True, 'rusr': True, 'xusr': False, 'wgrp': False, 'rgrp': False, 'xgrp': False, 'woth': False, 'roth': False, 'xoth': False, 'isuid': False, 'isgid': False, 'blocks': 8, 'disk_usage_bytes': 4096, 'block_size': 4096, 'device_type': 0, 'readable': True, 'writeable': True, 'executable': False, 'pw_name': 'change-guard', 'gr_name': 'change-guard', 'checksum': '82980de6fbe910486f55f49a2fab221a0805e6fb', 'mimetype': 'text/plain', 'charset': 'us-ascii', 'version': '4264301565', 'attributes': ['extents'], 'attr_flags': 'e'}}) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "failed": false,
+        "item": "/etc/change-guard/kubeconfig",
+        "stat": {
+            "atime": 1794474925.4806635,
+            "attr_flags": "e",
+            "attributes": [
+                "extents"
+            ],
+            "block_size": 4096,
+            "blocks": 8,
+            "charset": "us-ascii",
+            "checksum": "82980de6fbe910486f55f49a2fab221a0805e6fb",
+            "ctime": 1794474925.4206645,
+            "dev": 64768,
+            "device_type": 0,
+            "disk_usage_bytes": 4096,
+            "executable": false,
+            "exists": true,
+            "gid": 998,
+            "gr_name": "change-guard",
+            "inode": 1058353,
+            "isblk": false,
+            "ischr": false,
+            "isdir": false,
+            "isfifo": false,
+            "isgid": false,
+            "islnk": false,
+            "isreg": true,
+            "issock": false,
+            "isuid": false,
+            "mimetype": "text/plain",
+            "mode": "0600",
+            "mtime": 1794474925.4206645,
+            "nlink": 1,
+            "path": "/etc/change-guard/kubeconfig",
+            "pw_name": "change-guard",
+            "readable": true,
+            "rgrp": false,
+            "roth": false,
+            "rusr": true,
+            "size": 2760,
+            "uid": 998,
+            "version": "4264301565",
+            "wgrp": false,
+            "woth": false,
+            "writeable": true,
+            "wusr": true,
+            "xgrp": false,
+            "xoth": false,
+            "xusr": false
+        }
+    },
+    "msg": "All assertions passed"
+}
+ok: [master] => (item={'changed': False, 'failed': False, 'ansible_loop_var': 'item', 'item': '/etc/change-guard/proxy.env', 'stat': {'exists': True, 'path': '/etc/change-guard/proxy.env', 'mode': '0600', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 998, 'gid': 998, 'size': 412, 'inode': 1056735, 'dev': 64768, 'nlink': 1, 'atime': 1794472501.6465693, 'mtime': 1794472499.2781253, 'ctime': 1794472499.2746158, 'wusr': True, 'rusr': True, 'xusr': False, 'wgrp': False, 'rgrp': False, 'xgrp': False, 'woth': False, 'roth': False, 'xoth': False, 'isuid': False, 'isgid': False, 'blocks': 8, 'disk_usage_bytes': 4096, 'block_size': 4096, 'device_type': 0, 'readable': True, 'writeable': True, 'executable': False, 'pw_name': 'change-guard', 'gr_name': 'change-guard', 'checksum': '23b21b8d8028a97bcf97a67c6291f38ee54b1f47', 'mimetype': 'text/plain', 'charset': 'us-ascii', 'version': '3205487644', 'attributes': ['extents'], 'attr_flags': 'e'}}) => {
+    "ansible_loop_var": "item",
+    "changed": false,
+    "item": {
+        "ansible_loop_var": "item",
+        "changed": false,
+        "failed": false,
+        "item": "/etc/change-guard/proxy.env",
+        "stat": {
+            "atime": 1794472501.6465693,
+            "attr_flags": "e",
+            "attributes": [
+                "extents"
+            ],
+            "block_size": 4096,
+            "blocks": 8,
+            "charset": "us-ascii",
+            "checksum": "23b21b8d8028a97bcf97a67c6291f38ee54b1f47",
+            "ctime": 1794472499.2746158,
+            "dev": 64768,
+            "device_type": 0,
+            "disk_usage_bytes": 4096,
+            "executable": false,
+            "exists": true,
+            "gid": 998,
+            "gr_name": "change-guard",
+            "inode": 1056735,
+            "isblk": false,
+            "ischr": false,
+            "isdir": false,
+            "isfifo": false,
+            "isgid": false,
+            "islnk": false,
+            "isreg": true,
+            "issock": false,
+            "isuid": false,
+            "mimetype": "text/plain",
+            "mode": "0600",
+            "mtime": 1794472499.2781253,
+            "nlink": 1,
+            "path": "/etc/change-guard/proxy.env",
+            "pw_name": "change-guard",
+            "readable": true,
+            "rgrp": false,
+            "roth": false,
+            "rusr": true,
+            "size": 412,
+            "uid": 998,
+            "version": "3205487644",
+            "wgrp": false,
+            "woth": false,
+            "writeable": true,
+            "wusr": true,
+            "xgrp": false,
+            "xoth": false,
+            "xusr": false
+        }
+    },
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Verify the installed daemon imports and exposes its CLI] ***
+ok: [master]
+
+TASK [change_guard : Verify the short-lived kubeconfig has not expired] ********
+ok: [master]
+
+TASK [change_guard : Fail closed when the service token is expired or unreadable] ***
+ok: [master] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [change_guard : Verify read-only node access] *****************************
+ok: [master]
+
+TASK [change_guard : Verify cluster-wide pod listing for capacity accounting] ***
+ok: [master]
+
+TASK [change_guard : Verify separate Argo CD application read access] **********
+ok: [master]
+
+TASK [change_guard : Verify the service cannot read Secrets] *******************
+ok: [master]
+
+TASK [change_guard : Verify the service cannot read Pod logs] ******************
+ok: [master]
+
+TASK [change_guard : Verify the service cannot exec into Pods] *****************
+ok: [master]
+
+TASK [change_guard : Verify the service cannot write workloads] ****************
+ok: [master]
+
+TASK [change_guard : Verify the service cannot modify the Argo CD application] ***
+ok: [master]
+
+PLAY RECAP *********************************************************************
+master                     : ok=87   changed=11   unreachable=0    failed=0    skipped=13   rescued=0    ignored=0   
+
+[WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+[DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /home/myt/change-guard-deploy/ansible/roles/change_guard/tasks/preflight.yml:5:9
+
+3   ansible.builtin.assert:
+4     that:
+5       - ansible_os_family == "Debian"
+          ^ column 9
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+[DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /home/myt/change-guard-deploy/ansible/roles/change_guard/tasks/packages.yml:4:24
+
+2 - name: Map host architecture to release asset architecture
+3   ansible.builtin.set_fact:
+4     change_guard_arch: >-
+                         ^ column 24
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+

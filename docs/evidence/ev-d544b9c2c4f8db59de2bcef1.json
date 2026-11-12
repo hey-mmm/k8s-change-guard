@@ -1,0 +1,394 @@
+{
+  "schema_version": 1,
+  "evaluation_id": "ev-d544b9c2c4f8db59de2bcef1",
+  "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+  "pull_request": {
+    "number": 3,
+    "title": "Acceptance: BLOCK zero replica release",
+    "author": "hey-mmm",
+    "head_ref": "acceptance/block-zero-replicas",
+    "head_repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+    "base_ref": "main",
+    "pr_base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221"
+  },
+  "head_sha": "3a7d90440e1245c6f3f976c3e9dc10e5f5ca1141",
+  "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "base_branch": "main",
+  "head_tree_sha": "d5cbfb90378f5f920b14b0ad709c8c1210cfda86",
+  "base_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+  "head_tree_digest": "647562a1e6ecedb1164029e085417ffad599483ffcac7d2167bd4c421c6a8289",
+  "base_tree_digest": "a1a155a804d284291a6f94084c66b040ca629885a3f151e8afd28b22b05ed103",
+  "tree_entry_count": 173,
+  "changed_paths": [
+    "gitops/demo/values.yaml"
+  ],
+  "changed_count": 1,
+  "tree_diff_truncated": false,
+  "argo": {
+    "argo_source_changed": false,
+    "argo_application_changed": false,
+    "argo_project_changed": false,
+    "argo_manifest_error": false,
+    "argo_changed_paths": [],
+    "argo_application_count": 2
+  },
+  "render_digest": "542875c712e3919aaf6bf700a99cfd60f9f53d18b932e8eeb778d7791d1daef2",
+  "old_render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+  "deployment_images": [
+    {
+      "container": "demo-service",
+      "init": false,
+      "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d"
+    }
+  ],
+  "decision": "BLOCK",
+  "evaluated_at": 1794474349,
+  "expires_at": 1794474631,
+  "evidence_ttl_seconds": 300,
+  "rule_version": "2026.11.1",
+  "evidence": {
+    "collected_at": 1794474345,
+    "errors": [],
+    "metrics": {
+      "memory_working_set_bytes": 39059456.0,
+      "request_rate": 1.936814921895833,
+      "error_ratio": 0.0,
+      "p95_seconds": 0.00475,
+      "alerts": [
+        {
+          "name": "KubeCPUOvercommit",
+          "state": "firing",
+          "labels": {
+            "alertname": "KubeCPUOvercommit",
+            "severity": "warning"
+          }
+        },
+        {
+          "name": "Watchdog",
+          "state": "firing",
+          "labels": {
+            "alertname": "Watchdog",
+            "severity": "none"
+          }
+        }
+      ],
+      "source_timestamps": {
+        "up": 1794474331,
+        "memory_working_set_bytes": 1794474336,
+        "request_rate": 1794474331,
+        "error_ratio": 1794474331,
+        "p95_seconds": 1794474331,
+        "alerts": 1794474345
+      }
+    },
+    "capacity": {
+      "available_cpu_millicores": 2190.0,
+      "available_memory_bytes": 9185292288.0,
+      "allocatable_cpu_millicores": 4000.0,
+      "allocatable_memory_bytes": 12406517760.0,
+      "workers_ready": 1
+    },
+    "deployment": {
+      "name": "demo",
+      "namespace": "demo",
+      "replicas": 1,
+      "ready_replicas": 1,
+      "images": [
+        "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d"
+      ]
+    },
+    "node_count": 2,
+    "pod_count": 28
+  },
+  "evidence_digest": "d0ba20fa3240e47cff0a661e348b1a327d53b5265518d140b6242b4f817ebf99",
+  "ai": {
+    "status": "ok",
+    "model": "deepseek-chat",
+    "summary": "Decision preview is BLOCK and must stand: the candidate Deployment sets DEMO_STARTUP_FAIL=true, a deliberate fault-injection value that the trusted cases say to reject. The change is a single env value in Deployment/demo/demo (pod template), so it would roll a new Pod that prints startup_failed and CrashLoops. Per the trusted cases this is release protection, not a full outage: with maxUnavailable: 0 / maxSurge: 1 the old Pod stays Ready and keeps serving, so a green old Pod must not be read as a successful release. Two REVIEW findings also warrant attention before any re-attempt: 35 scheduled Pods carry no CPU/memory requests, so free capacity (2190m CPU, ~9.2GB memory on 1 ready worker) may be overstated, and KubeCPUOvercommit is firing. Recommend rejecting the fault value, restoring the normal setting, and re-running with capacity accounting for the retained old Pod plus surge Pod.",
+    "additional_risks": [
+      {
+        "title": "Fault-injection env value would ship to the cluster",
+        "detail": "The only change is Deployment/demo/demo env[6].value set to DEMO_STARTUP_FAIL=true. Trusted cases treat this as a drill-only fault to be rejected in a release; it makes the new Pod log startup_failed and enter CrashLoopBackOff.",
+        "severity": "REVIEW"
+      },
+      {
+        "title": "Old Pod staying Ready can mask a failed rollout",
+        "detail": "Because the chart uses maxUnavailable: 0 / maxSurge: 1, the previous Pod keeps serving 200 while the new Pod crashloops. Reviewers must not record this as a successful release or as a full service outage; verify new-Pod health and version separately.",
+        "severity": "REVIEW"
+      },
+      {
+        "title": "Capacity headroom may be overstated during surge",
+        "detail": "35 scheduled Pods have no CPU/memory requests and count as zero, while KubeCPUOvercommit is firing and only one worker is ready. Any capacity check for the surge Pod plus retained old Pod should be treated as optimistic.",
+        "severity": "REVIEW"
+      }
+    ],
+    "citations": [
+      {
+        "case_id": "startup-failure-release-protection",
+        "source": "docs/fault-review.md",
+        "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "line_start": 15,
+        "line_end": 15
+      },
+      {
+        "case_id": "startup-max-unavailable-protection",
+        "source": "docs/drills.md",
+        "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "line_start": 85,
+        "line_end": 104
+      },
+      {
+        "case_id": "startup-max-unavailable-protection",
+        "source": "docs/drills.md",
+        "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "line_start": 85,
+        "line_end": 104
+      }
+    ],
+    "error": null
+  },
+  "context": {
+    "tree_changes": [
+      "gitops/demo/values.yaml"
+    ],
+    "deployment_related_changes": [
+      "gitops/demo/values.yaml"
+    ],
+    "argo": {
+      "argo_source_changed": false,
+      "argo_application_changed": false,
+      "argo_project_changed": false,
+      "argo_manifest_error": false,
+      "argo_changed_paths": [],
+      "argo_application_count": 2
+    },
+    "changed_count": 1,
+    "tree_diff_truncated": false
+  },
+  "evaluation": {
+    "decision": "BLOCK",
+    "findings": [
+      {
+        "rule_id": "FAULT_INJECTION",
+        "severity": "BLOCK",
+        "field": "Deployment.spec.template.spec.containers[0].env[6].value",
+        "message": "DEMO_STARTUP_FAIL requests deliberate startup failure",
+        "evidence": {
+          "name": "DEMO_STARTUP_FAIL",
+          "value": "true"
+        }
+      },
+      {
+        "rule_id": "AI_ADDITIONAL_RISK",
+        "severity": "REVIEW",
+        "field": "ai_result.additional_risks",
+        "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+        "evidence": {
+          "risks": [
+            {
+              "title": "Fault-injection env value would ship to the cluster",
+              "detail": "The only change is Deployment/demo/demo env[6].value set to DEMO_STARTUP_FAIL=true. Trusted cases treat this as a drill-only fault to be rejected in a release; it makes the new Pod log startup_failed and enter CrashLoopBackOff."
+            },
+            {
+              "title": "Old Pod staying Ready can mask a failed rollout",
+              "detail": "Because the chart uses maxUnavailable: 0 / maxSurge: 1, the previous Pod keeps serving 200 while the new Pod crashloops. Reviewers must not record this as a successful release or as a full service outage; verify new-Pod health and version separately."
+            },
+            {
+              "title": "Capacity headroom may be overstated during surge",
+              "detail": "35 scheduled Pods have no CPU/memory requests and count as zero, while KubeCPUOvercommit is firing and only one worker is ready. Any capacity check for the surge Pod plus retained old Pod should be treated as optimistic."
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+        "severity": "REVIEW",
+        "field": "evidence.pods[].spec.containers[].resources.requests",
+        "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+        "evidence": {
+          "unreserved_requests": 35
+        }
+      },
+      {
+        "rule_id": "FIRING_ALERTS",
+        "severity": "REVIEW",
+        "field": "evidence.metrics.alerts",
+        "message": "one or more relevant alerts are firing",
+        "evidence": {
+          "alerts": [
+            {
+              "name": "KubeCPUOvercommit",
+              "state": "firing",
+              "activeAt": "2026-11-12T08:02:40.464748368Z",
+              "labels": {
+                "alertname": "KubeCPUOvercommit",
+                "severity": "warning"
+              }
+            }
+          ],
+          "count": 1
+        }
+      }
+    ],
+    "changes": [
+      {
+        "resource": "Deployment/demo/demo",
+        "kind": "Deployment",
+        "namespace": "demo",
+        "name": "demo",
+        "operation": "replace",
+        "path": "spec.template.spec.containers[0].env[6].value",
+        "old": "<redacted>",
+        "new": "<redacted>",
+        "pod_template": true
+      }
+    ],
+    "context": {
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "pull_request": 3,
+      "head_sha": "3a7d90440e1245c6f3f976c3e9dc10e5f5ca1141",
+      "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+      "pr_base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+      "head_ref": "acceptance/block-zero-replicas",
+      "base_ref": "main",
+      "head_tree_sha": "d5cbfb90378f5f920b14b0ad709c8c1210cfda86",
+      "base_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+      "head_tree_digest": "647562a1e6ecedb1164029e085417ffad599483ffcac7d2167bd4c421c6a8289",
+      "base_tree_digest": "a1a155a804d284291a6f94084c66b040ca629885a3f151e8afd28b22b05ed103",
+      "tree_entry_count": 173,
+      "changed_paths": [
+        "gitops/demo/values.yaml"
+      ],
+      "tree_changes": [
+        "gitops/demo/values.yaml"
+      ],
+      "deployment_related_changes": [
+        "gitops/demo/values.yaml"
+      ],
+      "changed_count": 1,
+      "tree_diff_truncated": false,
+      "argo": {
+        "argo_source_changed": false,
+        "argo_application_changed": false,
+        "argo_project_changed": false,
+        "argo_manifest_error": false,
+        "argo_changed_paths": [],
+        "argo_application_count": 2
+      },
+      "argo_source_changed": false,
+      "argo_application_changed": false,
+      "argo_project_changed": false,
+      "argo_manifest_error": false,
+      "argo_changed_paths": [],
+      "argo_application_count": 2,
+      "namespace": "demo",
+      "deployment": "demo",
+      "old_resource_count": 3,
+      "new_resource_count": 3,
+      "pod_template_changed": true,
+      "ai_required": true,
+      "ai_status": "ok",
+      "evidence_collected_at": 1794474345.0,
+      "evidence_ttl_seconds": 300
+    },
+    "render_digest": "542875c712e3919aaf6bf700a99cfd60f9f53d18b932e8eeb778d7791d1daef2",
+    "old_render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+    "evaluated_at": 1794474349,
+    "expires_at": 1794474631,
+    "rule_version": "2026.11.1",
+    "audit": {
+      "schema_version": "1.0",
+      "rule_version": "2026.11.1",
+      "evaluated_at": 1794474349,
+      "checks": [
+        {
+          "rule_id": "FAULT_INJECTION",
+          "severity": "BLOCK",
+          "field": "Deployment.spec.template.spec.containers[0].env[6].value",
+          "message": "DEMO_STARTUP_FAIL requests deliberate startup failure"
+        },
+        {
+          "rule_id": "AI_ADDITIONAL_RISK",
+          "severity": "REVIEW",
+          "field": "ai_result.additional_risks",
+          "message": "the model identified additional risk; it can only raise the decision to REVIEW"
+        },
+        {
+          "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+          "severity": "REVIEW",
+          "field": "evidence.pods[].spec.containers[].resources.requests",
+          "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated"
+        },
+        {
+          "rule_id": "FIRING_ALERTS",
+          "severity": "REVIEW",
+          "field": "evidence.metrics.alerts",
+          "message": "one or more relevant alerts are firing"
+        }
+      ],
+      "metrics": {
+        "memory_working_set_bytes": 39059456.0,
+        "request_rate": 1.936814921895833,
+        "error_ratio": 0.0,
+        "p95_seconds": 0.00475,
+        "up": 1.0,
+        "low_traffic": false,
+        "firing_alerts": 1,
+        "source_timestamps": {
+          "memory_working_set_bytes": 1794474336.816,
+          "request_rate": 1794474331.468,
+          "error_ratio": 1794474331.468,
+          "p95_seconds": 1794474331.468,
+          "up": 1794474331.468
+        }
+      },
+      "capacity": {
+        "pod_request_cpu_millicores": 50.0,
+        "pod_request_memory_bytes": 67108864.0,
+        "old_pod_request_cpu_millicores": 50.0,
+        "old_pod_request_memory_bytes": 67108864.0,
+        "replicas": 1,
+        "surge_pods": 1,
+        "new_pods_reserved": 1,
+        "additional_pods_reserved": 1,
+        "peak_total_pods": 2,
+        "peak_demo_cpu_millicores": 100.0,
+        "peak_demo_memory_bytes": 134217728.0,
+        "retained_old_replicas": 1,
+        "required_cpu_millicores": 50.0,
+        "required_memory_bytes": 67108864.0,
+        "source": "evidence.capacity",
+        "available_cpu_millicores": 2190.0,
+        "available_memory_bytes": 9185292288.0,
+        "workers_ready": 1,
+        "allocatable_cpu_millicores": 4000.0,
+        "allocatable_memory_bytes": 12406517760.0,
+        "existing_pods_requests_cpu_millicores": 1810.0,
+        "existing_pods_requests_memory_bytes": 3221225472.0,
+        "worker_names": [
+          "worker"
+        ],
+        "overcommitted": false,
+        "projected_total_cpu_millicores": 1860.0,
+        "projected_total_memory_bytes": 3288334336.0
+      },
+      "ai": {
+        "status": "ok",
+        "model": "deepseek-chat",
+        "additional_risks": 3,
+        "citations": 3
+      },
+      "changes_count": 1,
+      "pod_template_changed": true,
+      "render_digest": "542875c712e3919aaf6bf700a99cfd60f9f53d18b932e8eeb778d7791d1daef2",
+      "old_render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec"
+    }
+  },
+  "created_at": 1794474339,
+  "status_context": "change-guard/release",
+  "report_digest": "b2a2aa5dd6ff83d0584217a253afe1a575fbf185f48976a2bf7e5ce0489f1136"
+}

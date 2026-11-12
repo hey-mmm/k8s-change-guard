@@ -1,0 +1,20 @@
+{
+  "pr": 2,
+  "head_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+  "synthetic_merge_sha": "6809c2a8ec4ec76057d06e4ef10b416eb915a1f8",
+  "head_checks": [
+    {
+      "id": 131069710592,
+      "name": "Build and push image",
+      "conclusion": "skipped",
+      "app": "github-actions"
+    },
+    {
+      "id": 131069552695,
+      "name": "Test, lint, render",
+      "conclusion": "success",
+      "app": "github-actions"
+    }
+  ],
+  "synthetic_check_count": 0
+}

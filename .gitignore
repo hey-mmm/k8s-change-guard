@@ -18,3 +18,4 @@ credentials/
 .env
 ansible/secrets.yml
 ansible/*.retry
+test-output.txt

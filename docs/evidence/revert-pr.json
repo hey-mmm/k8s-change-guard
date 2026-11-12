@@ -1,0 +1,7 @@
+{
+  "pr": 6,
+  "url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/6",
+  "head_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "base_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+  "reverted_commit": "e6064c5df42ab701fac6a1e1be4bfac467a0410d"
+}

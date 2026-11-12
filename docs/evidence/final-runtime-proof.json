@@ -1,0 +1,123 @@
+{
+  "captured_at": 1794476767,
+  "version": "0.2.3",
+  "release": "/opt/change-guard/releases/0.2.3",
+  "service": {
+    "exit_code": 0,
+    "stdout": "active",
+    "stderr": ""
+  },
+  "renewal_timer": {
+    "exit_code": 0,
+    "stdout": "active",
+    "stderr": ""
+  },
+  "renewal_trigger": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "token_expiry": {
+    "status": "valid",
+    "expires_at": 1794519967,
+    "remaining_seconds": 43199
+  },
+  "rbac": [
+    {
+      "permission": "get nodes",
+      "expected": "yes",
+      "actual": "yes",
+      "passed": true
+    },
+    {
+      "permission": "list pods --all-namespaces",
+      "expected": "yes",
+      "actual": "yes",
+      "passed": true
+    },
+    {
+      "permission": "get applications.argoproj.io -n argocd",
+      "expected": "yes",
+      "actual": "yes",
+      "passed": true
+    },
+    {
+      "permission": "get secrets --all-namespaces",
+      "expected": "no",
+      "actual": "no",
+      "passed": true
+    },
+    {
+      "permission": "get pods --subresource=log -n demo",
+      "expected": "no",
+      "actual": "no",
+      "passed": true
+    },
+    {
+      "permission": "create pods --subresource=exec -n demo",
+      "expected": "no",
+      "actual": "no",
+      "passed": true
+    },
+    {
+      "permission": "create deployments -n demo",
+      "expected": "no",
+      "actual": "no",
+      "passed": true
+    },
+    {
+      "permission": "delete pods -n demo",
+      "expected": "no",
+      "actual": "no",
+      "passed": true
+    },
+    {
+      "permission": "patch applications.argoproj.io -n argocd",
+      "expected": "no",
+      "actual": "no",
+      "passed": true
+    },
+    {
+      "permission": "create serviceaccounts/token -n change-guard",
+      "expected": "no",
+      "actual": "no",
+      "passed": true
+    }
+  ],
+  "nodes": [
+    {
+      "name": "master",
+      "ready": true
+    },
+    {
+      "name": "worker",
+      "ready": true
+    }
+  ],
+  "argo": {
+    "sync": {
+      "comparedTo": {
+        "destination": {
+          "namespace": "demo",
+          "server": "https://kubernetes.default.svc"
+        },
+        "source": {
+          "helm": {
+            "valueFiles": [
+              "../../gitops/demo/values.yaml"
+            ]
+          },
+          "path": "charts/demo",
+          "repoURL": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes.git",
+          "targetRevision": "main"
+        }
+      },
+      "revision": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+      "status": "Synced"
+    },
+    "health": {
+      "lastTransitionTime": "2026-11-12T09:44:46Z",
+      "status": "Healthy"
+    }
+  }
+}

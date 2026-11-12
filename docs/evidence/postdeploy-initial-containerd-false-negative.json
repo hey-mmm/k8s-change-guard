@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "verifier": "change-guard-postdeploy",
+  "status": "failed",
+  "expected_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+  "expected_app_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "expected_image": "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7",
+  "checks": [
+    {
+      "name": "argo",
+      "status": "pass",
+      "detail": "Argo is Synced/Healthy at the expected revision",
+      "evidence": {
+        "application": "demo",
+        "revision": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+        "sync_status": "Synced",
+        "health_status": "Healthy",
+        "operation_phase": "Succeeded"
+      }
+    },
+    {
+      "name": "deployment",
+      "status": "pass",
+      "detail": "Deployment image and replica status match",
+      "evidence": {
+        "name": "demo",
+        "namespace": "demo",
+        "generation": 16,
+        "observed_generation": 16,
+        "replicas": 1,
+        "updated_replicas": 1,
+        "ready_replicas": 1,
+        "available_replicas": 1,
+        "images": [
+          "ghcr.io/hey-mmm/observability-demo@sha256:af77edde6463b40b795b3588e545582c8cd026bd57eec2c43f150a566c2120e7"
+        ],
+        "target_container": "demo-service"
+      }
+    },
+    {
+      "name": "pods",
+      "status": "fail",
+      "detail": "Pod demo-547488b54d-hbhf7 does not run the expected image",
+      "evidence": {
+        "pod_count": 1,
+        "pods": [],
+        "digest_caveats": []
+      }
+    },
+    {
+      "name": "endpoints",
+      "status": "pass",
+      "detail": "Service has ready endpoint addresses",
+      "evidence": {
+        "ready_addresses": 1,
+        "not_ready_addresses": 0,
+        "addresses": [
+          "10.244.171.111"
+        ]
+      }
+    },
+    {
+      "name": "http_version",
+      "status": "pass",
+      "detail": "HTTP /version provenance and readiness endpoints are healthy",
+      "evidence": {
+        "status": 200,
+        "gitSha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+        "version": ""
+      }
+    }
+  ],
+  "recommendation": {
+    "action": "open_revert_pr",
+    "reason": "pods: Pod demo-547488b54d-hbhf7 does not run the expected image",
+    "failing_checks": [
+      "pods"
+    ],
+    "note": "This verifier is read-only. Open a revert pull request for the offending change; it does not and must not roll back or mutate the cluster automatically."
+  },
+  "started_at": 1794475861,
+  "finished_at": 1794476161
+}

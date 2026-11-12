@@ -1,0 +1,10 @@
+{
+  "evaluation_id": "ev-0f65bcbc66fcfd21f479f50b",
+  "pr": 2,
+  "head_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+  "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "reason": "已核验候选values故障开关均关闭，仅更新经CI溯源的digest及版本。单worker现有KubeCPUOvercommit与35项未预留requests风险明确保留；本次不增加副本或requests，surge额外50mCPU/64Mi低于当前调度余量。仅限实验平台本次发布，随后检查新Pod实际digest与/version并观察正流量，不以旧Pod健康代替验收。",
+  "comment_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/2#issuecomment-6819285850",
+  "actor": "hey-mmm",
+  "at": "2026-11-12T08:59:35Z"
+}

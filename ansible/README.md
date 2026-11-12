@@ -5,10 +5,9 @@ unprivileged user, grants read-only Kubernetes access, and gives the service a
 short-lived TokenRequest kubeconfig. It does **not** copy the controller's
 bootstrap/admin kubeconfig to the service identity.
 
-Current status: this worktree is the implementation, not an acceptance record.
-The repository still has no commit in the working tree used for this document,
-so there is no project CI run or final acceptance to cite. See
-`docs/creation-steps.md`, `docs/runbook.md`, and `docs/fault-review.md`.
+Current release, deployment, merge/revert and post-deploy results are recorded in
+`docs/acceptance.md`. This README intentionally does not copy time-sensitive
+version/test/CI numbers; historical deployment notes are not current status.
 
 ## 1. Supported target
 
@@ -32,19 +31,23 @@ install `git`, `ssh`, or `nc`, which the merge helper needs on the host.
 ## 2. Build the trusted artifact
 
 ```sh
-scripts/build-release.sh --version 0.1.4
-# -> dist/k8s-change-guard-0.1.4.tar.gz and a SHA-256 in the JSON output
+# First make pyproject.toml project.version and __version__ equal to <new-version>.
+VERSION='<new-version>'
+scripts/build-release.sh --version "$VERSION"
+# -> dist/k8s-change-guard-<new-version>.tar.gz and a SHA-256 in the JSON output
 ```
+
+`--version` only changes the tarball name/JSON field; it does not modify
+`pyproject.toml` or `change_guard/__init__.py`. A release whose artifact name and
+package metadata disagree is not acceptable.
 
 The tarball contains only `change_guard/`, `knowledge/`, `pyproject.toml`,
 `requirements.txt`, and `config.example.yaml`. It never contains tests,
 Ansible, scripts, VCS metadata, or credentials. Keep `dist/` out of Git.
 
-There is a version-label inconsistency in the current snapshot:
-`pyproject.toml` says `0.1.0`, `change_guard/__init__.py` says `0.2.0`, and the
-existing `dist/` contains `0.1.1`-`0.1.3` artifacts. Always pass an explicit
-`--version` and bind that value to the Ansible variables and artifact SHA-256
-until the labels are unified.
+Do not let Git normalize `knowledge/sources/`: `.gitattributes` sets
+`knowledge/sources/* -text` because the knowledge hashes attest exact source
+bytes. A CRLF checkout once caused a project CI mismatch; keep the bytes intact.
 
 ## 3. Inputs and credentials
 
@@ -52,8 +55,8 @@ Copy `ansible/group_vars/all.yml.example` to `ansible/group_vars/all.yml` and
 set at least:
 
 ```yaml
-change_guard_version: "0.1.4"
-change_guard_artifact: "{{ playbook_dir }}/../dist/k8s-change-guard-0.1.4.tar.gz"
+change_guard_version: "<new-version>"
+change_guard_artifact: "{{ playbook_dir }}/../dist/k8s-change-guard-<new-version>.tar.gz"
 change_guard_artifact_checksum: "<64-hex SHA-256 from build-release>"
 
 change_guard_github_token_src: "{{ playbook_dir }}/../secrets/github-token"
@@ -84,22 +87,35 @@ The GitHub PAT is separate from the merge deploy key:
   `python -m change_guard.merge`; it is not given to the daemon for arbitrary
   pushes.
 
-## 4. Critical configuration: `merge_required_ci`
+## 4. Critical policy inputs
 
-Set a single aggregate check-name string:
+Set the aggregate check name as a single string:
 
 ```yaml
 change_guard_merge_required_ci: "Test, lint, render"
 ```
 
-The current `defaults/main.yml` and `all.yml.example` contain a three-element
-list (`Test`, `lint`, `render`). The config template would write that list, and
-`merge.py` passes `str(config["merge_required_ci"])` to a function that expects
-one check name; the resulting `"['Test', 'lint', 'render']"` never matches the
-project-one aggregate job. This is a functional blocker for the final merge
-step (fail closed), not a reason to disable the CI check. The code has not been
-changed here; override the variable and verify the installed config is a
-string before merging.
+Keep it a string (not a three-element list). The role defaults and example now
+use this single string; `merge.py` matches one aggregate GitHub Actions check
+name bound to the PR head.
+
+Set the operator-approved chart pin to the exact `charts/demo` Git blob digest:
+
+```yaml
+change_guard_approved_chart_digest: "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+```
+
+This is the real digest computed from the current `charts/demo` Git blobs; the
+old parent `work/approved-chart.json` value `0b2b...` is stale and must not be used.
+The digest is `sha256(canonical_json({path under charts/demo: sha256(exact git
+blob bytes)}))`; CRLF/LF differences change it, and `gitops/demo/values.yaml`
+is deliberately not part of the pin. A missing pin is ERROR/BLOCK; a mismatch
+is BLOCK and cannot be approved. Updating a chart template requires a separate,
+trusted operator update to this pin. `merge.py` recomputes it from the head tree
+and refuses forged reports.
+
+`.github/workflows/` changes are a hard BLOCK; `merge.py` independently compares
+base/head workflow trees. This closes the PR-editable-workflow/CI spoof path.
 
 ## 5. Deploy
 
@@ -209,6 +225,8 @@ window or a credential/input changed). The verify phase checks:
 - required reads work: nodes, all-namespace pods, Argo CD Applications;
 - forbidden actions fail: Secrets, pod logs/exec, workload writes, Argo writes
   (subresources checked with `--subresource=log|exec`);
+- installed config has string `merge_required_ci` and a non-empty
+  `approved_chart_digest`; report policy binding/schema 2 is in use;
 - bwrap namespace creation and a real Helm render under the same hardening.
 
 Standalone RBAC check:
@@ -217,9 +235,9 @@ Standalone RBAC check:
 sh scripts/verify-rbac.sh /etc/change-guard/kubeconfig
 ```
 
-There is also an existing historical deployment record with a completed
-release/verify run and a second `changed=0` run; those logs are not a substitute
-for a fresh acceptance run in your environment.
+Current deployment/merge/revert/post-deploy evidence and final acceptance are in
+`docs/acceptance.md`. Historical 0.2.1 notes are kept only as history; do not
+reuse their test counts or recap as current status.
 
 ## 9. Merge deploy key and post-deploy
 
@@ -228,23 +246,49 @@ The optional merge integration installs:
 - `/etc/change-guard/merge-deploy-key` (`0600`, service-owned);
 - `/etc/change-guard/github_known_hosts` (`0600`, service-owned);
 - `config.yaml` keys `merge_deploy_key`, `merge_known_hosts`,
-  `merge_ssh_proxy`, `merge_required_ci`.
+  `merge_ssh_proxy`, `merge_required_ci`, `approved_chart_digest`, and optional
+  `merge_fetch_depth` (default 128).
 
-`merge.py` is intentionally run as `change-guard`, because it must write state
-owned by that user:
+Prefer the root wrapper from the trusted deployment directory, which pauses polling
+and restores it on exit:
 
 ```sh
+sudo scripts/merge-release.sh <number>
+```
+
+The wrapper stops `change-guard.service` to avoid the non-blocking state lock,
+uses a `trap ... EXIT` to restore the previous polling state, and reads
+`/etc/change-guard/proxy.env` after dropping to `change-guard` via `runuser`.
+Direct Python is still possible, but stop the daemon/serialize first; otherwise it
+may fail with `DaemonBusy`:
+
+```sh
+sudo systemctl stop change-guard.service
 sudo -u change-guard \
   env HTTP_PROXY=http://11.0.1.1:7890 \
       HTTPS_PROXY=http://11.0.1.1:7890 \
       NO_PROXY='127.0.0.1,localhost,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local' \
   /opt/change-guard/current/venv/bin/python -m change_guard.merge \
   --config /etc/change-guard/config.yaml --pr <number>
+sudo systemctl start change-guard.service
 ```
 
-It validates the current report, exact head/base, approval, synthetic merge
-commit parents, required CI, report digest and lease before pushing. It does
-not check out or execute candidate code.
+It validates the current report schema/policy binding, exact head/base, approval,
+workflow tree equality, independently recomputed chart pin, head-bound GitHub
+Actions CI, synthetic parents/tree, report digest, and exact lease before pushing.
+GitHub Actions `pull_request` checks are bound to the PR **head**, not the
+synthetic merge commit; the command therefore queries head checks and proves the
+synthetic tree equals the head tree, then fast-forwards `main` to the evaluated
+head with `--force-with-lease=refs/heads/main:<old-main>`. It does not push the
+synthetic commit, call the GitHub Merge API, or check out/execute candidate code.
+`main` becomes a normal single-parent head; rollback is `git revert <head>` with
+no `-m 1`.
+
+After the PR is closed/merged, the daemon revokes the historical
+`change-guard/release` status on the old head; a guard **error/pending** on main
+or the old head may therefore be revocation, not a post-deploy failure. The merge
+record plus the report/approval/CI at merge time are the gate proof; do not force
+a permanent green status for appearance.
 
 Post-deploy verifier:
 
@@ -252,24 +296,43 @@ Post-deploy verifier:
 sudo -u change-guard \
   /opt/change-guard/current/venv/bin/python -m change_guard.postdeploy verify \
   --config /etc/change-guard/config.yaml \
-  --expected-sha <merge-commit> \
+  --expected-sha <main-head-gitops-revision> \
+  --expected-app-sha <image-source-commit> \
   --report /var/lib/change-guard/reports/<evaluation-id>.json
 ```
 
-The verifier is read-only. On failure it returns an `open_revert_pr`
-recommendation; it never rolls back or mutates the cluster.
+`--expected-sha` is the Argo/GitOps revision; `--expected-app-sha` is the image
+source commit exposed by `/version`. They are normally different and both must
+be supplied. The pod check matches the Pod **spec** container name/image and
+verifies the runtime digest from `status.containerStatuses[].imageID`; do not use
+`status.containerStatuses[].image` as the manifest reference (containerd may
+report a config ID there). The verifier is read-only. On failure it returns an
+`open_revert_pr` recommendation; it never rolls back or mutates the cluster.
 
 ## 10. Known deployment caveats
 
 - The GitHub ruleset DeployKey bypass is repository-wide, not per-key. Keep
-  exactly one write deploy key and audit it regularly.
+  exactly one write deploy key and audit it regularly; IR-02 cannot be fixed by
+  the platform or by a per-key ruleset setting.
 - GitHub success statuses have no project-defined TTL. The daemon revokes stale
   statuses while running, and the merge command re-validates; manual revocation
   is still needed if the daemon is down.
-- The project-one CI aggregate job name can be changed by a PR that edits the
-  workflow; see `work/independent-review.md`. Do not treat a green check name
-  alone as proof that the original tests ran.
-- The current Ansible `merge_required_ci` list must be overridden with the
-  single string `"Test, lint, render"` until the code/example is unified.
-- Version labels are inconsistent in this snapshot; use explicit artifact
-  version plus SHA-256 as the content identity.
+- `.github/workflows/` changes are now a hard BLOCK, and merge independently
+  compares base/head workflow trees. Do not treat a green check name alone as
+  proof unless the workflow tree is unchanged.
+- GitHub Actions checks are bound to the PR head; synthetic merge check-runs can
+  be empty. Never switch merge back to synthetic-check lookup.
+- Updating `charts/demo` requires a separate trusted `approved_chart_digest`
+  update. The current real digest is `194baf90...c3e05d`, not the stale
+  `0b2b...` reference.
+- `pyproject.toml`/`__version__` must agree with the release; `--version` only
+  changes the tarball name.
+- `knowledge/sources/` is pinned with `-text`; CRLF conversion changes hashes
+  and has caused CI failure.
+- fast-forward may leave the GitHub PR unmarked as merged; root should verify
+  manually rather than granting the guard PR write/merge API permissions.
+- Post-deploy needs both `--expected-sha` (GitOps revision) and
+  `--expected-app-sha` (image source commit); they are usually different.
+- The root-only token helper depends on the local
+  `/etc/kubernetes/admin.conf`; a separate guard host needs controller-side
+  rotation.

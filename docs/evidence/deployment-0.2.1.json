@@ -1,0 +1,624 @@
+{
+  "schema": "change-guard-deployment-proof/v1",
+  "generated_at": "2026-11-12T17:28:27+08:00",
+  "status": "SUCCESS_WITH_MERGE_BLOCKER",
+  "deployment_status": "SUCCESS",
+  "version": "0.2.1",
+  "superseded_by": {
+    "version": "0.2.2",
+    "deployed_at": "2026-11-12T17:25:51+08:00",
+    "deployed_by": "root/another actor (not this deployment worker)",
+    "current_symlink": "/opt/change-guard/releases/0.2.2",
+    "artifact_sha256": "13efaa396c5094b3a7a931b6280ce4809ff5abece8778a0fe1b5189c0417b189",
+    "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+    "head_ci_and_fast_forward_present": true,
+    "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d",
+    "note": "0.2.2 supersedes 0.2.1 and resolves the merge blocker documented here.",
+    "evidence": [
+      "work/final-inspect-0.2.2.txt",
+      "work/final-policy-binding-validated-0.2.2.txt"
+    ]
+  },
+  "merge_readiness": {
+    "ready_for_real_merge_with_deployed_merge_module": false,
+    "reason": "The immutable 0.2.1 merge.py validates CI on GitHub synthetic merge SHA. Read-only probes show 0 check-runs on the synthetic merge SHA and the required successful check on the PR head SHA.",
+    "pr2_head_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+    "pr2_synthetic_merge_sha": "6809c2a8ec4ec76057d06e4ef10b416eb915a1f8",
+    "head_check_runs": 2,
+    "synthetic_check_runs": 0,
+    "required_head_check": "Test, lint, render: completed/success",
+    "remediation": "A later un-deployed local iteration adds head-SHA CI validation and head fast-forward push. It must be tested, rebuilt as a new immutable version, and deployed before using the deployed merge module for real merge.",
+    "evidence": "work/final-pr2-ci-binding-0.2.1.txt"
+  },
+  "host": {
+    "hostname": "master",
+    "address": "11.0.1.10",
+    "os": "Linux 5.15.0-177-generic x86_64",
+    "systemd": "249 (249.11-0ubuntu3.23)",
+    "python": "3.10.12",
+    "ansible": "ansible-playbook [core 2.21.6]"
+  },
+  "artifact": {
+    "local_path": "C:\\Users\\MYT\\Documents\\Codex\\2026-11-12\\https-github-com-hey-mmm-full-3\\work\\k8s-change-guard\\dist\\k8s-change-guard-0.2.1.tar.gz",
+    "remote_path": "/home/myt/change-guard-deploy/dist/k8s-change-guard-0.2.1.tar.gz",
+    "sha256": "59c1a9d8f822e30e99d096fc7aa26c3bd045d7201205c70972648a514e7fc024",
+    "bytes": 122668,
+    "packaged_files": 34,
+    "build_command": "python scripts/build-release.py --output dist/k8s-change-guard-0.2.1.tar.gz",
+    "content_check": {
+      "artifact_has_knowledge": true,
+      "artifact_has_package": true,
+      "config_example_correct_chart_digest": true,
+      "config_example_no_stale_digest": true,
+      "daemon_chart_digest_helper": true,
+      "daemon_chart_mismatch_block": true,
+      "daemon_policy_binding": true,
+      "daemon_schema_v2": true,
+      "daemon_workflow_block": true,
+      "excludes_ansible": true,
+      "excludes_tests": true,
+      "init_version_0.2.1": true,
+      "merge_independent_chart_pin": true,
+      "merge_independent_workflow_check": true,
+      "merge_policy_binding": true,
+      "pyproject_version_0.2.1": true
+    },
+    "source_mismatches": []
+  },
+  "source_integrity": {
+    "pyproject_version": "0.2.1",
+    "package___version__": "0.2.1",
+    "tests": {
+      "command": "python -m unittest discover -s tests -q",
+      "ran": 174,
+      "skipped": 3,
+      "result": "OK"
+    },
+    "source_freeze": {
+      "source": "immutable release artifact contents",
+      "file_count": 34,
+      "overall_sha256": "793349cd7c0cbb3bf159e3572a872fbcaec70a577fbdd4d1c17183d2914528f2",
+      "artifact_matches_frozen_source": true
+    },
+    "post_release_source_drift": {
+      "detected": true,
+      "changed_or_missing_packaged_files": [
+        {
+          "artifact_sha256": "f5bd94e0cea799948980f19e4a4f4e222af1d7188a042c2c509ba2ad2234e4cc",
+          "local_sha256": "e1ed82e96dc69980c24dda4f563e89516e13fefcc368f28a294f07c7b0d025a7",
+          "path": "change_guard/daemon.py",
+          "state": "changed_after_build"
+        },
+        {
+          "artifact_sha256": "d294aeee26d5008cfaa98fbf176b6019064500a1d359893b85183377a18c96c0",
+          "local_sha256": "66f13bed07d3a8e97e15ae2857d7f21514218c4432dd85b99d67fb215b53f028",
+          "path": "change_guard/merge.py",
+          "state": "changed_after_build"
+        },
+        {
+          "artifact_sha256": "3305c0439ba493eb35cdb68d4c77e17fe47c963a699dbcd6336f34673a598b23",
+          "local_sha256": "85c5b01bb463addd0e5c8799672b5a7bad511b41c11886ff98e1a3f143fe2ab3",
+          "path": "change_guard/postdeploy.py",
+          "state": "changed_after_build"
+        }
+      ],
+      "local_only_files_not_in_artifact": [],
+      "deployed_artifact_is_immutable_tested_snapshot": true,
+      "note": "The deployed release is immutable and matches this artifact. Local source advanced after the tested build; those changes are not deployed as 0.2.1."
+    },
+    "security_hardening": {
+      "workflow_change_hard_block": true,
+      "merge_independent_workflow_tree_check": true,
+      "merge_independent_chart_pin": true,
+      "report_schema_version_2": true,
+      "policy_binding_in_daemon": true,
+      "policy_binding_in_merge": true,
+      "chart_digest_helper": true,
+      "chart_mismatch_hard_block": true
+    }
+  },
+  "chart_pin": {
+    "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+    "ref": "refs/heads/main",
+    "main_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+    "tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+    "algorithm": "sha256(canonical_json({path_under_charts_demo: sha256(git_blob_bytes)}))",
+    "approved_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+    "files": {
+      "Chart.yaml": "3e74a02017fad3932b070caebdd471ffcd9ec55c353c74b2f7e7d9c61795a6ee",
+      "templates/NOTES.txt": "1922cf5a34844a8f31ecee39f52b9a9261c34dd655b111a8dba3b0c912f218df",
+      "templates/_helpers.tpl": "d4f2797cbf23bc181d4f3a87110df1930b0bef207c6983f88ac0eecc35833572",
+      "templates/deployment.yaml": "792a90c9f1561a953a64f38757b6b564149b255340e610f68a451ff055cf912e",
+      "templates/service.yaml": "cdc4fd3cd90a01a3b47693c78fa9c1449d0ffb1bf6dc50bf84806e95e39143ce",
+      "templates/servicemonitor.yaml": "69d3a5b98466165b6eaf84ba8b36018bd12d59feace159b16bcdcd5228239e47",
+      "values.yaml": "854190875d3a2b81ad0e39fe33d4f61bbfba092909a0a20580145df3ee9973bf"
+    },
+    "blob_shas": {
+      "charts/demo/Chart.yaml": "59e71841a30f800bc75f74cf1af6c8e7a25820b4",
+      "charts/demo/templates/NOTES.txt": "800f7d326e0919f97ac014de0ac64a1d21efd3f9",
+      "charts/demo/templates/_helpers.tpl": "155067186b49772e2e4aab0aa45f05f488adbe4a",
+      "charts/demo/templates/deployment.yaml": "cac2d928ba34bc631d029beb405b1c5fdab50332",
+      "charts/demo/templates/service.yaml": "38200b3835d989c808ae23726a0140357f12af59",
+      "charts/demo/templates/servicemonitor.yaml": "2e252620de2da03f67e9da6aa3685f098c9d50bd",
+      "charts/demo/values.yaml": "6bf02826b4a86ef3f61ebd224dba18e2f295205f"
+    },
+    "confirmed_by": [
+      "GitHub Git Trees/Blobs API (read-only)",
+      "git cat-file blob objects at refs/heads/main (not a worktree checkout)"
+    ],
+    "api_matches_git_objects": true,
+    "stale_reference": {
+      "path": "work/approved-chart.json",
+      "digest": "0b2b19a416a9a59d9b89ef0b78a81f7dfa28cfc557c534e5eaaf6ed3a3b780a0",
+      "used_for_deployment": false,
+      "reason": "Old reference file does not match the real Git blob bytes for templates/NOTES.txt and templates/_helpers.tpl."
+    },
+    "pr2_scope": {
+      "changed_paths": [
+        "gitops/demo/values.yaml"
+      ],
+      "chart_files_changed": false,
+      "chart_digest_matches_approved": true
+    }
+  },
+  "immutable_release": {
+    "current_symlink": "/opt/change-guard/releases/0.2.1",
+    "release_dir": "/opt/change-guard/releases/0.2.1",
+    "release_dir_mode": "0755",
+    "owner": "root:root",
+    "recorded_artifact_sha256": "59c1a9d8f822e30e99d096fc7aa26c3bd045d7201205c70972648a514e7fc024",
+    "recorded_digest_matches_artifact": true,
+    "installed_version": "0.2.1",
+    "previous_releases_untouched": true,
+    "previous_releases": {
+      "0.1.2": {
+        "recorded_artifact_sha256": "0e812665097c3cc0ae40aa972fd9c90bfe9c08774d7ebcbf91481dbe95ea4046",
+        "mtime": "2026-11-12 16:31:17.254984583 +0800"
+      },
+      "0.1.3": {
+        "recorded_artifact_sha256": "c01eaf52e6d48b142a58f8fb636a15df4081d9f26a6613fe9ea387169ebd151f",
+        "mtime": "2026-11-12 16:39:23.485441555 +0800"
+      },
+      "0.2.0": {
+        "recorded_artifact_sha256": "bfacc64bf2d76dfd824cdf5a8463a71c817c9ca24a72ccccdc6d4e5e3a47a98c",
+        "mtime": "2026-11-12 16:56:30.398400854 +0800"
+      }
+    },
+    "note": "Ansible installs each version in a new immutable directory; prior releases were not modified."
+  },
+  "deployment": {
+    "deploy_vars_path": "/home/myt/change-guard-deploy/deploy-vars.yml",
+    "deploy_vars_version": "0.2.1",
+    "deploy_vars_artifact_checksum": "59c1a9d8f822e30e99d096fc7aa26c3bd045d7201205c70972648a514e7fc024",
+    "merge_required_ci": {
+      "type": "str",
+      "value": "Test, lint, render"
+    },
+    "approved_chart_digest": {
+      "type": "str",
+      "value": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+    },
+    "first_pass": {
+      "command": "cd /home/myt/change-guard-deploy && ANSIBLE_NOCOLOR=1 /home/myt/.venvs/ansible/bin/ansible-playbook -i inventory.ini ansible/site.yml -e @deploy-vars.yml --become-password-file /home/myt/.cg-become-pass",
+      "recap": {
+        "ok": 87,
+        "changed": 12,
+        "unreachable": 0,
+        "failed": 0,
+        "skipped": 13
+      },
+      "failed": 0,
+      "log": "work/final-ansible-deploy-0.2.1.txt"
+    },
+    "second_pass_idempotent": {
+      "command": "same ansible-playbook command",
+      "recap": {
+        "ok": 75,
+        "changed": 0,
+        "unreachable": 0,
+        "failed": 0,
+        "skipped": 24
+      },
+      "changed_zero": true,
+      "failed": 0,
+      "log": "work/final-ansible-idempotent-0.2.1.txt"
+    },
+    "ansible_verification_play": {
+      "result": "passed",
+      "rbac_checks": 8,
+      "log": "work/final-ansible-verify-0.2.1.txt"
+    }
+  },
+  "service": {
+    "unit": "change-guard.service",
+    "active": true,
+    "enabled": true,
+    "user": "change-guard",
+    "group": "change-guard",
+    "main_pid": 669218,
+    "exec_main_start": "Thu 2026-11-12 17:14:49 CST",
+    "restarts": 0,
+    "command": "/opt/change-guard/current/venv/bin/python -m change_guard.daemon --config /etc/change-guard/config.yaml",
+    "login_shell": "/usr/sbin/nologin",
+    "home": "/var/lib/change-guard"
+  },
+  "runtime_policy_and_cache": {
+    "guard_version": "0.2.1",
+    "rule_version": "2026.11.1",
+    "policy_schema_version": 1,
+    "policy_digest": "1dae15b148a77f7f1d2971960ef61e355b20c2781bee19f29a6def09f05c7ad1",
+    "approved_chart_digest": [
+      "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+    ],
+    "reports": {
+      "2": {
+        "report_file": "ev-322cc84ef9c96ccfb359c8fe.json",
+        "schema_version": 2,
+        "pr": 2,
+        "decision": "REVIEW",
+        "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+        "guard_version": "0.2.1",
+        "rule_version": "2026.11.1",
+        "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+        "approved_chart_digests": [
+          "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+        ],
+        "workflow_changed": false,
+        "policy_digest": "1dae15b148a77f7f1d2971960ef61e355b20c2781bee19f29a6def09f05c7ad1",
+        "policy_binding_matches_validated": true,
+        "finding_rule_ids": [
+          "AI_ADDITIONAL_RISK",
+          "CAPACITY_POD_REQUESTS_UNRESERVED",
+          "FIRING_ALERTS"
+        ],
+        "head_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+        "changed_count": 1,
+        "changed_paths": [
+          "gitops/demo/values.yaml"
+        ],
+        "workflow_paths": []
+      },
+      "3": {
+        "report_file": "ev-e744b7140c89b4fd9f175909.json",
+        "schema_version": 2,
+        "pr": 3,
+        "decision": "BLOCK",
+        "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+        "guard_version": "0.2.1",
+        "rule_version": "2026.11.1",
+        "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+        "approved_chart_digests": [
+          "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+        ],
+        "workflow_changed": false,
+        "policy_digest": "1dae15b148a77f7f1d2971960ef61e355b20c2781bee19f29a6def09f05c7ad1",
+        "policy_binding_matches_validated": true,
+        "finding_rule_ids": [
+          "AI_ADDITIONAL_RISK",
+          "CAPACITY_POD_REQUESTS_UNRESERVED",
+          "FAULT_INJECTION",
+          "FIRING_ALERTS"
+        ],
+        "head_sha": "3a7d90440e1245c6f3f976c3e9dc10e5f5ca1141",
+        "changed_count": 1,
+        "changed_paths": [
+          "gitops/demo/values.yaml"
+        ],
+        "workflow_paths": []
+      }
+    },
+    "all_reports_policy_binding_match": true,
+    "all_reports_chart_pin_match": true,
+    "all_reports_workflow_unchanged": true,
+    "schema_2_reports_observed": true,
+    "cache_note": "SCHEMA_VERSION=2 invalidates schema-1 cached reports; PR2/PR3 were reevaluated with the 0.2.1 policy binding and approved chart pin."
+  },
+  "runtime_health": {
+    "last_poll_at": "2026-11-12 17:16:17,122",
+    "last_poll_status": "ok",
+    "open_prs_observed": 2,
+    "last_poll_errors": 0,
+    "polls_observed_since_restart": 2,
+    "all_polls_ok": true,
+    "note": "Read-only daemon polling; no PR, approval, status, or main-branch mutation was performed by this deployment.",
+    "log": "work/final-service-journal-0.2.1.txt"
+  },
+  "systemd_hardening": {
+    "NoNewPrivileges": "yes",
+    "ProtectSystem": "strict",
+    "ProtectHome": "yes",
+    "PrivateTmp": "yes",
+    "PrivateDevices": "yes",
+    "InaccessiblePaths": "/root /home",
+    "ReadOnlyPaths": "/etc/change-guard /opt/change-guard",
+    "ReadWritePaths": "/var/lib/change-guard",
+    "CapabilityBoundingSet": "",
+    "AmbientCapabilities": "",
+    "RestrictNamespaces": "no",
+    "RestrictRealtime": "yes",
+    "RestrictSUIDSGID": "yes",
+    "LockPersonality": "yes",
+    "MemoryDenyWriteExecute": "yes",
+    "SystemCallArchitectures": "native",
+    "LimitNOFILE": "8192",
+    "LimitNPROC": "8192",
+    "TasksMax": "8192",
+    "MemoryMax": "2147483648",
+    "systemd_analyze_exposure": "2.4 OK",
+    "note": "RestrictNamespaces=no is deliberate: bubblewrap requires user/mount/net/pid/ipc/uts namespaces for the renderer sandbox."
+  },
+  "filesystem_boundaries": {
+    "checks": {
+      "service_config": "readable",
+      "service_kubeconfig": "readable",
+      "service_github_token": "readable",
+      "admin_conf": "denied",
+      "root_home": "denied",
+      "operator_home": "denied",
+      "state_dir": "writable",
+      "config_dir": "denied"
+    },
+    "service_can_read_config": true,
+    "service_can_read_kubeconfig": true,
+    "service_can_read_github_token": true,
+    "service_cannot_read_admin_kubeconfig": true,
+    "service_cannot_read_root_home": true,
+    "service_cannot_read_operator_home": true,
+    "service_can_write_state_dir": true,
+    "service_cannot_write_config_dir": true
+  },
+  "credentials": {
+    "github_token": {
+      "source": "work/github-agent-token.txt",
+      "installed_path": "/etc/change-guard/github-token",
+      "mode": "0600",
+      "owner": "change-guard",
+      "group": "change-guard",
+      "size_bytes": 93,
+      "matches_current_local_source": true,
+      "content_or_hash_included": false
+    },
+    "deepseek_token": {
+      "installed_path": "/etc/change-guard/deepseek-token",
+      "mode": "0600",
+      "owner": "change-guard",
+      "size_bytes": 36,
+      "matches_source": true
+    },
+    "kubeconfig": {
+      "installed_path": "/etc/change-guard/kubeconfig",
+      "mode": "0600",
+      "owner": "change-guard",
+      "size_bytes": 2760
+    },
+    "merge_deploy_key": {
+      "installed_path": "/etc/change-guard/merge-deploy-key",
+      "mode": "0600",
+      "owner": "change-guard",
+      "matches_source": true
+    },
+    "github_known_hosts": {
+      "installed_path": "/etc/change-guard/github_known_hosts",
+      "mode": "0600",
+      "owner": "change-guard",
+      "matches_source": true
+    },
+    "note": "No token, password, key, or credential hash is included in this proof."
+  },
+  "rbac": {
+    "identity": "system:serviceaccount:change-guard:change-guard",
+    "checks": [
+      {
+        "command": "get nodes",
+        "expected": "yes",
+        "actual": "yes",
+        "rc": 0,
+        "result": "PASS"
+      },
+      {
+        "command": "list pods --all-namespaces",
+        "expected": "yes",
+        "actual": "yes",
+        "rc": 0,
+        "result": "PASS"
+      },
+      {
+        "command": "get applications.argoproj.io -n argocd",
+        "expected": "yes",
+        "actual": "yes",
+        "rc": 0,
+        "result": "PASS"
+      },
+      {
+        "command": "get secrets -n demo",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "get secrets --all-namespaces",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "get pods --subresource=log -n demo",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "create pods --subresource=exec -n demo",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "create deployments -n demo",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "delete pods -n demo",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "patch applications.argoproj.io -n argocd",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "create serviceaccounts/token -n change-guard",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      }
+    ],
+    "all_passed": true,
+    "allowed": [
+      "get nodes",
+      "list pods --all-namespaces",
+      "get applications.argoproj.io -n argocd"
+    ],
+    "denied": [
+      "get secrets -n demo",
+      "get secrets --all-namespaces",
+      "get pods --subresource=log -n demo",
+      "create pods --subresource=exec -n demo",
+      "create deployments -n demo",
+      "delete pods -n demo",
+      "patch applications.argoproj.io -n argocd",
+      "create serviceaccounts/token -n change-guard"
+    ]
+  },
+  "token_renewal": {
+    "timer_unit": "change-guard-token-renew.timer",
+    "service_unit": "change-guard-token-renew.service",
+    "timer_enabled": true,
+    "timer_active": true,
+    "period": "6h",
+    "manual_trigger_command": "systemctl start change-guard-token-renew.service",
+    "manual_trigger_timestamp": "2026-11-12T17:15:25+08:00",
+    "trigger_rc": 0,
+    "result": "success",
+    "exec_main_status": 0,
+    "journal_message": "{\"renewed\": \"change-guard/change-guard\", \"requested_lifetime\": \"12h\"}",
+    "token_status": "valid",
+    "remaining_seconds_after_renewal": 43199,
+    "expires_at_epoch": 1794518125,
+    "kubeconfig_mode": "600",
+    "kubeconfig_owner": "change-guard:change-guard",
+    "kubeconfig_mtime": "2026-11-12 17:15:25.420664549 +0800",
+    "last_trigger": "Thu 2026-11-12 16:56:38 CST",
+    "next_elapse": "Thu 2026-11-12 23:15:25 CST",
+    "helper_path": "/usr/local/lib/change-guard/renew-service-token.py",
+    "helper_mode": "0700",
+    "helper_owner": "root:root",
+    "log": "work/final-renewal-trigger-0.2.1.txt"
+  },
+  "not_performed": [
+    "No GitHub pull request was created, updated, merged, or approved.",
+    "No GitHub approval or review action was taken.",
+    "No push to the GitHub main branch was made.",
+    "No previous immutable release directory was modified.",
+    "No credential value or credential hash was printed or saved."
+  ],
+  "evidence_files": {
+    "final-ansible-deploy-0.2.1.txt": {
+      "sha256": "efa5d2910c863bf13b79a9d51588e195a33db3a9568e355d286a1d85939d458e",
+      "bytes": 32788
+    },
+    "final-ansible-idempotent-0.2.1.txt": {
+      "sha256": "5059b25ba3fc1026c2de1db55277cb165a105b0953e60b490e2dfb2c9b9b81d3",
+      "bytes": 32699
+    },
+    "final-ansible-verify-0.2.1.txt": {
+      "sha256": "21eef9c1cd770f83f6a5573ce8b5461c7123f8b898569a0fdf7b5ae83572591d",
+      "bytes": 13627
+    },
+    "final-renewal-trigger-0.2.1.txt": {
+      "sha256": "604ddf2b1b66691e3d4b8357b8f1f709ea2a75b138a562f800fbcdd20f40d11c",
+      "bytes": 1667
+    },
+    "final-release-listing-0.2.1.txt": {
+      "sha256": "c1438b2b22ca3e075ccac1a16e45cf57e6def538c955e462aa286740bd7f6971",
+      "bytes": 749
+    },
+    "final-environment-0.2.1.txt": {
+      "sha256": "6921817df29ee1eb4d447b5471c6cdcba1957f0d31bc84cee9a3dd7593c76c10",
+      "bytes": 118
+    },
+    "final-service-journal-0.2.1.txt": {
+      "sha256": "8e88f4b6dec574feaf5fbe96dcc7e1dce5c6b460a5bf675c6ba6e83a7db41e4f",
+      "bytes": 659
+    },
+    "final-initial-check-0.2.1.txt": {
+      "sha256": "046755a5f292c298970a33747b67ccdca7f7138a0c12b7561d1bc3710dc2ccc8",
+      "bytes": 1435
+    },
+    "final-policy-binding-validated-0.2.1.txt": {
+      "sha256": "cf5a5279faca1c0d0828884c8d56aed5c04382d9e545ad904c3805e981b57b50",
+      "bytes": 2037
+    },
+    "final-pr2-scope-0.2.1.txt": {
+      "sha256": "5a6926e65c7762a4eb8ef927f29c19aae43a0676a0838cd6865abdb9687b651a",
+      "bytes": 739
+    },
+    "final-pr2-ci-binding-0.2.1.txt": {
+      "sha256": "b0901bf7f8e49b9cd73de17dbd371fd15276fbc824101d54f83bbca4534d1e56",
+      "bytes": 312
+    },
+    "final-artifact-check-0.2.1.json": {
+      "sha256": "537edd332ba80ff824b63c781be60e7cc0ca7ab9baea91edf5136662c1b1b2be",
+      "bytes": 890
+    },
+    "source-freeze-0.2.1-artifact.json": {
+      "sha256": "d9e49694b7ac76ec8c72d91d6840be689df7fdcb339fc65ed7aa926f3d267318",
+      "bytes": 5508
+    },
+    "source-drift-0.2.1.json": {
+      "sha256": "51dcdb404d14c52e4fe918996f354f9c7dafebfda729718bcf809a9f469e7a4e",
+      "bytes": 1238
+    },
+    "chart-digest-main-api.json": {
+      "sha256": "36751a5ac4ab5ceee724d4c52fa33d94a5a8ecea05a74a2683ee6e0864ee5a5c",
+      "bytes": 1737
+    },
+    "chart-digest-main.json": {
+      "sha256": "ade4a2f2af1849f36d1dfefd8dbe4783a2d8064fad1eb51205bbafd141562830",
+      "bytes": 1085
+    },
+    "final-inspect-0.2.2.txt": {
+      "sha256": "68d1fa5fc02a4a9b505e03853ad4798a4f7f3289bf663174459fd7743a6fdaec",
+      "bytes": 1945
+    },
+    "final-policy-binding-validated-0.2.2.txt": {
+      "sha256": "620baba42ad9124f9556373eeccc63921f3ab44185bb19534b69bb86a34f21b3",
+      "bytes": 2678
+    },
+    "k8s-change-guard/docs/evidence/deployment-0.2.0.json": {
+      "sha256": "030fbe34d1021af872004431a4b82f496b11d9c96190f8f9d88f685022974ff5",
+      "bytes": 12098
+    },
+    "k8s-change-guard/docs/evidence/chart-digest-main-823770e.json": {
+      "sha256": "36751a5ac4ab5ceee724d4c52fa33d94a5a8ecea05a74a2683ee6e0864ee5a5c",
+      "bytes": 1737
+    },
+    "k8s-change-guard/docs/evidence/deployment-0.2.1.json": {
+      "sha256": "c451fd4542ad6e424edcd44a5e4d73eb8e7fe9638104f0fb760cdb0169ea978d",
+      "bytes": 23160
+    }
+  }
+}

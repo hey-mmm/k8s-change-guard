@@ -1,0 +1,370 @@
+{
+  "schema": "change-guard-deployment-proof/v1",
+  "generated_at": "2026-11-12T17:00:44+08:00",
+  "status": "SUCCESS",
+  "host": {
+    "hostname": "master",
+    "address": "11.0.1.10",
+    "os": "Linux 5.15.0-177-generic x86_64",
+    "systemd": "249 (249.11-0ubuntu3.23)",
+    "python": "3.10.12",
+    "ansible": "ansible-playbook [core 2.21.6]"
+  },
+  "version": "0.2.0",
+  "artifact": {
+    "local_path": "C:\\Users\\MYT\\Documents\\Codex\\2026-11-12\\https-github-com-hey-mmm-full-3\\work\\k8s-change-guard\\dist\\k8s-change-guard-0.2.0.tar.gz",
+    "remote_path": "/home/myt/change-guard-deploy/dist/k8s-change-guard-0.2.0.tar.gz",
+    "sha256": "bfacc64bf2d76dfd824cdf5a8463a71c817c9ca24a72ccccdc6d4e5e3a47a98c",
+    "bytes": 118169,
+    "packaged_files": 34,
+    "build_command": "python scripts/build-release.py --output dist/k8s-change-guard-0.2.0.tar.gz",
+    "deterministic": true
+  },
+  "source_integrity": {
+    "pyproject_version": "0.2.0",
+    "package___version__": "0.2.0",
+    "github_base64_linewrap_fix_present": true,
+    "engine_series_presence_present": true,
+    "merge_module_present": true,
+    "merge_required_ci_default_present": true,
+    "tests": {
+      "command": "python -m unittest discover -s tests -q",
+      "ran": 164,
+      "skipped": 3,
+      "result": "OK"
+    }
+  },
+  "immutable_release": {
+    "current_symlink": "/opt/change-guard/releases/0.2.0",
+    "release_dir": "/opt/change-guard/releases/0.2.0",
+    "release_dir_mode": "0755",
+    "owner": "root:root",
+    "recorded_artifact_sha256": "bfacc64bf2d76dfd824cdf5a8463a71c817c9ca24a72ccccdc6d4e5e3a47a98c",
+    "recorded_digest_matches_artifact": true,
+    "installed_version": "0.2.0",
+    "previous_releases_untouched": true,
+    "previous_releases": {
+      "0.1.2": {
+        "recorded_artifact_sha256": "0e812665097c3cc0ae40aa972fd9c90bfe9c08774d7ebcbf91481dbe95ea4046",
+        "mtime": "2026-11-12 16:31:17.254984583 +0800"
+      },
+      "0.1.3": {
+        "recorded_artifact_sha256": "c01eaf52e6d48b142a58f8fb636a15df4081d9f26a6613fe9ea387169ebd151f",
+        "mtime": "2026-11-12 16:39:23.485441555 +0800"
+      }
+    },
+    "note": "Ansible installs each version in a new immutable directory; 0.1.2 and 0.1.3 were not modified."
+  },
+  "deployment": {
+    "deploy_vars_path": "/home/myt/change-guard-deploy/deploy-vars.yml",
+    "deploy_vars_version": "0.2.0",
+    "deploy_vars_artifact_checksum": "bfacc64bf2d76dfd824cdf5a8463a71c817c9ca24a72ccccdc6d4e5e3a47a98c",
+    "merge_required_ci": {
+      "type": "str",
+      "value": "Test, lint, render"
+    },
+    "installed_config_merge_required_ci": {
+      "type": "str",
+      "value": "Test, lint, render"
+    },
+    "first_pass": {
+      "command": "cd /home/myt/change-guard-deploy && ANSIBLE_NOCOLOR=1 /home/myt/.venvs/ansible/bin/ansible-playbook -i inventory.ini ansible/site.yml -e @deploy-vars.yml --become-password-file /home/myt/.cg-become-pass",
+      "recap": {
+        "ok": 88,
+        "changed": 16,
+        "unreachable": 0,
+        "failed": 0,
+        "skipped": 12
+      },
+      "failed": 0,
+      "log": "work/final-ansible-deploy.txt"
+    },
+    "second_pass_idempotent": {
+      "command": "same ansible-playbook command",
+      "recap": {
+        "ok": 75,
+        "changed": 0,
+        "unreachable": 0,
+        "failed": 0,
+        "skipped": 24
+      },
+      "changed_zero": true,
+      "failed": 0,
+      "log": "work/final-ansible-idempotent.txt"
+    },
+    "ansible_verification_play": {
+      "result": "passed",
+      "rbac_checks": 8,
+      "log": "work/final-ansible-verify.txt"
+    }
+  },
+  "service": {
+    "unit": "change-guard.service",
+    "active": true,
+    "enabled": true,
+    "user": "change-guard",
+    "group": "change-guard",
+    "main_pid": 637886,
+    "exec_main_start": "Thu 2026-11-12 16:56:39 CST",
+    "restarts": 0,
+    "command": "/opt/change-guard/current/venv/bin/python -m change_guard.daemon --config /etc/change-guard/config.yaml",
+    "login_shell": "/usr/sbin/nologin",
+    "home": "/var/lib/change-guard"
+  },
+  "runtime_health": {
+    "last_poll_at": "2026-11-12 16:59:59,382",
+    "last_poll_status": "ok",
+    "open_prs_observed": 2,
+    "last_poll_errors": 0,
+    "polls_observed": 13,
+    "all_polls_ok": true,
+    "note": "Read-only daemon polling; no PR, approval, status, or main-branch mutation was performed by this deployment.",
+    "log": "work/final-service-journal.txt"
+  },
+  "systemd_hardening": {
+    "NoNewPrivileges": "yes",
+    "ProtectSystem": "strict",
+    "ProtectHome": "yes",
+    "PrivateTmp": "yes",
+    "PrivateDevices": "yes",
+    "InaccessiblePaths": "/root /home",
+    "ReadOnlyPaths": "/etc/change-guard /opt/change-guard",
+    "ReadWritePaths": "/var/lib/change-guard",
+    "CapabilityBoundingSet": "",
+    "AmbientCapabilities": "",
+    "RestrictNamespaces": "no",
+    "RestrictRealtime": "yes",
+    "RestrictSUIDSGID": "yes",
+    "LockPersonality": "yes",
+    "MemoryDenyWriteExecute": "yes",
+    "SystemCallArchitectures": "native",
+    "LimitNOFILE": "8192",
+    "LimitNPROC": "8192",
+    "TasksMax": "8192",
+    "MemoryMax": "2147483648",
+    "systemd_analyze_exposure": "2.4 OK",
+    "note": "RestrictNamespaces=no is deliberate: bubblewrap requires user/mount/net/pid/ipc/uts namespaces for the renderer sandbox."
+  },
+  "filesystem_boundaries": {
+    "checks": {
+      "service_config": "readable",
+      "service_kubeconfig": "readable",
+      "service_github_token": "readable",
+      "admin_conf": "denied",
+      "root_home": "denied",
+      "operator_home": "denied",
+      "state_dir": "writable",
+      "config_dir": "denied"
+    },
+    "service_can_read_config": true,
+    "service_can_read_kubeconfig": true,
+    "service_can_read_github_token": true,
+    "service_cannot_read_admin_kubeconfig": true,
+    "service_cannot_read_root_home": true,
+    "service_cannot_read_operator_home": true,
+    "service_can_write_state_dir": true,
+    "service_cannot_write_config_dir": true
+  },
+  "credentials": {
+    "github_token": {
+      "source": "work/github-agent-token.txt",
+      "installed_path": "/etc/change-guard/github-token",
+      "mode": "0600",
+      "owner": "change-guard",
+      "group": "change-guard",
+      "size_bytes": 93,
+      "matches_current_local_source": true,
+      "content_or_hash_included": false
+    },
+    "deepseek_token": {
+      "installed_path": "/etc/change-guard/deepseek-token",
+      "mode": "0600",
+      "owner": "change-guard",
+      "size_bytes": 36,
+      "matches_source": true
+    },
+    "kubeconfig": {
+      "installed_path": "/etc/change-guard/kubeconfig",
+      "mode": "0600",
+      "owner": "change-guard",
+      "size_bytes": 2760
+    },
+    "merge_deploy_key": {
+      "installed_path": "/etc/change-guard/merge-deploy-key",
+      "mode": "0600",
+      "owner": "change-guard",
+      "matches_source": true
+    },
+    "github_known_hosts": {
+      "installed_path": "/etc/change-guard/github_known_hosts",
+      "mode": "0600",
+      "owner": "change-guard",
+      "matches_source": true
+    },
+    "note": "No token, password, key, or credential hash is included in this proof."
+  },
+  "rbac": {
+    "identity": "system:serviceaccount:change-guard:change-guard",
+    "checks": [
+      {
+        "command": "get nodes",
+        "expected": "yes",
+        "actual": "yes",
+        "rc": 0,
+        "result": "PASS"
+      },
+      {
+        "command": "list pods --all-namespaces",
+        "expected": "yes",
+        "actual": "yes",
+        "rc": 0,
+        "result": "PASS"
+      },
+      {
+        "command": "get applications.argoproj.io -n argocd",
+        "expected": "yes",
+        "actual": "yes",
+        "rc": 0,
+        "result": "PASS"
+      },
+      {
+        "command": "get secrets -n demo",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "get secrets --all-namespaces",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "get pods --subresource=log -n demo",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "create pods --subresource=exec -n demo",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "create deployments -n demo",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "delete pods -n demo",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "patch applications.argoproj.io -n argocd",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      },
+      {
+        "command": "create serviceaccounts/token -n change-guard",
+        "expected": "no",
+        "actual": "no",
+        "rc": 1,
+        "result": "PASS"
+      }
+    ],
+    "all_passed": true,
+    "allowed": [
+      "get nodes",
+      "list pods --all-namespaces",
+      "get applications.argoproj.io -n argocd"
+    ],
+    "denied": [
+      "get secrets -n demo",
+      "get secrets --all-namespaces",
+      "get pods --subresource=log -n demo",
+      "create pods --subresource=exec -n demo",
+      "create deployments -n demo",
+      "delete pods -n demo",
+      "patch applications.argoproj.io -n argocd",
+      "create serviceaccounts/token -n change-guard"
+    ]
+  },
+  "token_renewal": {
+    "timer_unit": "change-guard-token-renew.timer",
+    "service_unit": "change-guard-token-renew.service",
+    "timer_enabled": true,
+    "timer_active": true,
+    "period": "6h",
+    "manual_trigger_command": "systemctl start change-guard-token-renew.service",
+    "manual_trigger_timestamp": "2026-11-12T16:57:33+08:00",
+    "trigger_rc": 0,
+    "result": "success",
+    "exec_main_status": 0,
+    "journal_message": "{\"renewed\": \"change-guard/change-guard\", \"requested_lifetime\": \"12h\"}",
+    "token_status": "valid",
+    "remaining_seconds_after_renewal": 43199,
+    "expires_at_epoch": 1794517053,
+    "kubeconfig_mode": "0600",
+    "kubeconfig_owner": "change-guard:change-guard",
+    "kubeconfig_mtime": "2026-11-12 16:57:33.257204491 +0800",
+    "last_trigger": "Thu 2026-11-12 16:56:38 CST",
+    "next_elapse": "Thu 2026-11-12 22:57:33 CST",
+    "helper_path": "/usr/local/lib/change-guard/renew-service-token.py",
+    "helper_mode": "0700",
+    "helper_owner": "root:root",
+    "log": "work/final-renewal-trigger.txt"
+  },
+  "not_performed": [
+    "No GitHub pull request was created, updated, merged, or approved.",
+    "No GitHub approval or review action was taken.",
+    "No push to the GitHub main branch was made.",
+    "No published release or previous immutable release directory was modified.",
+    "No credential value or credential hash was printed or saved."
+  ],
+  "evidence_files": {
+    "final-ansible-deploy.txt": {
+      "sha256": "7a8b89e217c854c2ad6d4ab6d40dfe04e42efd7774c8842cb378741943378e28",
+      "bytes": 32805
+    },
+    "final-ansible-idempotent.txt": {
+      "sha256": "38f0caa09fd0b478ca5e96444fac0c1191f9193cc2dad3e11106d6d873156df2",
+      "bytes": 32699
+    },
+    "final-ansible-verify.txt": {
+      "sha256": "3810e3334b4f9a1fcc7ca4d41f2c665e9a53667e5d876e6365fe04f59036fbee",
+      "bytes": 12108
+    },
+    "final-renewal-trigger.txt": {
+      "sha256": "c9da31f0e5bc0e6189501c93178a1059b903b117da25c2bb6a15a60d32d87eab",
+      "bytes": 1401
+    },
+    "final-release-listing.txt": {
+      "sha256": "7bcadaf067fc6612f7a1b36de7eff930cebdc0a98dc64747c84e063e24e5b993",
+      "bytes": 572
+    },
+    "final-environment.txt": {
+      "sha256": "6921817df29ee1eb4d447b5471c6cdcba1957f0d31bc84cee9a3dd7593c76c10",
+      "bytes": 118
+    },
+    "final-artifact-check.txt": {
+      "sha256": "802c3258f65817ad4ca8d50b125715a0a11b31798154efdbee34b819eb3d3045",
+      "bytes": 314
+    },
+    "final-service-journal.txt": {
+      "sha256": "74e5ea3706ae7279dbb065ca97731451e6d50458853033c44a386474bc6d1288",
+      "bytes": 1539
+    }
+  }
+}

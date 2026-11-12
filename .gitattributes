@@ -2,3 +2,5 @@
 *.sh text eol=lf
 # Knowledge hashes attest exact snapshot bytes, including source line endings.
 knowledge/sources/* -text
+# Evidence hashes cover captured bytes; preserve original log whitespace.
+docs/evidence/** -text whitespace=-blank-at-eol,-blank-at-eof

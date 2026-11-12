@@ -1,0 +1,14 @@
+[
+  {
+    "pr": 4,
+    "head_sha": "d02bda67401592caee38b123e66126bc618f147b",
+    "url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/4",
+    "expected_rule": "WORKFLOW_CHANGE_BLOCKED"
+  },
+  {
+    "pr": 5,
+    "head_sha": "90c113e36c07fa6cc958ce8fbd1f8a82e2679e80",
+    "url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/5",
+    "expected_rule": "APPROVED_CHART_DIGEST_MISMATCH"
+  }
+]

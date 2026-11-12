@@ -1,0 +1,10 @@
+{
+  "evaluation_id": "ev-3197f2cadf956f6dfcc349f8",
+  "pr": 6,
+  "head_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "base_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+  "reason": "受托验收操作员：真实git revert恢复已核验旧digest与c0bff8a源码版本，候选故障开关关闭、无新增副本或requests。接受实验平台既有CPUOvercommit/未预留requests风险；新版本发布后验收已全通过，此次仅做受控回退演示，随后再次验证Argo、镜像和正流量。",
+  "comment_url": "https://github.com/hey-mmm/Full-Stack-Observability-in-Kubernetes/pull/6#issuecomment-6820153377",
+  "actor": "hey-mmm",
+  "at": "2026-11-12T09:42:03Z"
+}

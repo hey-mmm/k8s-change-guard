@@ -1,0 +1,27 @@
+{
+  "algorithm": "sha256(canonical_json({path_under_charts_demo: sha256(git_blob_bytes)}))",
+  "blob_shas": {
+    "charts/demo/Chart.yaml": "59e71841a30f800bc75f74cf1af6c8e7a25820b4",
+    "charts/demo/templates/NOTES.txt": "800f7d326e0919f97ac014de0ac64a1d21efd3f9",
+    "charts/demo/templates/_helpers.tpl": "155067186b49772e2e4aab0aa45f05f488adbe4a",
+    "charts/demo/templates/deployment.yaml": "cac2d928ba34bc631d029beb405b1c5fdab50332",
+    "charts/demo/templates/service.yaml": "38200b3835d989c808ae23726a0140357f12af59",
+    "charts/demo/templates/servicemonitor.yaml": "2e252620de2da03f67e9da6aa3685f098c9d50bd",
+    "charts/demo/values.yaml": "6bf02826b4a86ef3f61ebd224dba18e2f295205f"
+  },
+  "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+  "files": {
+    "Chart.yaml": "3e74a02017fad3932b070caebdd471ffcd9ec55c353c74b2f7e7d9c61795a6ee",
+    "templates/NOTES.txt": "1922cf5a34844a8f31ecee39f52b9a9261c34dd655b111a8dba3b0c912f218df",
+    "templates/_helpers.tpl": "d4f2797cbf23bc181d4f3a87110df1930b0bef207c6983f88ac0eecc35833572",
+    "templates/deployment.yaml": "792a90c9f1561a953a64f38757b6b564149b255340e610f68a451ff055cf912e",
+    "templates/service.yaml": "cdc4fd3cd90a01a3b47693c78fa9c1449d0ffb1bf6dc50bf84806e95e39143ce",
+    "templates/servicemonitor.yaml": "69d3a5b98466165b6eaf84ba8b36018bd12d59feace159b16bcdcd5228239e47",
+    "values.yaml": "854190875d3a2b81ad0e39fe33d4f61bbfba092909a0a20580145df3ee9973bf"
+  },
+  "main_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "ref": "refs/heads/main",
+  "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+  "source": "GitHub Git Trees/Blobs API, read-only",
+  "tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574"
+}

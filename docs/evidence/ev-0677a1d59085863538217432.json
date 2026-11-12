@@ -1,0 +1,478 @@
+{
+  "schema_version": 2,
+  "evaluation_id": "ev-0677a1d59085863538217432",
+  "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+  "pull_request": {
+    "number": 4,
+    "title": "Acceptance: BLOCK workflow-pin change",
+    "author": "hey-mmm",
+    "head_ref": "acceptance/workflow-pin",
+    "head_repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+    "base_ref": "main",
+    "pr_base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221"
+  },
+  "head_sha": "d02bda67401592caee38b123e66126bc618f147b",
+  "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+  "base_branch": "main",
+  "head_tree_sha": "f647960aad779b4ad756ed20e7614c58734bab02",
+  "base_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+  "head_tree_digest": "8f23587b954fcb68e0fbd613dcae78129e95cc795189e08c51ef171f8e480d6f",
+  "base_tree_digest": "a1a155a804d284291a6f94084c66b040ca629885a3f151e8afd28b22b05ed103",
+  "tree_entry_count": 173,
+  "changed_paths": [
+    ".github/workflows/ci.yml"
+  ],
+  "changed_count": 1,
+  "tree_diff_truncated": false,
+  "argo": {
+    "argo_source_changed": false,
+    "argo_application_changed": false,
+    "argo_project_changed": false,
+    "argo_manifest_error": false,
+    "argo_changed_paths": [],
+    "argo_application_count": 2
+  },
+  "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+  "old_render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+  "deployment_images": [
+    {
+      "container": "demo-service",
+      "init": false,
+      "image": "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d"
+    }
+  ],
+  "decision": "BLOCK",
+  "findings": [
+    {
+      "rule_id": "WORKFLOW_CHANGE_BLOCKED",
+      "severity": "BLOCK",
+      "field": "context.workflow_changed",
+      "message": "a .github/workflows/ file changed; CI workflow content must be identical on base and head",
+      "evidence": {
+        "paths": [
+          ".github/workflows/ci.yml"
+        ],
+        "count": 1
+      }
+    },
+    {
+      "rule_id": "AI_ADDITIONAL_RISK",
+      "severity": "REVIEW",
+      "field": "ai_result.additional_risks",
+      "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+      "evidence": {
+        "risks": [
+          {
+            "title": "Overstated free capacity on a single worker",
+            "detail": "Available CPU/memory is computed while 35 container requests are unreserved and treated as zero, and KubeCPUOvercommit is firing. Any rollout with surge or retained old Pods may not fit; capacity should be recomputed with requests reserved and only the Ready worker counted."
+          },
+          {
+            "title": "Firing alert treated as context only",
+            "detail": "The KubeCPUOvercommit warning is firing. Firing alerts are context, not evidence of recovery or release readiness, and should be resolved or explicitly accepted by a reviewer before merge."
+          }
+        ],
+        "count": 2
+      }
+    },
+    {
+      "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+      "severity": "REVIEW",
+      "field": "evidence.pods[].spec.containers[].resources.requests",
+      "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+      "evidence": {
+        "unreserved_requests": 35
+      }
+    },
+    {
+      "rule_id": "FIRING_ALERTS",
+      "severity": "REVIEW",
+      "field": "evidence.metrics.alerts",
+      "message": "one or more relevant alerts are firing",
+      "evidence": {
+        "alerts": [
+          {
+            "name": "KubeCPUOvercommit",
+            "state": "firing",
+            "activeAt": "2026-11-12T08:02:40.464748368Z",
+            "labels": {
+              "alertname": "KubeCPUOvercommit",
+              "severity": "warning"
+            }
+          }
+        ],
+        "count": 1
+      }
+    }
+  ],
+  "evaluated_at": 1794475604,
+  "expires_at": 1794475886,
+  "evidence_ttl_seconds": 300,
+  "rule_version": "2026.11.1",
+  "guard_version": "0.2.2",
+  "policy_binding": {
+    "guard_version": "0.2.2",
+    "rule_version": "2026.11.1",
+    "policy_schema_version": 1,
+    "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d"
+  },
+  "policy_digest": "c2a615e2cb94e417c88c8954a381a25e065b1813ba44f5cf33ba4b095706aa4d",
+  "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+  "approved_chart_digests": [
+    "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+  ],
+  "workflow_changed": true,
+  "evidence": {
+    "collected_at": 1794475601,
+    "errors": [],
+    "metrics": {
+      "memory_working_set_bytes": 39055360.0,
+      "request_rate": 0.5579045246407831,
+      "error_ratio": 0.0,
+      "p95_seconds": 0.00475,
+      "alerts": [
+        {
+          "name": "KubeCPUOvercommit",
+          "state": "firing",
+          "labels": {
+            "alertname": "KubeCPUOvercommit",
+            "severity": "warning"
+          }
+        },
+        {
+          "name": "Watchdog",
+          "state": "firing",
+          "labels": {
+            "alertname": "Watchdog",
+            "severity": "none"
+          }
+        }
+      ],
+      "source_timestamps": {
+        "up": 1794475591,
+        "memory_working_set_bytes": 1794475586,
+        "request_rate": 1794475591,
+        "error_ratio": 1794475591,
+        "p95_seconds": 1794475591,
+        "alerts": 1794475601
+      }
+    },
+    "capacity": {
+      "available_cpu_millicores": 2190.0,
+      "available_memory_bytes": 9185292288.0,
+      "allocatable_cpu_millicores": 4000.0,
+      "allocatable_memory_bytes": 12406517760.0,
+      "workers_ready": 1
+    },
+    "deployment": {
+      "name": "demo",
+      "namespace": "demo",
+      "replicas": 1,
+      "ready_replicas": 1,
+      "images": [
+        "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d"
+      ]
+    },
+    "node_count": 2,
+    "pod_count": 28
+  },
+  "evidence_digest": "41dc2ea3483557a02e8d065f4eccd91482f2b79fdc7a176396cafcd47129a24a",
+  "ai": {
+    "status": "ok",
+    "model": "deepseek-chat",
+    "summary": "This PR only touches .github/workflows/ci.yml and the decision preview is REVIEW, not an approval. The report shows a single Ready worker with 2190m CPU and ~9.2 GB memory available, but 35 unreserved container requests mean free capacity is likely overstated, and a KubeCPUOvercommit warning is firing. The trusted worker-capacity case confirms the control-plane node is tainted and must not be counted as schedulable worker capacity, so effective headroom is smaller than the raw numbers suggest. The change itself is a workflow pin change with no manifest or Argo changes, so cluster risk is low, but capacity and alert evidence should be reviewed before any rollout that adds replicas or surge Pods. No approval is given here; hard guard rules remain in force.",
+    "additional_risks": [
+      {
+        "title": "Overstated free capacity on a single worker",
+        "detail": "Available CPU/memory is computed while 35 container requests are unreserved and treated as zero, and KubeCPUOvercommit is firing. Any rollout with surge or retained old Pods may not fit; capacity should be recomputed with requests reserved and only the Ready worker counted.",
+        "severity": "REVIEW"
+      },
+      {
+        "title": "Firing alert treated as context only",
+        "detail": "The KubeCPUOvercommit warning is firing. Firing alerts are context, not evidence of recovery or release readiness, and should be resolved or explicitly accepted by a reviewer before merge.",
+        "severity": "REVIEW"
+      }
+    ],
+    "citations": [
+      {
+        "case_id": "worker-capacity-check",
+        "source": "docs/stage1-runbook.md",
+        "source_sha256": "d7b45acf41d790c3666fd94b56865bffce11eef59519829ec90cdb14a73a4e5d",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "line_start": 134,
+        "line_end": 145
+      },
+      {
+        "case_id": "alert-resolved-fingerprint",
+        "source": "docs/fault-review.md",
+        "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+        "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+        "line_start": 13,
+        "line_end": 14
+      }
+    ],
+    "error": null
+  },
+  "context": {
+    "tree_changes": [
+      ".github/workflows/ci.yml"
+    ],
+    "deployment_related_changes": [
+      ".github/workflows/ci.yml"
+    ],
+    "workflow_changed": true,
+    "workflow_paths": [
+      ".github/workflows",
+      ".github/workflows/ci.yml"
+    ],
+    "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+    "argo": {
+      "argo_source_changed": false,
+      "argo_application_changed": false,
+      "argo_project_changed": false,
+      "argo_manifest_error": false,
+      "argo_changed_paths": [],
+      "argo_application_count": 2
+    },
+    "changed_count": 1,
+    "tree_diff_truncated": false
+  },
+  "evaluation": {
+    "decision": "BLOCK",
+    "findings": [
+      {
+        "rule_id": "WORKFLOW_CHANGE_BLOCKED",
+        "severity": "BLOCK",
+        "field": "context.workflow_changed",
+        "message": "a .github/workflows/ file changed; CI workflow content must be identical on base and head",
+        "evidence": {
+          "paths": [
+            ".github/workflows/ci.yml"
+          ],
+          "count": 1
+        }
+      },
+      {
+        "rule_id": "AI_ADDITIONAL_RISK",
+        "severity": "REVIEW",
+        "field": "ai_result.additional_risks",
+        "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+        "evidence": {
+          "risks": [
+            {
+              "title": "Overstated free capacity on a single worker",
+              "detail": "Available CPU/memory is computed while 35 container requests are unreserved and treated as zero, and KubeCPUOvercommit is firing. Any rollout with surge or retained old Pods may not fit; capacity should be recomputed with requests reserved and only the Ready worker counted."
+            },
+            {
+              "title": "Firing alert treated as context only",
+              "detail": "The KubeCPUOvercommit warning is firing. Firing alerts are context, not evidence of recovery or release readiness, and should be resolved or explicitly accepted by a reviewer before merge."
+            }
+          ],
+          "count": 2
+        }
+      },
+      {
+        "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+        "severity": "REVIEW",
+        "field": "evidence.pods[].spec.containers[].resources.requests",
+        "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+        "evidence": {
+          "unreserved_requests": 35
+        }
+      },
+      {
+        "rule_id": "FIRING_ALERTS",
+        "severity": "REVIEW",
+        "field": "evidence.metrics.alerts",
+        "message": "one or more relevant alerts are firing",
+        "evidence": {
+          "alerts": [
+            {
+              "name": "KubeCPUOvercommit",
+              "state": "firing",
+              "activeAt": "2026-11-12T08:02:40.464748368Z",
+              "labels": {
+                "alertname": "KubeCPUOvercommit",
+                "severity": "warning"
+              }
+            }
+          ],
+          "count": 1
+        }
+      }
+    ],
+    "changes": [],
+    "context": {
+      "repository": "hey-mmm/Full-Stack-Observability-in-Kubernetes",
+      "pull_request": 4,
+      "head_sha": "d02bda67401592caee38b123e66126bc618f147b",
+      "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+      "pr_base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+      "head_ref": "acceptance/workflow-pin",
+      "base_ref": "main",
+      "head_tree_sha": "f647960aad779b4ad756ed20e7614c58734bab02",
+      "base_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+      "head_tree_digest": "8f23587b954fcb68e0fbd613dcae78129e95cc795189e08c51ef171f8e480d6f",
+      "base_tree_digest": "a1a155a804d284291a6f94084c66b040ca629885a3f151e8afd28b22b05ed103",
+      "tree_entry_count": 173,
+      "changed_paths": [
+        ".github/workflows/ci.yml"
+      ],
+      "tree_changes": [
+        ".github/workflows/ci.yml"
+      ],
+      "deployment_related_changes": [
+        ".github/workflows/ci.yml"
+      ],
+      "changed_count": 1,
+      "tree_diff_truncated": false,
+      "workflow_changed": true,
+      "workflow_paths": [
+        ".github/workflows",
+        ".github/workflows/ci.yml"
+      ],
+      "chart_digest": "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d",
+      "approved_chart_digests": [
+        "194baf90afd746299e256dc0bf144a12bc6f6325bacf77b40ff01e50b0c3e05d"
+      ],
+      "argo": {
+        "argo_source_changed": false,
+        "argo_application_changed": false,
+        "argo_project_changed": false,
+        "argo_manifest_error": false,
+        "argo_changed_paths": [],
+        "argo_application_count": 2
+      },
+      "argo_source_changed": false,
+      "argo_application_changed": false,
+      "argo_project_changed": false,
+      "argo_manifest_error": false,
+      "argo_changed_paths": [],
+      "argo_application_count": 2,
+      "namespace": "demo",
+      "deployment": "demo",
+      "old_resource_count": 3,
+      "new_resource_count": 3,
+      "pod_template_changed": false,
+      "ai_required": true,
+      "ai_status": "ok",
+      "evidence_collected_at": 1794475601.0,
+      "evidence_ttl_seconds": 300
+    },
+    "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+    "old_render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+    "evaluated_at": 1794475604,
+    "expires_at": 1794475886,
+    "rule_version": "2026.11.1",
+    "audit": {
+      "schema_version": "1.0",
+      "rule_version": "2026.11.1",
+      "evaluated_at": 1794475604,
+      "checks": [
+        {
+          "rule_id": "WORKFLOW_CHANGE_BLOCKED",
+          "severity": "BLOCK",
+          "field": "context.workflow_changed",
+          "message": "a .github/workflows/ file changed; CI workflow content must be identical on base and head"
+        },
+        {
+          "rule_id": "AI_ADDITIONAL_RISK",
+          "severity": "REVIEW",
+          "field": "ai_result.additional_risks",
+          "message": "the model identified additional risk; it can only raise the decision to REVIEW"
+        },
+        {
+          "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+          "severity": "REVIEW",
+          "field": "evidence.pods[].spec.containers[].resources.requests",
+          "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated"
+        },
+        {
+          "rule_id": "FIRING_ALERTS",
+          "severity": "REVIEW",
+          "field": "evidence.metrics.alerts",
+          "message": "one or more relevant alerts are firing"
+        }
+      ],
+      "metrics": {
+        "memory_working_set_bytes": 39055360.0,
+        "request_rate": 0.5579045246407831,
+        "error_ratio": 0.0,
+        "p95_seconds": 0.00475,
+        "up": 1.0,
+        "low_traffic": false,
+        "firing_alerts": 1,
+        "source_timestamps": {
+          "memory_working_set_bytes": 1794475586.327,
+          "request_rate": 1794475591.461,
+          "error_ratio": 1794475591.461,
+          "p95_seconds": 1794475591.461,
+          "up": 1794475591.461
+        }
+      },
+      "capacity": {
+        "pod_request_cpu_millicores": 50.0,
+        "pod_request_memory_bytes": 67108864.0,
+        "old_pod_request_cpu_millicores": 50.0,
+        "old_pod_request_memory_bytes": 67108864.0,
+        "replicas": 1,
+        "surge_pods": 1,
+        "new_pods_reserved": 1,
+        "additional_pods_reserved": 1,
+        "peak_total_pods": 2,
+        "peak_demo_cpu_millicores": 100.0,
+        "peak_demo_memory_bytes": 134217728.0,
+        "retained_old_replicas": 1,
+        "required_cpu_millicores": 50.0,
+        "required_memory_bytes": 67108864.0,
+        "source": "evidence.capacity",
+        "available_cpu_millicores": 2190.0,
+        "available_memory_bytes": 9185292288.0,
+        "workers_ready": 1,
+        "allocatable_cpu_millicores": 4000.0,
+        "allocatable_memory_bytes": 12406517760.0,
+        "existing_pods_requests_cpu_millicores": 1810.0,
+        "existing_pods_requests_memory_bytes": 3221225472.0,
+        "worker_names": [
+          "worker"
+        ],
+        "overcommitted": false,
+        "projected_total_cpu_millicores": 1860.0,
+        "projected_total_memory_bytes": 3288334336.0
+      },
+      "ai": {
+        "status": "ok",
+        "model": "deepseek-chat",
+        "additional_risks": 2,
+        "citations": 2
+      },
+      "changes_count": 0,
+      "pod_template_changed": false,
+      "render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+      "old_render_digest": "eb2d20b882198c2dad168adcc4fab14be94944f965bf014ceebadac0c9bf32ec",
+      "daemon_escalations": [
+        {
+          "rule_id": "WORKFLOW_CHANGE_BLOCKED",
+          "severity": "BLOCK",
+          "field": "context.workflow_changed"
+        }
+      ]
+    },
+    "daemon_escalations": [
+      {
+        "rule_id": "WORKFLOW_CHANGE_BLOCKED",
+        "severity": "BLOCK",
+        "field": "context.workflow_changed",
+        "message": "a .github/workflows/ file changed; CI workflow content must be identical on base and head",
+        "evidence": {
+          "paths": [
+            ".github/workflows/ci.yml"
+          ],
+          "count": 1
+        }
+      }
+    ]
+  },
+  "created_at": 1794475595,
+  "status_context": "change-guard/release",
+  "report_digest": "31dedf9de6df4e803d1c99e27b238614e483b5ec9044a4f6c401d5f9b7ad3b15"
+}

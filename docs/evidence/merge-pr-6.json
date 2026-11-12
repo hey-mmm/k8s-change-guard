@@ -1,0 +1,24 @@
+{
+  "result": "MERGED",
+  "strategy": "fast-forward",
+  "pr": 6,
+  "head_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "evaluated_head": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "base_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+  "merge_sha": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+  "synthetic_merge_sha": "7c89e7742960e5679dad1ba922b69d6a03da85ec",
+  "synthetic_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+  "head_tree_sha": "b5edacddad17d6c827840de24cf599724f9f6574",
+  "base_ancestor": true,
+  "evaluation_id": "ev-3197f2cadf956f6dfcc349f8",
+  "decision": "REVIEW",
+  "merged_at": 1794476580,
+  "evidence_expires_at": 1794476635,
+  "github_merge_api_used": false,
+  "rollback": {
+    "strategy": "git-revert",
+    "commit": "321eb9517b83dc0e9261e16dcdb26016332dd7c3",
+    "mainline": null,
+    "command": "git revert 321eb9517b83dc0e9261e16dcdb26016332dd7c3"
+  }
+}

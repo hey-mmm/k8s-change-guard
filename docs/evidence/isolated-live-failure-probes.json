@@ -1,0 +1,527 @@
+{
+  "evidence_kind": "live read-only evaluation with isolated failure configuration",
+  "probes": [
+    {
+      "scenario": "monitoring-connection-refused",
+      "overrides": {
+        "prometheus_url": "http://127.0.0.1:1"
+      },
+      "duration_seconds": 18.06,
+      "decision": "ERROR",
+      "ai": {
+        "status": "ok",
+        "model": "deepseek-chat",
+        "summary": "Decision preview is ERROR: the release cannot be evaluated because all Prometheus evidence queries failed (connection refused on 127.0.0.1:1), leaving up, request rate, error ratio, p95 latency, memory, and alert data missing, plus missing raw source series. The change replaces the demo Deployment image digest and two redacted env values in the pod template, and bumps version labels on Deployment, Service, and ServiceMonitor. Because the env values are redacted, it is not possible to confirm that fault-injection settings (e.g. DEMO_ERROR_RATE, DEMO_LATENCY_MS, DEMO_STARTUP_FAIL) are absent; this must be verified before any release. Capacity evidence is also weak: 35 scheduled Pods have no CPU/memory requests and are treated as zero, so free capacity may be overstated. Recommend blocking until metrics collection is restored and the redacted env values are reviewed.",
+        "additional_risks": [
+          {
+            "title": "Redacted env values may carry fault-injection settings",
+            "detail": "Two pod-template env values changed but are redacted, so reviewers cannot confirm they are not fault-injection knobs. The trusted cases show that DEMO_ERROR_RATE=1, DEMO_LATENCY_MS=3000, and DEMO_STARTUP_FAIL=true are drill-only settings that must not ship. Require the actual values (or a diff showing them at normal defaults) before release.",
+            "severity": "REVIEW"
+          },
+          {
+            "title": "No observability evidence to gate the rollout",
+            "detail": "All Prometheus queries failed and up/request-rate/error-ratio/p95/memory/alert evidence is missing, so post-deploy health cannot be validated. Restore metrics collection and re-run evaluation rather than approving on absent data.",
+            "severity": "REVIEW"
+          },
+          {
+            "title": "Capacity may be overstated",
+            "detail": "35 scheduled Pods lack CPU/memory requests and are counted as zero, so available capacity (2190m CPU, ~9.2GB memory on one ready worker) may not reflect real headroom for the new image.",
+            "severity": "REVIEW"
+          }
+        ],
+        "citations": [
+          {
+            "case_id": "http500-fault",
+            "source": "docs/fault-review.md",
+            "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+            "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+            "line_start": 13,
+            "line_end": 13
+          },
+          {
+            "case_id": "latency-3000-fault",
+            "source": "docs/fault-review.md",
+            "source_sha256": "88c141d58f1d578c0e91063d0c98cd6e71787cab95a787f655851dcc13c1be9f",
+            "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+            "line_start": 14,
+            "line_end": 14
+          },
+          {
+            "case_id": "startup-max-unavailable-protection",
+            "source": "docs/drills.md",
+            "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+            "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+            "line_start": 85,
+            "line_end": 104
+          },
+          {
+            "case_id": "latency-probes-not-delayed",
+            "source": "docs/drills.md",
+            "source_sha256": "d62020d176e6812132e791415c6e0092adc2d2780bad9aa858f9b88a6479aa89",
+            "source_commit": "713c5c3e5e5c9e17d83dc109686a9f0788f2af5b",
+            "line_start": 77,
+            "line_end": 83
+          }
+        ],
+        "error": null
+      },
+      "findings": [
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[0]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "Prometheus query memory_working_set_bytes failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max_over_time%28%28sum+by+%28pod%29+%28container_memory_working_set_bytes%7Bnamespace%3D%22demo%22%2Cpod%3D~%22demo-.%2A%22%2Ccontainer%21%3D%22%22%7D%29%29%5B15m%3A%5D%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc4533199f0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[10]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "memory max_over_time query returned no samples"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[11]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "memory source series is missing"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[12]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "error ratio evidence is unavailable because the query failed"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[13]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "p95 latency evidence is unavailable"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[14]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "Prometheus alerts query failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/alerts (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc453319d20>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[15]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "source timestamp for up is invalid"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[16]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "memory evidence is missing"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[17]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "request rate evidence is missing"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[18]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "alert evidence is missing"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[1]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "Prometheus query request_rate failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=sum%28rate%28demo_http_requests_total%7Bnamespace%3D%22demo%22%2Croute%3D%22%2Fwork%22%7D%5B5m%5D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc453318c40>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[2]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "Prometheus query error_numerator failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=sum%28rate%28demo_http_requests_total%7Bnamespace%3D%22demo%22%2Croute%3D%22%2Fwork%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc453318fa0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[3]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "Prometheus query p95_seconds failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=histogram_quantile%280.95%2C+sum+by+%28le%29+%28rate%28demo_http_request_duration_seconds_bucket%7Bnamespace%3D%22demo%22%2Croute%3D%22%2Fwork%22%7D%5B5m%5D%29%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc453319960>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[4]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "Prometheus query up failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max%28up%7Bnamespace%3D%22demo%22%2Cpod%3D~%22demo-.%2A%22%7D%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc45331a5c0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[5]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "Prometheus query up_source failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max%28timestamp%28up%7Bnamespace%3D%22demo%22%2Cpod%3D~%22demo-.%2A%22%7D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc453319c60>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[6]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "Prometheus query memory_source failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max%28timestamp%28container_memory_working_set_bytes%7Bnamespace%3D%22demo%22%2Cpod%3D~%22demo-.%2A%22%2Ccontainer%21%3D%22%22%7D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc45331ab90>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[7]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "Prometheus query request_counter_source failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max%28timestamp%28demo_http_requests_total%7Bnamespace%3D%22demo%22%2Croute%3D%22%2Fwork%22%7D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc45331ac50>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[8]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "Prometheus query latency_bucket_source failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max%28timestamp%28demo_http_request_duration_seconds_bucket%7Bnamespace%3D%22demo%22%2Croute%3D%22%2Fwork%22%7D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc45331ab00>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+          }
+        },
+        {
+          "rule_id": "EVIDENCE_ERROR",
+          "severity": "ERROR",
+          "field": "evidence.errors[9]",
+          "message": "evidence collection reported an error",
+          "evidence": {
+            "error": "target up metric is missing or has no raw scrape timestamp"
+          }
+        },
+        {
+          "rule_id": "METRIC_MISSING_OR_INVALID",
+          "severity": "ERROR",
+          "field": "evidence.metrics.error_ratio",
+          "message": "error ratio is missing or non-finite",
+          "evidence": {
+            "raw": null
+          }
+        },
+        {
+          "rule_id": "METRIC_MISSING_OR_INVALID",
+          "severity": "ERROR",
+          "field": "evidence.metrics.memory_working_set_bytes",
+          "message": "memory max-over-15m is missing or non-finite",
+          "evidence": {
+            "raw": null
+          }
+        },
+        {
+          "rule_id": "METRIC_MISSING_OR_INVALID",
+          "severity": "ERROR",
+          "field": "evidence.metrics.p95_seconds",
+          "message": "p95 latency is missing or non-finite",
+          "evidence": {
+            "raw": null
+          }
+        },
+        {
+          "rule_id": "METRIC_MISSING_OR_INVALID",
+          "severity": "ERROR",
+          "field": "evidence.metrics.request_rate",
+          "message": "request rate is missing or non-finite",
+          "evidence": {
+            "raw": null
+          }
+        },
+        {
+          "rule_id": "METRIC_MISSING_OR_INVALID",
+          "severity": "ERROR",
+          "field": "evidence.metrics.up",
+          "message": "target up value is non-finite or invalid",
+          "evidence": {
+            "raw": null
+          }
+        },
+        {
+          "rule_id": "METRIC_SOURCE_MISSING",
+          "severity": "ERROR",
+          "field": "evidence.metrics.series_presence.latency_bucket",
+          "message": "raw source series must exist for every release evaluation",
+          "evidence": {
+            "source": "latency_bucket"
+          }
+        },
+        {
+          "rule_id": "METRIC_SOURCE_MISSING",
+          "severity": "ERROR",
+          "field": "evidence.metrics.series_presence.memory",
+          "message": "raw source series must exist for every release evaluation",
+          "evidence": {
+            "source": "memory"
+          }
+        },
+        {
+          "rule_id": "METRIC_SOURCE_MISSING",
+          "severity": "ERROR",
+          "field": "evidence.metrics.series_presence.requests_total",
+          "message": "raw source series must exist for every release evaluation",
+          "evidence": {
+            "source": "requests_total"
+          }
+        },
+        {
+          "rule_id": "METRIC_SOURCE_MISSING",
+          "severity": "ERROR",
+          "field": "evidence.metrics.series_presence.up",
+          "message": "raw source series must exist for every release evaluation",
+          "evidence": {
+            "source": "up"
+          }
+        },
+        {
+          "rule_id": "AI_ADDITIONAL_RISK",
+          "severity": "REVIEW",
+          "field": "ai_result.additional_risks",
+          "message": "the model identified additional risk; it can only raise the decision to REVIEW",
+          "evidence": {
+            "risks": [
+              {
+                "title": "Redacted env values may carry fault-injection settings",
+                "detail": "Two pod-template env values changed but are redacted, so reviewers cannot confirm they are not fault-injection knobs. The trusted cases show that DEMO_ERROR_RATE=1, DEMO_LATENCY_MS=3000, and DEMO_STARTUP_FAIL=true are drill-only settings that must not ship. Require the actual values (or a diff showing them at normal defaults) before release."
+              },
+              {
+                "title": "No observability evidence to gate the rollout",
+                "detail": "All Prometheus queries failed and up/request-rate/error-ratio/p95/memory/alert evidence is missing, so post-deploy health cannot be validated. Restore metrics collection and re-run evaluation rather than approving on absent data."
+              },
+              {
+                "title": "Capacity may be overstated",
+                "detail": "35 scheduled Pods lack CPU/memory requests and are counted as zero, so available capacity (2190m CPU, ~9.2GB memory on one ready worker) may not reflect real headroom for the new image."
+              }
+            ],
+            "count": 3
+          }
+        },
+        {
+          "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+          "severity": "REVIEW",
+          "field": "evidence.pods[].spec.containers[].resources.requests",
+          "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+          "evidence": {
+            "unreserved_requests": 35
+          }
+        }
+      ],
+      "evidence": {
+        "collected_at": 1794474602,
+        "errors": [
+          "Prometheus query memory_working_set_bytes failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max_over_time%28%28sum+by+%28pod%29+%28container_memory_working_set_bytes%7Bnamespace%3D%22demo%22%2Cpod%3D~%22demo-.%2A%22%2Ccontainer%21%3D%22%22%7D%29%29%5B15m%3A%5D%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc4533199f0>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+          "Prometheus query request_rate failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=sum%28rate%28demo_http_requests_total%7Bnamespace%3D%22demo%22%2Croute%3D%22%2Fwork%22%7D%5B5m%5D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc453318c40>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+          "Prometheus query error_numerator failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=sum%28rate%28demo_http_requests_total%7Bnamespace%3D%22demo%22%2Croute%3D%22%2Fwork%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc453318fa0>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+          "Prometheus query p95_seconds failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=histogram_quantile%280.95%2C+sum+by+%28le%29+%28rate%28demo_http_request_duration_seconds_bucket%7Bnamespace%3D%22demo%22%2Croute%3D%22%2Fwork%22%7D%5B5m%5D%29%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc453319960>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+          "Prometheus query up failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max%28up%7Bnamespace%3D%22demo%22%2Cpod%3D~%22demo-.%2A%22%7D%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc45331a5c0>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+          "Prometheus query up_source failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max%28timestamp%28up%7Bnamespace%3D%22demo%22%2Cpod%3D~%22demo-.%2A%22%7D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc453319c60>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+          "Prometheus query memory_source failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max%28timestamp%28container_memory_working_set_bytes%7Bnamespace%3D%22demo%22%2Cpod%3D~%22demo-.%2A%22%2Ccontainer%21%3D%22%22%7D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc45331ab90>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+          "Prometheus query request_counter_source failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max%28timestamp%28demo_http_requests_total%7Bnamespace%3D%22demo%22%2Croute%3D%22%2Fwork%22%7D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc45331ac50>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+          "Prometheus query latency_bucket_source failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/query?query=max%28timestamp%28demo_http_request_duration_seconds_bucket%7Bnamespace%3D%22demo%22%2Croute%3D%22%2Fwork%22%7D%29%29 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc45331ab00>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+          "target up metric is missing or has no raw scrape timestamp",
+          "memory max_over_time query returned no samples",
+          "memory source series is missing",
+          "error ratio evidence is unavailable because the query failed",
+          "p95 latency evidence is unavailable",
+          "Prometheus alerts query failed: HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /api/v1/alerts (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fc453319d20>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+          "source timestamp for up is invalid",
+          "memory evidence is missing",
+          "request rate evidence is missing",
+          "alert evidence is missing"
+        ],
+        "metrics": {
+          "memory_working_set_bytes": null,
+          "request_rate": null,
+          "error_ratio": null,
+          "p95_seconds": null,
+          "alerts": [],
+          "source_timestamps": {
+            "up": null
+          }
+        },
+        "capacity": {
+          "available_cpu_millicores": 2190.0,
+          "available_memory_bytes": 9185292288.0,
+          "allocatable_cpu_millicores": 4000.0,
+          "allocatable_memory_bytes": 12406517760.0,
+          "workers_ready": 1
+        },
+        "deployment": {
+          "name": "demo",
+          "namespace": "demo",
+          "replicas": 1,
+          "ready_replicas": 1,
+          "images": [
+            "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d"
+          ]
+        },
+        "node_count": 2,
+        "pod_count": 28
+      },
+      "head_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+      "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+      "recorded_at": 1794474606,
+      "side_effects": "no status publication; no cluster writes"
+    },
+    {
+      "scenario": "deepseek-one-second-deadline",
+      "overrides": {
+        "deepseek_timeout_seconds": 1,
+        "deepseek_total_timeout_seconds": 1
+      },
+      "duration_seconds": 16.71,
+      "decision": "ERROR",
+      "ai": {
+        "status": "error",
+        "model": "deepseek-chat",
+        "summary": "",
+        "additional_risks": [],
+        "citations": [],
+        "error": "HTTPSConnectionPool(host='api.deepseek.com', port=443): Read timed out."
+      },
+      "findings": [
+        {
+          "rule_id": "AI_UNAVAILABLE",
+          "severity": "ERROR",
+          "field": "ai_result.error",
+          "message": "DeepSeek review failed closed",
+          "evidence": {
+            "error": "HTTPSConnectionPool(host='api.deepseek.com', port=443): Read timed out."
+          }
+        },
+        {
+          "rule_id": "CAPACITY_POD_REQUESTS_UNRESERVED",
+          "severity": "REVIEW",
+          "field": "evidence.pods[].spec.containers[].resources.requests",
+          "message": "some scheduled Pods have no CPU/memory requests and are treated as zero; free capacity may be overstated",
+          "evidence": {
+            "unreserved_requests": 35
+          }
+        },
+        {
+          "rule_id": "FIRING_ALERTS",
+          "severity": "REVIEW",
+          "field": "evidence.metrics.alerts",
+          "message": "one or more relevant alerts are firing",
+          "evidence": {
+            "alerts": [
+              {
+                "name": "KubeCPUOvercommit",
+                "state": "firing",
+                "activeAt": "2026-11-12T08:02:40.464748368Z",
+                "labels": {
+                  "alertname": "KubeCPUOvercommit",
+                  "severity": "warning"
+                }
+              }
+            ],
+            "count": 1
+          }
+        }
+      ],
+      "evidence": {
+        "collected_at": 1794474625,
+        "errors": [],
+        "metrics": {
+          "memory_working_set_bytes": 39059456.0,
+          "request_rate": 1.9333536844247483,
+          "error_ratio": 0.0,
+          "p95_seconds": 0.00475,
+          "alerts": [
+            {
+              "name": "Watchdog",
+              "state": "firing",
+              "labels": {
+                "alertname": "Watchdog",
+                "severity": "none"
+              }
+            },
+            {
+              "name": "KubeCPUOvercommit",
+              "state": "firing",
+              "labels": {
+                "alertname": "KubeCPUOvercommit",
+                "severity": "warning"
+              }
+            }
+          ],
+          "source_timestamps": {
+            "up": 1794474616,
+            "memory_working_set_bytes": 1794474620,
+            "request_rate": 1794474616,
+            "error_ratio": 1794474616,
+            "p95_seconds": 1794474616,
+            "alerts": 1794474625
+          }
+        },
+        "capacity": {
+          "available_cpu_millicores": 2190.0,
+          "available_memory_bytes": 9185292288.0,
+          "allocatable_cpu_millicores": 4000.0,
+          "allocatable_memory_bytes": 12406517760.0,
+          "workers_ready": 1
+        },
+        "deployment": {
+          "name": "demo",
+          "namespace": "demo",
+          "replicas": 1,
+          "ready_replicas": 1,
+          "images": [
+            "ghcr.io/hey-mmm/observability-demo@sha256:456dfbbecf18b66b5b9e5c02bcba50c5fd4458f467e4b29c8d11d049d998677d"
+          ]
+        },
+        "node_count": 2,
+        "pod_count": 28
+      },
+      "head_sha": "e6064c5df42ab701fac6a1e1be4bfac467a0410d",
+      "base_sha": "823770eff4e9384ceb83aa1561f9b5f95239c221",
+      "recorded_at": 1794474626,
+      "side_effects": "no status publication; no cluster writes"
+    }
+  ]
+}
