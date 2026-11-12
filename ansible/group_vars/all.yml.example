@@ -2,7 +2,7 @@
 # Copy to ansible/group_vars/all.yml and fill in the trusted values.
 # Credential source paths are on the Ansible controller, never in this file.
 
-change_guard_version: "0.3.0"
+change_guard_version: "0.3.1"
 change_guard_artifact: "{{ playbook_dir }}/../dist/k8s-change-guard-{{ change_guard_version }}.tar.gz"
 change_guard_artifact_checksum: "REPLACE_WITH_SHA256_OF_TRUSTED_TARBALL"
 

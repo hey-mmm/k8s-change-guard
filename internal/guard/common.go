@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-const Version = "0.3.0"
+const Version = "0.3.1"
 const RuleVersion = "go-2026-11-12.1"
 
 type M = map[string]any

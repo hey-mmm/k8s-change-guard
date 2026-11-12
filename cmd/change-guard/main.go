@@ -496,6 +496,11 @@ func cgCheckToken(args []string) int {
 	flags := cgFlagSet("check-token")
 	minRemaining := flags.Int("min-remaining", 3600, "minimum remaining seconds")
 	now := flags.Float64("now", 0, "testing override for current Unix time")
+	// Retain the documented positional-first interface used by the systemd
+	// timer and Ansible while also supporting standard flag-first invocation.
+	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
+		args = append(append([]string{}, args[1:]...), args[0])
+	}
 	if err := flags.Parse(args); err != nil {
 		return 2
 	}

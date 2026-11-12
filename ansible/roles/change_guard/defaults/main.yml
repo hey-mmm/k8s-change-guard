@@ -11,7 +11,7 @@ change_guard_binary_name: k8s-change-guard
 change_guard_binary: "{{ change_guard_current_link }}/{{ change_guard_binary_name }}"
 change_guard_token_check_min_remaining: "{{ change_guard_token_refresh_before_seconds | int }}"
 
-change_guard_version: "0.3.0"
+change_guard_version: "0.3.1"
 change_guard_artifact_checksum: ""
 change_guard_artifact: "{{ playbook_dir }}/../dist/k8s-change-guard-{{ change_guard_version }}.tar.gz"
 
